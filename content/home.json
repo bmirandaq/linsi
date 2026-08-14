@@ -1,0 +1,13 @@
+{
+  "subtitle": "Linguagem Simplificada de Fluxogramas de UX",
+  "positioning": [
+    "LINSI é uma linguagem simplificada para construção de fluxogramas de UX — User Experience. Criada para representar e priorizar quem interage com produtos e serviços digitais.",
+    "Pode ser descrita como notação, fluxograma, template ou sistema, ou tudo isso ao mesmo tempo.",
+    "Embora use elementos presentes em notações como BPMN e UML, LINSI nasce como crítica dessas linguagens clássicas. Não se propõe a ser perfeita, e sim a fazer sentido.",
+    "Mais do que uma forma de desenhar fluxos, LINSI organiza leitura, decisão e comunicação. Seu valor não está em parecer robusta; está em tornar o raciocínio visível e útil para quem precisa entender, discutir, revisar e evoluir uma experiência."
+  ],
+  "primaryAction": {
+    "label": "Acessar documentação",
+    "href": "/docs/glossario"
+  }
+}

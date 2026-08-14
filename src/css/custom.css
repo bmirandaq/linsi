@@ -1,0 +1,416 @@
+:root {
+  --linsi-brand-01-darkest: #340106;
+  --linsi-brand-01-darker: #4f090c;
+  --linsi-brand-01-dark: #971f1a;
+  --linsi-brand-01-base: #e23929;
+  --linsi-brand-01-light: #ea7967;
+  --linsi-brand-01-lighter: #f1b19b;
+  --linsi-brand-01-lightest: #fbeae2;
+  --linsi-brand-02-darkest: #060c2b;
+  --linsi-brand-02-base: #1f1696;
+  --linsi-brand-02-light: #443aa6;
+  --linsi-brand-02-lighter: #7063b9;
+  --linsi-brand-02-lightest: #9c8fcc;
+  --linsi-brand-02-ultralight: #c6bce1;
+  --linsi-brand-02-ultralighter: #ebe8f4;
+  --linsi-neutral-darkest: #172637;
+  --linsi-neutral-darker: #253243;
+  --linsi-neutral-dark: #4b5565;
+  --linsi-neutral-base: #7c8491;
+  --linsi-neutral-light: #afb5bf;
+  --linsi-neutral-lighter: #dbdfe6;
+  --linsi-neutral-lightest: #f5f8fd;
+  --linsi-pure-white: #ffffff;
+  --linsi-pure-black: #000000;
+  --linsi-logo-surface: #f5f8fd;
+  --linsi-border-color: #dbdfe6;
+  --linsi-navbar-border-color: #dbdfe6;
+  --linsi-focus-color: #1f1696;
+  --linsi-home-copy: #253243;
+  --linsi-home-subtitle: #4b5565;
+  --linsi-button-background: #971f1a;
+  --linsi-button-hover-background: #4f090c;
+  --linsi-button-text: #ffffff;
+  --linsi-button-focus-inner: #f5f8fd;
+
+  --ifm-color-primary: #971f1a;
+  --ifm-color-primary-dark: #4f090c;
+  --ifm-color-primary-darker: #340106;
+  --ifm-color-primary-darkest: #340106;
+  --ifm-color-primary-light: #971f1a;
+  --ifm-color-primary-lighter: #971f1a;
+  --ifm-color-primary-lightest: #fbeae2;
+  --ifm-background-color: #f5f8fd;
+  --ifm-background-surface-color: #ffffff;
+  --ifm-font-family-base: 'Manrope Variable', sans-serif;
+  --ifm-heading-font-family: 'Plus Jakarta Sans Variable', sans-serif;
+  --ifm-font-color-base: #253243;
+  --ifm-heading-color: #172637;
+  --ifm-link-color: #971f1a;
+  --ifm-link-hover-color: #4f090c;
+  --ifm-menu-color-active: #971f1a;
+  --ifm-navbar-background-color: #ffffff;
+  --ifm-navbar-height: 72px;
+  --ifm-navbar-link-color: #253243;
+  --ifm-toc-border-color: #dbdfe6;
+  --ifm-hr-border-color: #dbdfe6;
+  --ifm-global-radius: 4px;
+  --ifm-alert-border-radius: 4px;
+  --ifm-code-border-radius: 4px;
+  --ifm-button-border-radius: 4px;
+}
+
+[data-theme='dark'] {
+  --linsi-logo-surface: #04081f;
+  --linsi-border-color: #4b5565;
+  --linsi-navbar-border-color: #4b5565;
+  --linsi-focus-color: #f1b19b;
+  --linsi-home-copy: #f5f8fd;
+  --linsi-home-subtitle: #dbdfe6;
+  --linsi-button-background: #f1b19b;
+  --linsi-button-hover-background: #fbeae2;
+  --linsi-button-text: #340106;
+  --linsi-button-focus-inner: #060c2b;
+
+  --ifm-color-primary: #f1b19b;
+  --ifm-color-primary-dark: #ea7967;
+  --ifm-color-primary-darker: #e23929;
+  --ifm-color-primary-darkest: #971f1a;
+  --ifm-color-primary-light: #fbeae2;
+  --ifm-color-primary-lighter: #fbeae2;
+  --ifm-color-primary-lightest: #ffffff;
+  --ifm-background-color: #04081f;
+  --ifm-background-surface-color: #172637;
+  --ifm-font-color-base: #f5f8fd;
+  --ifm-heading-color: #ffffff;
+  --ifm-link-color: #f1b19b;
+  --ifm-link-hover-color: #fbeae2;
+  --ifm-menu-color: #f5f8fd;
+  --ifm-menu-color-active: #f1b19b;
+  --ifm-navbar-background-color: #060c2b;
+  --ifm-navbar-link-color: #f5f8fd;
+  --ifm-toc-border-color: #4b5565;
+  --ifm-hr-border-color: #4b5565;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--ifm-background-color);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.navbar__title {
+  font-family: var(--ifm-heading-font-family);
+}
+
+.navbar {
+  border-bottom: 1px solid var(--linsi-navbar-border-color);
+  box-shadow: none;
+}
+
+.navbar__brand {
+  gap: 0.5rem;
+}
+
+.navbar__logo {
+  height: 48px;
+  width: 82px;
+}
+
+.navbar__title {
+  color: var(--linsi-neutral-darkest);
+  font-weight: 700;
+}
+
+.navbar__link {
+  font-weight: 600;
+}
+
+.navbarCta {
+  align-items: center;
+  border: 1px solid var(--linsi-brand-01-dark);
+  border-radius: 4px;
+  display: inline-flex;
+  font-size: 0.75rem;
+  justify-content: center;
+  line-height: 1.2;
+  margin-right: 0.5rem;
+  padding: 0.5rem 0.75rem !important;
+}
+
+.navbarCta--secondary {
+  color: var(--linsi-brand-01-dark) !important;
+}
+
+.navbarCta--primary {
+  background: var(--linsi-brand-01-dark);
+  color: var(--linsi-pure-white) !important;
+}
+
+.navbarCta--secondary:hover {
+  background: var(--linsi-brand-01-lightest);
+  border-color: var(--linsi-brand-01-darker);
+  color: var(--linsi-brand-01-darker) !important;
+}
+
+.navbarCta--primary:hover {
+  background: var(--linsi-brand-01-darker);
+  border-color: var(--linsi-brand-01-darker);
+}
+
+[data-theme='dark'] .navbarCta {
+  border-color: var(--linsi-brand-01-lighter);
+}
+
+[data-theme='dark'] .navbarCta--secondary {
+  color: var(--linsi-brand-01-lighter) !important;
+}
+
+[data-theme='dark'] .navbarCta--primary {
+  background: var(--linsi-brand-01-lighter);
+  color: var(--linsi-brand-01-darkest) !important;
+}
+
+[data-theme='dark'] .navbarCta--secondary:hover {
+  background: var(--linsi-neutral-darker);
+  border-color: var(--linsi-brand-01-lightest);
+  color: var(--linsi-brand-01-lightest) !important;
+}
+
+[data-theme='dark'] .navbarCta--primary:hover {
+  background: var(--linsi-brand-01-lightest);
+  border-color: var(--linsi-brand-01-lightest);
+}
+
+.navbar__link:hover,
+.navbar__link--active {
+  color: var(--linsi-brand-01-dark);
+}
+
+[data-theme='dark'] .navbar__link:hover,
+[data-theme='dark'] .navbar__link--active {
+  color: var(--linsi-brand-01-lighter);
+}
+
+.navbar__link:focus-visible,
+.menu__link:focus-visible,
+.pagination-nav__link:focus-visible,
+.breadcrumbs__link:focus-visible,
+.table-of-contents__link:focus-visible,
+a:focus-visible {
+  border-radius: 2px;
+  outline: 3px solid var(--linsi-focus-color);
+  outline-offset: 3px;
+}
+
+.theme-doc-sidebar-container {
+  border-right-color: var(--linsi-border-color) !important;
+}
+
+.menu__link {
+  border-radius: 4px;
+  color: var(--linsi-neutral-darker);
+  line-height: 1.45;
+}
+
+.menu__link:hover {
+  background: var(--linsi-neutral-lightest);
+  color: var(--linsi-brand-01-dark);
+}
+
+.menu__link--active:not(.menu__link--sublist) {
+  background: var(--linsi-brand-01-lightest);
+  color: var(--linsi-brand-01-darkest);
+  font-weight: 700;
+}
+
+.theme-doc-markdown {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.theme-doc-markdown > h1:first-child {
+  font-size: clamp(2.25rem, 5vw, 3.25rem);
+  letter-spacing: -0.035em;
+}
+
+.theme-doc-markdown h2 {
+  letter-spacing: -0.02em;
+  margin-top: 2.5rem;
+}
+
+.alert--secondary {
+  --ifm-alert-background-color: var(--linsi-brand-02-ultralighter);
+  --ifm-alert-border-color: var(--linsi-brand-02-base);
+  --ifm-alert-foreground-color: var(--linsi-brand-02-darkest);
+}
+
+.alert--secondary a {
+  color: var(--linsi-brand-02-darkest);
+  text-decoration-thickness: 2px;
+}
+
+.pagination-nav__link {
+  border-color: var(--linsi-neutral-lighter);
+  border-radius: 4px;
+}
+
+.pagination-nav__link:hover {
+  background: var(--linsi-neutral-lightest);
+  border-color: var(--linsi-brand-01-dark);
+}
+
+.pagination-nav__label {
+  color: var(--linsi-brand-01-dark);
+}
+
+[data-theme='light'] .theme-doc-sidebar-container {
+  background: var(--linsi-brand-02-lightest);
+  border-right-color: var(--linsi-brand-02-lighter) !important;
+}
+
+[data-theme='light'] .theme-doc-sidebar-container .menu__link {
+  color: var(--linsi-neutral-darkest);
+}
+
+[data-theme='light'] .theme-doc-sidebar-container .menu__link:hover,
+[data-theme='light'] .theme-doc-sidebar-container button:hover {
+  background: var(--linsi-brand-02-ultralighter);
+  color: var(--linsi-brand-02-darkest);
+}
+
+[data-theme='light'] .theme-doc-sidebar-container .menu__link:active,
+[data-theme='light'] .theme-doc-sidebar-container button:active {
+  background: var(--linsi-brand-02-ultralight);
+  color: var(--linsi-brand-02-darkest);
+}
+
+[data-theme='light']
+  .theme-doc-sidebar-container
+  .menu__link--active:not(.menu__link--sublist) {
+  background: var(--linsi-brand-01-darker);
+  color: var(--linsi-brand-01-lightest);
+}
+
+[data-theme='light'] .theme-doc-sidebar-container button {
+  color: var(--linsi-neutral-darkest);
+}
+
+.linsi-sidebar-credit {
+  background: var(--linsi-brand-02-ultralighter);
+  border: 1px solid var(--linsi-brand-02-lighter);
+  border-radius: 4px;
+  color: var(--linsi-brand-02-darkest);
+  display: flex;
+  flex-direction: column;
+  margin: 1.25rem 0.5rem 0.5rem;
+  padding: 1rem;
+}
+
+.linsi-sidebar-credit__eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.375rem;
+  text-transform: uppercase;
+}
+
+.linsi-sidebar-credit__name {
+  font-family: var(--ifm-heading-font-family);
+  font-size: 1rem;
+}
+
+.linsi-sidebar-credit__title {
+  font-size: 0.8125rem;
+  margin: 0.125rem 0 0.75rem;
+}
+
+.linsi-sidebar-credit__link {
+  color: var(--linsi-brand-01-darker);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.linsi-sidebar-credit__link:hover {
+  color: var(--linsi-brand-01-darkest);
+}
+
+[data-theme='dark'] .theme-doc-sidebar-container {
+  background: var(--linsi-brand-02-darkest);
+}
+
+[data-theme='dark'] .menu__link {
+  color: var(--linsi-neutral-lightest);
+}
+
+[data-theme='dark'] .menu__link:hover {
+  background: var(--linsi-neutral-darker);
+  color: var(--linsi-brand-01-lighter);
+}
+
+[data-theme='dark'] .menu__link--active:not(.menu__link--sublist) {
+  background: var(--linsi-brand-01-darker);
+  color: var(--linsi-brand-01-lightest);
+}
+
+[data-theme='dark'] .alert--secondary {
+  --ifm-alert-background-color: var(--linsi-neutral-darker);
+  --ifm-alert-border-color: var(--linsi-brand-02-lightest);
+  --ifm-alert-foreground-color: var(--linsi-neutral-lightest);
+}
+
+[data-theme='dark'] .alert--secondary a {
+  color: var(--linsi-brand-01-lighter);
+}
+
+[data-theme='dark'] .pagination-nav__link {
+  border-color: var(--linsi-neutral-dark);
+}
+
+[data-theme='dark'] .pagination-nav__link:hover {
+  background: var(--linsi-neutral-darker);
+  border-color: var(--linsi-brand-01-lighter);
+}
+
+[data-theme='dark'] .pagination-nav__label {
+  color: var(--linsi-brand-01-lighter);
+}
+
+[data-theme='dark'] .linsi-sidebar-credit {
+  background: var(--linsi-neutral-darkest);
+  border-color: var(--linsi-neutral-dark);
+  color: var(--linsi-neutral-lightest);
+}
+
+[data-theme='dark'] .linsi-sidebar-credit__link {
+  color: var(--linsi-brand-01-lighter);
+}
+
+[data-theme='dark'] .linsi-sidebar-credit__link:hover {
+  color: var(--linsi-brand-01-lightest);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

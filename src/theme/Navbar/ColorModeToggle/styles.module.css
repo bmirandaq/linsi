@@ -1,0 +1,73 @@
+.toggle {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 0.625rem;
+  height: 40px;
+  justify-content: center;
+  padding: 7px 8px;
+}
+
+.label {
+  color: var(--ifm-navbar-link-color);
+  font-family: var(--ifm-font-family-base);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1;
+  min-width: 72px;
+  text-align: right;
+}
+
+.track {
+  background: var(--linsi-neutral-lighter);
+  border: 1px solid var(--linsi-neutral-base);
+  border-radius: 999px;
+  display: block;
+  height: 26px;
+  padding: 3px;
+  transition: background-color 120ms ease, border-color 120ms ease;
+  width: 48px;
+}
+
+.thumb {
+  background: var(--linsi-brand-01-dark);
+  border-radius: 50%;
+  display: block;
+  height: 18px;
+  transform: translateX(0);
+  transition: background-color 120ms ease, transform 120ms ease;
+  width: 18px;
+}
+
+.toggle:hover .track {
+  border-color: var(--linsi-brand-01-dark);
+}
+
+.toggle:focus-visible {
+  border-radius: 4px;
+  outline: 3px solid var(--linsi-focus-color);
+  outline-offset: 2px;
+}
+
+:global([data-theme='dark']) .track {
+  background: var(--linsi-neutral-darker);
+  border-color: var(--linsi-neutral-light);
+}
+
+:global([data-theme='dark']) .thumb {
+  background: var(--linsi-brand-01-lighter);
+  transform: translateX(22px);
+}
+
+:global([data-theme='dark']) .toggle:hover .track {
+  border-color: var(--linsi-brand-01-lighter);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track,
+  .thumb {
+    transition: none;
+  }
+}

@@ -1,0 +1,97 @@
+.main {
+  min-height: calc(100vh - var(--ifm-navbar-height));
+}
+
+.intro {
+  align-items: center;
+  background: var(--linsi-logo-surface);
+  display: flex;
+  min-height: calc(100vh - var(--ifm-navbar-height));
+  padding: 5rem 0 6rem;
+}
+
+.container {
+  max-width: 760px;
+}
+
+.logo {
+  display: block;
+  height: auto;
+  margin-bottom: 3rem;
+  width: 163px;
+}
+
+.visuallyHidden {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.subtitle {
+  color: var(--linsi-home-subtitle);
+  font-size: clamp(1.125rem, 2.5vw, 1.5rem);
+  line-height: 1.5;
+  margin: 0 0 2rem;
+  max-width: 600px;
+}
+
+.positioningCopy {
+  color: var(--linsi-home-copy);
+  margin-bottom: 2.5rem;
+  max-width: 680px;
+}
+
+.positioningCopy p {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  margin-bottom: 1.125rem;
+}
+
+.positioningCopy p:last-child {
+  margin-bottom: 0;
+}
+
+.primaryAction {
+  background: var(--linsi-button-background);
+  border: 2px solid var(--linsi-button-background);
+  border-radius: 4px;
+  color: var(--linsi-button-text);
+  font-size: 1rem;
+  padding: 0.75rem 1.25rem;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.primaryAction:hover {
+  background: var(--linsi-button-hover-background);
+  border-color: var(--linsi-button-hover-background);
+  color: var(--linsi-button-text);
+  text-decoration: none;
+}
+
+.primaryAction:focus-visible {
+  box-shadow: 0 0 0 2px var(--linsi-button-focus-inner),
+    0 0 0 5px var(--linsi-focus-color);
+  outline: none;
+}
+
+@media (max-width: 576px) {
+  .intro {
+    align-items: flex-start;
+    padding: 4rem 0;
+  }
+
+  .logo {
+    margin-bottom: 2.5rem;
+    width: 136px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primaryAction {
+    transition: none;
+  }
+}

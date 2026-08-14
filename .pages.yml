@@ -1,0 +1,85 @@
+media:
+  input: static/img/uploads
+  output: /img/uploads
+  rename: safe
+  categories: [image]
+
+content:
+  - name: home
+    label: Página inicial
+    type: file
+    path: content/home.json
+    format: json
+    operations:
+      delete: false
+    fields:
+      - name: subtitle
+        label: Subtítulo
+        type: string
+        required: true
+      - name: positioning
+        label: Parágrafos de posicionamento
+        type: text
+        list: true
+        required: true
+      - name: primaryAction
+        label: Botão principal
+        type: object
+        required: true
+        fields:
+          - name: label
+            label: Texto do botão
+            type: string
+            required: true
+          - name: href
+            label: Link do botão
+            type: string
+            required: true
+
+  - name: docs
+    label: Documentação
+    type: collection
+    path: docs
+    format: yaml-frontmatter
+    subfolders: true
+    exclude: ["**/_category_.json"]
+    filename:
+      template: "{primary}.md"
+      field: create
+    view:
+      layout: tree
+      node:
+        filename: index.md
+        hideDirs: others
+      fields: [title, sidebar_position]
+      primary: title
+      sort: [sidebar_position, title]
+    fields:
+      - name: title
+        label: Título
+        type: string
+        required: true
+      - name: description
+        label: Descrição
+        type: text
+      - name: sidebar_position
+        label: Ordem na navegação
+        type: number
+      - name: slug
+        label: Endereço da página
+        type: string
+      - name: body
+        label: Conteúdo
+        type: rich-text
+        required: true
+
+settings:
+  content:
+    merge: true
+  commit:
+    identity: user
+    templates:
+      create: "content: criar {filename}"
+      update: "content: atualizar {filename}"
+      delete: "content: remover {filename}"
+      rename: "content: renomear {oldFilename} para {newFilename}"
