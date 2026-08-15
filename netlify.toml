@@ -1,0 +1,16 @@
+[build]
+  command = "npm run build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "24"
+  BASE_URL = "/"
+
+[context.production.environment]
+  BASE_URL = "/"
+
+[context.deploy-preview.environment]
+  BASE_URL = "/"
+
+[context.branch-deploy.environment]
+  BASE_URL = "/"
