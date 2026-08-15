@@ -1,10 +1,8 @@
 ---
-sidebar_position: 1
+sidebar_position: 3
 title: Glossário
-description: Glossário da documentação LINSI.
 slug: /glossario
 ---
-
 # Glossário
 
 **Jornada**  
