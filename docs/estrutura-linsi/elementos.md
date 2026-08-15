@@ -1,8 +1,9 @@
 ---
-sidebar_position: 1
+sidebar_position: 4
 title: Elementos
 ---
 # Elementos
+
 ---
 
 ### Seta
@@ -12,6 +13,7 @@ Conecta os elementos.
 [img]
 
 Tipos de seta: 
+
 - **Comum**: continuidade, direção genérica. Aplica-se cor cinza/neutra.
 - **Positiva**: direção ao sucesso, esperada. Cor verde.
 - **Negativa**: direção a uma falha ou erro. Cor vermelha.
@@ -80,19 +82,23 @@ Pode ser descartável em fluxos cujo início já esteja escancarado pelo context
 ---
 
 ### Fim
+
 Representa encerramento da jornada exposta.
 
 ---
 
 ### Retomada
+
 Redirecionamento para outro fluxo ou jornada existente.
 
 ---
 
 ### Nota
+
 Elemento auxiliar para explicações, regras de negócio e informações adicionais.
 
 ---
 
 ### Comentário
+
 Elemento temporário para dúvidas, pontos em aberto e observações de trabalho.
