@@ -1,4 +1,16 @@
 /** @type {import('@docusaurus/types').Config} */
+const fontSelectorHtml = `
+  <label class="linsi-font-selector">
+    <span class="linsi-font-selector__label">Fonte</span>
+    <select class="linsi-font-selector__select" data-font-selector aria-label="Fonte do texto">
+      <option value="manrope">Manrope</option>
+      <option value="inter">Inter</option>
+      <option value="opendyslexic">OpenDyslexic</option>
+      <option value="georgia">Georgia</option>
+    </select>
+  </label>
+`;
+
 const config = {
   title: 'LINSI',
   tagline: 'Linguagem Simplificada de Fluxogramas de UX',
@@ -37,6 +49,21 @@ const config = {
     ],
   ],
 
+  plugins: [
+    [
+      '@cmfcmf/docusaurus-search-local',
+      {
+        indexDocs: true,
+        indexDocSidebarParentCategories: 2,
+        includeParentCategoriesInPageTitle: true,
+        indexBlog: false,
+        indexPages: true,
+        language: 'pt',
+        maxSearchResults: 8,
+      },
+    ],
+  ],
+
   themeConfig: {
     colorMode: {
       defaultMode: 'light',
@@ -59,16 +86,24 @@ const config = {
           label: 'Documentação',
         },
         {
-          href: 'https://example.com/quero-contribuir',
-          label: 'QUERO CONTRIBUIR',
-          position: 'right',
-          className: 'navbarCta navbarCta--secondary',
+          href: 'https://github.com/bmirandaq/linsi/discussions/new/choose',
+          label: 'Quero contribuir',
+          position: 'left',
         },
         {
-          href: 'https://example.com/enviar-case',
-          label: 'ENVIAR CASE',
+          href: 'https://github.com/bmirandaq/linsi/discussions/new?category=ajuda',
+          label: 'Pedir ajuda',
+          position: 'left',
+        },
+        {
+          type: 'search',
           position: 'right',
-          className: 'navbarCta navbarCta--primary',
+        },
+        {
+          type: 'html',
+          position: 'right',
+          value: fontSelectorHtml,
+          className: 'linsi-font-selector-item',
         },
       ],
     },
