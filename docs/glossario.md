@@ -3,34 +3,63 @@ sidebar_position: 3
 title: Glossário
 slug: /glossario
 ---
+
 # Glossário
 
-**Jornada**  
-Caminho completo da pessoa usuária ao interagir com um produto ou serviço
+### Pessoa usuária
 
-**Fluxo**  
-Sequência lógica de ações dentro de um processo
+Quem interage com o produto, plataforma ou serviço. Sinônimos: cliente, beneficiário
 
-**Diagrama**  
-Representação visual de relações e estruturas
+### Jornada
 
-**Fluxograma**  
-Diagrama de fluxo de processo com símbolos padronizados
+Sequência de etapas, interações e experiências ao longo do relacionamento com o produto. 
 
-**Notação**  
-Sistema de símbolos usado para representar ideias, conceitos ou processos
+Pode englobar desde o primeiro contato até pós-uso, além de todas as possibilidades de ponto de contato, digitais ou não. 
 
-**Interface**  
-Ponto de contato entre pessoa usuária e sistema
+Pode ser uma visão ampla (macro), restrita (micro) ou específica.
 
-**Pessoa usuária**  
-Aquela que interage com o produto ou serviço
+### Fluxo
 
-**Rótulo**  
-Explicar
+Sequência de etapas e/ou atividades realizadas para atingir um objetivo específico dentro de uma jornada. 
 
-**Interação**  
-Explicar
+Uma jornada pode ter vários fluxos, e um fluxo pode se entender como uma jornada.
 
-**Ação**  
-Explicar
+### Diagrama
+
+Representação visual de relações e estruturas que se conectam.
+
+### Fluxograma
+
+É um tipo de representação visual de diagrama.
+
+### Notação
+
+Sistema de símbolos para representar ideias, conceitos ou processos. A própria LINSI é uma notação.
+
+### Interface
+
+Ponto de contato entre pessoa usuária e sistema (produto, plataforma ou serviço), físico ou digital. 
+
+### Telas
+
+Protótipos, representações visuais, interfaces digitais das jornadas/fluxos.
+
+### Ação 
+
+Algo que a pessoa faz durante o fluxo.
+
+### Interação
+
+Troca entre a pessoa e o sistema, envolvendo uma ação e uma resposta em sequência.
+
+### Comportamento
+
+Forma como o sistema age ou responde diante de uma ação (forma ativa) ou condição (forma independente, baseada em regra).
+
+### Rótulo
+
+Texto curto que nomeia ou identifica um elemento ou informação na interface. 
+
+Também pode ser chamado de label (é o mesmo que rótulo, só que em inglês).
+
+> Não há consenso absoluto sobre todos os termos apresentados neste glossário. Na LINSI, eles são usados conforme as definições estabelecidas aqui.
