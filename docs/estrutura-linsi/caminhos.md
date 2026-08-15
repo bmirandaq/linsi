@@ -1,9 +1,8 @@
 ---
-sidebar_position: 3
+sidebar_position: 6
 title: Caminhos
 description: Camada de caminhos da estrutura LINSI.
 ---
-
 # Camada 3 - Caminhos
 
 Pode existir um único ou mais caminhos.
