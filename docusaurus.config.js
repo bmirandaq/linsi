@@ -4,10 +4,10 @@ const config = {
   tagline: 'Linguagem Simplificada de Fluxogramas de UX',
   favicon: 'img/linsi-logo.svg',
 
-  url: process.env.SITE_URL ?? 'http://localhost:3000',
+  url: process.env.SITE_URL ?? process.env.URL ?? 'http://localhost:3000',
   baseUrl: process.env.BASE_URL ?? '/',
   organizationName: 'bmirandaq',
-  projectName: 'linsi-documentacao',
+  projectName: 'linsi',
 
   onBrokenLinks: 'throw',
   markdown: {

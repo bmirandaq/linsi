@@ -1,8 +1,6 @@
-name: Publicar documentação
+name: Publicar documentação no GitHub Pages
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -37,7 +35,7 @@ jobs:
         run: npm run build
         env:
           SITE_URL: https://bmirandaq.github.io
-          BASE_URL: /linsi-documentacao/
+          BASE_URL: /linsi/
 
       - name: Preparar artefato
         uses: actions/upload-pages-artifact@v5
