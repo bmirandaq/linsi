@@ -1,9 +1,8 @@
 ---
-sidebar_position: 2
+sidebar_position: 5
 title: Colunas
 description: Camada de colunas da estrutura LINSI.
 ---
-
 # Camada 2 - Colunas
 
 Colunas devem ser organizadas de cima para baixo, de acordo com a ordem: comum, alternativo, negativo.
