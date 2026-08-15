@@ -6,9 +6,22 @@ slug: /principios
 ---
 # Princípios LINSI
 
-- **Centrada nas pessoas**: Transcrever a perspectiva de quem visualiza e interage.  
-- **Simplificada**: Incluir só o que tem função, dispensar o resto.  
-- **Sistêmica**: Conectar o todo, protagonizando a visão de experiência.  
-- **Visualmente intuitiva**: Organizar composição, elementos e conteúdo para reconhecimento imediato.  
-- **Adaptável**: Ajustar-se a diferentes contextos, escalas e necessidades.
+### 1) Centrada nas pessoas
 
+Transcrever a perspectiva de quem percebe, ouve, visualiza e/ou interage
+
+### 2) Simplificada
+
+Incluir apenas o que tem função e dispensar o resto
+
+### 3) Sistêmica
+
+Conectar o todo, protagonizando a visão de experiência da pessoa cliente/beneficiária
+
+### 4) Visualmente intuitiva
+
+Organizar composição, elementos e conteúdo para reconhecimento imediato
+
+### 5) Adaptável
+
+Ajustar-se a diferentes contextos, escalas e necessidades
