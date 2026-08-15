@@ -3,7 +3,9 @@ sidebar_position: 2
 title: Conceito de fluxograma
 slug: /conceito-fluxograma
 ---
-# Importância dos fluxogramas
+
+
+# Conceito de fluxograma
 
 Fluxogramas são representações visuais de processos — sequências de atos lógicos. Entre seus benefícios, alguns merecem destaque: diagnóstico, clareza, alinhamento e economia.
 
