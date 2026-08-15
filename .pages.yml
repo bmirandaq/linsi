@@ -48,9 +48,6 @@ content:
       field: create
     view:
       layout: tree
-      node:
-        filename: index.md
-        hideDirs: others
       fields: [title, sidebar_position]
       primary: title
       sort: [sidebar_position, title]
