@@ -60,6 +60,22 @@
   --ifm-button-border-radius: 4px;
 }
 
+html[data-font-family='manrope'] {
+  --ifm-font-family-base: 'Manrope Variable', sans-serif;
+}
+
+html[data-font-family='inter'] {
+  --ifm-font-family-base: 'Inter Variable', sans-serif;
+}
+
+html[data-font-family='opendyslexic'] {
+  --ifm-font-family-base: 'OpenDyslexic', sans-serif;
+}
+
+html[data-font-family='georgia'] {
+  --ifm-font-family-base: Georgia, 'Times New Roman', serif;
+}
+
 [data-theme='dark'] {
   --linsi-logo-surface: #04081f;
   --linsi-border-color: #4b5565;
@@ -134,60 +150,52 @@ h6,
   font-weight: 600;
 }
 
-.navbarCta {
+.linsi-font-selector-item {
   align-items: center;
-  border: 1px solid var(--linsi-brand-01-dark);
-  border-radius: 4px;
-  display: inline-flex;
+  display: flex;
+  padding: 0 0.375rem;
+}
+
+.linsi-font-selector {
+  align-items: center;
+  display: flex;
+  gap: 0.375rem;
+}
+
+.linsi-font-selector__label {
+  color: var(--ifm-navbar-link-color);
   font-size: 0.75rem;
-  justify-content: center;
-  line-height: 1.2;
-  margin-right: 0.5rem;
-  padding: 0.5rem 0.75rem !important;
+  font-weight: 700;
 }
 
-.navbarCta--secondary {
-  color: var(--linsi-brand-01-dark) !important;
+.linsi-font-selector__select {
+  background: var(--ifm-navbar-background-color);
+  border: 1px solid var(--linsi-neutral-base);
+  border-radius: 4px;
+  color: var(--ifm-navbar-link-color);
+  cursor: pointer;
+  font-family: var(--ifm-font-family-base);
+  font-size: 0.8125rem;
+  height: 36px;
+  max-width: 118px;
+  padding: 0 1.75rem 0 0.5rem;
 }
 
-.navbarCta--primary {
-  background: var(--linsi-brand-01-dark);
-  color: var(--linsi-pure-white) !important;
+.linsi-font-selector__select:hover {
+  border-color: var(--linsi-brand-01-dark);
 }
 
-.navbarCta--secondary:hover {
-  background: var(--linsi-brand-01-lightest);
-  border-color: var(--linsi-brand-01-darker);
-  color: var(--linsi-brand-01-darker) !important;
+.linsi-font-selector__select:focus-visible {
+  outline: 3px solid var(--linsi-focus-color);
+  outline-offset: 2px;
 }
 
-.navbarCta--primary:hover {
-  background: var(--linsi-brand-01-darker);
-  border-color: var(--linsi-brand-01-darker);
+[data-theme='dark'] .linsi-font-selector__select {
+  border-color: var(--linsi-neutral-light);
 }
 
-[data-theme='dark'] .navbarCta {
+[data-theme='dark'] .linsi-font-selector__select:hover {
   border-color: var(--linsi-brand-01-lighter);
-}
-
-[data-theme='dark'] .navbarCta--secondary {
-  color: var(--linsi-brand-01-lighter) !important;
-}
-
-[data-theme='dark'] .navbarCta--primary {
-  background: var(--linsi-brand-01-lighter);
-  color: var(--linsi-brand-01-darkest) !important;
-}
-
-[data-theme='dark'] .navbarCta--secondary:hover {
-  background: var(--linsi-neutral-darker);
-  border-color: var(--linsi-brand-01-lightest);
-  color: var(--linsi-brand-01-lightest) !important;
-}
-
-[data-theme='dark'] .navbarCta--primary:hover {
-  background: var(--linsi-brand-01-lightest);
-  border-color: var(--linsi-brand-01-lightest);
 }
 
 .navbar__link:hover,
@@ -412,5 +420,24 @@ a:focus-visible {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 996px) {
+  .linsi-font-selector-item {
+    padding: 0.75rem;
+  }
+
+  .linsi-font-selector {
+    width: 100%;
+  }
+
+  .linsi-font-selector__label {
+    color: var(--ifm-menu-color);
+  }
+
+  .linsi-font-selector__select {
+    flex: 1;
+    max-width: none;
   }
 }
