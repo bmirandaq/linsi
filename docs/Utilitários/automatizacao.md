@@ -5,4 +5,4 @@ slug: automatizacao
 ---
 Skill
 
-Plugin
+Plugin Figma
