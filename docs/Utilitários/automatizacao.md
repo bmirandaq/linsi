@@ -1,7 +1,7 @@
 ---
-title: Automatização
+title: Automação
 sidebar_position: 8
-slug: automatizacao
+slug: automacao
 ---
 Skill
 
