@@ -1,10 +1,8 @@
 ---
-sidebar_position: 3
-title: Importância dos fluxogramas
-description: Importância dos fluxogramas na documentação LINSI.
-slug: /importancia-dos-fluxogramas
+sidebar_position: 2
+title: Conceito de fluxograma
+slug: /conceito-fluxograma
 ---
-
 # Importância dos fluxogramas
 
 Fluxogramas são representações visuais de processos — sequências de atos lógicos. Entre seus benefícios, alguns merecem destaque: diagnóstico, clareza, alinhamento e economia.
