@@ -1,61 +1,98 @@
 ---
 sidebar_position: 1
 title: Elementos
-description: Camada de elementos da estrutura LINSI.
+---
+# Elementos
 ---
 
-# Camada 1 - Elementos
+### Seta
 
-**1\. Seta**  
-A seta conecta os elementos. Tipos de seta: 
+Conecta os elementos. 
 
-* Comum (genérica, esperada),   
-* positiva (caminho de sucesso),   
-* negativa (caminho de falha, erro, exceção) e   
-* alternativa (caminho alternativo, secundário).
+[img]
 
-Setas podem ter rótulos na linha, principalmente quando partem de uma condição.
+Tipos de seta: 
+- **Comum**: continuidade, direção genérica. Aplica-se cor cinza/neutra.
+- **Positiva**: direção ao sucesso, esperada. Cor verde.
+- **Negativa**: direção a uma falha ou erro. Cor vermelha.
+- **Alternativa**: direção secundária, alternativa, de exceção. Cor laranja.
 
-Setas comuns e positivas podem significar a mesma coisa, dependendo do contexto. Para maior destaque, usa-se a positiva.
+**Particularidades** 
 
-**2\. Interface**  
+1. Setas podem ter rótulos ao decorrer da linha.
+2. Dependendo do contexto, há setas que podem vir a significar a mesma coisa. Exemplo: Comuns vs Positivas, Negativas vs Alternativas. Use a que mais fizer sentido e destaque ao cenário.
+
+---
+
+### Interface
+
 Expõe o que é fornecido, visível e/ou o que é possível interagir.
 
-**2.1 Tela**  
-Interface primária: página, painel visível. Pode conter título, conteúdo e ações. 
+Tipos delemento Interface:
 
-**2.2 Janela**  
-Interface que sobrepõe uma tela, por completo ou parcialmente: modal, drawer, popover, qualquer elemento transitório que não substitui a tela.
+**Tela**
 
-**3\. Processo**  
-Expõe o comportamento do sistema, seja uma reação pós-acionamento da pessoa usuária ou autônoma.
+[img]
 
-A pessoa usuária não necessariamente tem visibilidade do que for expresso em um elemento de Processo. Reflexos possíveis em interface seriam carregamento, skeleton, toaster ou outras sinalizações. 
+É a interface primária: página, painel visível. Pode conter título, conteúdo e ações.
 
-Neste caso, utilizar em conjunto de elemento Interface: Tela ou Janela.
+**Janela**
 
-**4\. Ação**  
+[img]
+
+Interface que sobrepõe uma tela, seja por completo ou parcialmente: modal, drawer, popover, qualquer elemento transitório que não substitui Tela.
+
+---
+
+### Processo
+
+Expõe o comportamento do sistema, seja uma reação pós-acionamento ou autônoma.
+
+Não necessariamente há visibilidade/percepção à pessoa usuária sobre o que for expresso em um elemento Processo. Reflexos possíveis: carregamento, skeleton, toaster. 
+
+Neste caso, é esperado apresentar elemento Interface (Tela ou Janela) para especificar qual é o reflexo.
+
+---
+
+### Ação
+
 Expõe a interação ou acionamento realizado pela pessoa usuária durante o fluxo.  
 Pode ser uma ação completa ou apenas o rótulo do botão, link ou comando disparado.
 
-**5\. Condição**  
+---
+
+### Condição
+
 Representa uma verificação que pode abrir dois ou mais caminhos no fluxo.  
 O rótulo da Condição deve ser escrito como uma pergunta.  
+
 Use perguntas afirmativas. Evite perguntas negativas porque dificultam a coerência dos rótulos nas setas subsequentes.  
+
 Setas que partem da Condição devem conter rótulo e precisam concordar nominalmente com a pergunta formulada.
 
-**6\. Início**  
+---
+
+### Início
+
 Representa o ponto de partida do fluxo.  
 Pode ser descartável em fluxos cujo início já esteja escancarado pelo contexto.
 
-**7\. Fim**  
+---
+
+### Fim
 Representa encerramento da jornada exposta.
 
-**8\. Retomada**  
+---
+
+### Retomada
 Redirecionamento para outro fluxo ou jornada existente.
 
-**9\. Nota**  
+---
+
+### Nota
 Elemento auxiliar para explicações, regras de negócio e informações adicionais.
 
-**10\. Comentário**  
+---
+
+### Comentário
 Elemento temporário para dúvidas, pontos em aberto e observações de trabalho.
