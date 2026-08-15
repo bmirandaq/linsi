@@ -3,7 +3,6 @@ sidebar_position: 3
 title: Glossário
 slug: /glossario
 ---
-
 # Glossário
 
 ### Pessoa usuária
@@ -30,11 +29,11 @@ Representação visual de relações e estruturas que se conectam.
 
 ### Fluxograma
 
-É um tipo de representação visual de diagrama.
+É um tipo de representação visual de diagrama, normalmente voltado a processos.
 
 ### Notação
 
-Sistema de símbolos para representar ideias, conceitos ou processos. A própria LINSI é uma notação.
+Sistema de símbolos para representar ideias, conceitos ou processos. A própria LINSI é uma notação, além de framework.
 
 ### Interface
 
@@ -44,7 +43,7 @@ Ponto de contato entre pessoa usuária e sistema (produto, plataforma ou serviç
 
 Protótipos, representações visuais, interfaces digitais das jornadas/fluxos.
 
-### Ação 
+### Ação
 
 Algo que a pessoa faz durante o fluxo.
 
@@ -63,3 +62,4 @@ Texto curto que nomeia ou identifica um elemento ou informação na interface.
 Também pode ser chamado de label (é o mesmo que rótulo, só que em inglês).
 
 > Não há consenso absoluto sobre todos os termos apresentados neste glossário. Na LINSI, eles são usados conforme as definições estabelecidas aqui.
+
