@@ -11,11 +11,13 @@ Caminhos são as sequências que uma pessoa pode percorrer dentro do fluxo.
 
 Um fluxo pode possuir apenas um Caminho ou se dividir em vários conforme surgem diferentes continuidades.
 
-Na LINSI, os Caminhos são distribuídos verticalmente para tornar essas possibilidades fáceis de reconhecer e acompanhar.
+
 
 ### Ordem dos Caminhos
 
-Mantenha uma ordem vertical consistente:
+---
+
+Da mesma forma que ocorre em Colunas, siga este racional para a sequência de Caminhos:
 
 - caminhos principais, comuns ou positivos acima;
 - caminhos alternativos abaixo;
@@ -25,18 +27,16 @@ Mantenha uma ordem vertical consistente:
 
 **Evite reorganizar os cenários livremente a cada novo Caminho.** Por exemplo: colocar um negativo acima, depois um positivo abaixo e, mais adiante, outro alternativo acima.
 
-Mesmo que as conexões (setas) estejam corretas, essa alternância dificulta acompanhar o fluxo e quebra a previsibilidade da composição.
+Mesmo que as setas estejam conectando corretamente, essa alternância dificulta acompanhar o fluxo e quebra a previsibilidade de leitura.
 
-### Novos Caminhos
 
-Nem toda diferença no fluxo exige um novo Caminho. Crie um quando houver continuidades diferentes que precisem seguir separadamente. 
-
-Exemplo: após uma Condição.
 
 ### Convergência
 
-Caminhos podem voltar a se encontrar. Quando diferentes continuidades chegarem ao mesmo ponto, conecte-as novamente sempre que isso mantiver a leitura clara.
+---
 
-[img]
+Caminhos podem voltar a se encontrar. Quando chegarem ao mesmo ponto, conecte-os novamente para manter a leitura clara.
+
+[img-example]
 
 Não é necessário manter Caminhos separados depois que a diferença entre eles deixou de existir, muito menos repetir as próximas Interfaces em ambos.
