@@ -1,10 +1,11 @@
 ---
 title: Templates
 sidebar_position: 7
-slug: templates
+slug: /templates
 ---
-figjam
 
-draw.io
+import TemplateCards from '@site/src/components/TemplateCards';
 
-miro
+# Templates
+
+<TemplateCards />

@@ -1,8 +1,14 @@
 ---
 title: Automação
 sidebar_position: 8
-slug: automacao
+slug: /automacao
 ---
-Skill
 
-Plugin Figma
+# Automação
+
+:::secondary[Em breve]
+Esta seção está em desenvolvimento.
+:::
+
+* Skill
+* Plugin Figma

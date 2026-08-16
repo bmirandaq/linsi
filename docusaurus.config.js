@@ -14,7 +14,7 @@ const fontSelectorHtml = `
 const config = {
   title: 'LINSI',
   tagline: 'Linguagem Simplificada de Fluxogramas de UX',
-  favicon: 'img/linsi-logo.svg',
+  favicon: 'img/favicon.png',
 
   url: process.env.SITE_URL ?? process.env.URL ?? 'http://localhost:3000',
   baseUrl: process.env.BASE_URL ?? '/',
@@ -84,6 +84,11 @@ const config = {
           sidebarId: 'docsSidebar',
           position: 'left',
           label: 'Documentação',
+        },
+        {
+          to: '/cafe-bea',
+          label: 'Pagar café pra Bea ☕',
+          position: 'left',
         },
         {
           href: 'https://github.com/bmirandaq/linsi/discussions/new/choose',
