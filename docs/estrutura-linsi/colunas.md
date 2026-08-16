@@ -19,13 +19,13 @@ Quando há uma variação da **mesma etapa ou interface**, os cenários podem pe
 
 Por exemplo: se uma Tela possui uma versão alternativa naquele mesmo momento do fluxo, podem estar na mesma coluna.
 
-[img]
+[img-example]
 
-Nesses casos, organize as variações de cima para baixo:
+Nesses casos, organize as variações nessa sequência, de cima para baixo:
 
-* cenário neutro ou positivo;
-* cenário alternativo, se houver;
-* cenário negativo, se houver.
+- cenário neutro ou positivo;
+- cenário alternativo, se houver;
+- cenário negativo, se houver.
 
 Quando uma interação gera **novos desdobramentos do fluxo**, os resultados avançam para uma nova coluna e seguem por seus respectivos Caminhos.
 
@@ -36,4 +36,4 @@ Em resumo:
 - Variação do mesmo momento → mesma coluna
 - Novo desdobramento → próxima coluna
 
-> Nem todo fluxo precisa de muitas colunas, nem todas precisam representar o mesmo nível de detalhe. Use apenas as necessárias para organizar a leitura sem fragmentar o fluxograma.
+> Nem todo fluxo precisa de muitas colunas e nem todas precisam representar o mesmo nível de detalhe. Use apenas as necessárias para organizar a leitura sem fragmentar o fluxograma.
