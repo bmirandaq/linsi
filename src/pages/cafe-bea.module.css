@@ -1,0 +1,248 @@
+.main {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: calc(100vh - var(--ifm-navbar-height) - 200px);
+  padding: 3rem 1rem 4rem;
+}
+
+.container {
+  max-width: 800px;
+}
+
+.card {
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--linsi-border-color);
+  border-radius: 6px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  padding: 2.5rem 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.badge {
+  background: var(--linsi-brand-01-lightest);
+  border-radius: 4px;
+  color: var(--linsi-brand-01-dark);
+  display: inline-block;
+  font-family: var(--ifm-heading-font-family);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  padding: 0.25rem 0.75rem;
+}
+
+.title {
+  color: var(--linsi-neutral-darkest);
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+
+.subtitle {
+  color: var(--linsi-neutral-dark);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 auto;
+  max-width: 600px;
+}
+
+.contentGrid {
+  align-items: center;
+  display: grid;
+  gap: 2.5rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 680px) {
+  .contentGrid {
+    grid-template-columns: 280px 1fr;
+  }
+}
+
+.qrSection {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.qrWrapper {
+  background: #ffffff;
+  border: 1px solid var(--linsi-border-color);
+  border-radius: 6px;
+  display: flex;
+  padding: 0.75rem;
+}
+
+.qrImage {
+  border-radius: 4px;
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+.qrCaption {
+  color: var(--linsi-neutral-dark);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.fieldLabel {
+  color: var(--linsi-neutral-dark);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.fieldValue {
+  color: var(--linsi-neutral-darkest);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.copyRow {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.codeSnippet {
+  background: var(--ifm-background-color);
+  border: 1px solid var(--linsi-border-color);
+  border-radius: 4px;
+  color: var(--linsi-neutral-darkest);
+  flex: 1;
+  font-size: 0.875rem;
+  overflow: hidden;
+  padding: 0.45rem 0.65rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.copyButton {
+  background: var(--ifm-background-color);
+  border: 1px solid var(--linsi-border-color);
+  border-radius: 4px;
+  color: var(--linsi-neutral-darkest);
+  cursor: pointer;
+  font-family: var(--ifm-font-family-base);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.45rem 0.85rem;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.copyButton:hover {
+  background: var(--linsi-neutral-lighter);
+  border-color: var(--linsi-neutral-base);
+}
+
+.pixTextarea {
+  background: var(--ifm-background-color);
+  border: 1px solid var(--linsi-border-color);
+  border-radius: 4px;
+  color: var(--linsi-neutral-dark);
+  font-family: monospace;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  padding: 0.5rem;
+  resize: none;
+  width: 100%;
+}
+
+.primaryCopyButton {
+  align-items: center;
+  background: var(--linsi-button-background);
+  border: none;
+  border-radius: 4px;
+  color: var(--linsi-button-text);
+  cursor: pointer;
+  display: inline-flex;
+  font-family: var(--ifm-heading-font-family);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  justify-content: center;
+  margin-top: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  transition: background 0.15s ease, transform 0.15s ease;
+  width: 100%;
+}
+
+.primaryCopyButton:hover {
+  background: var(--linsi-button-hover-background);
+  transform: translateY(-1px);
+}
+
+.copiedButton {
+  background: var(--linsi-brand-02-base) !important;
+  border-color: var(--linsi-brand-02-base) !important;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .card {
+  background: var(--linsi-brand-02-darkest);
+  border-color: var(--linsi-border-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] .badge {
+  background: var(--linsi-brand-01-darker);
+  color: var(--linsi-brand-01-lightest);
+}
+
+[data-theme='dark'] .title {
+  color: var(--linsi-pure-white);
+}
+
+[data-theme='dark'] .subtitle {
+  color: var(--linsi-neutral-lighter);
+}
+
+[data-theme='dark'] .fieldLabel {
+  color: var(--linsi-neutral-light);
+}
+
+[data-theme='dark'] .fieldValue {
+  color: var(--linsi-pure-white);
+}
+
+[data-theme='dark'] .codeSnippet {
+  background: #04081f;
+  border-color: var(--linsi-border-color);
+  color: var(--linsi-pure-white);
+}
+
+[data-theme='dark'] .pixTextarea {
+  background: #04081f;
+  border-color: var(--linsi-border-color);
+  color: var(--linsi-neutral-light);
+}
+
+[data-theme='dark'] .copyButton {
+  background: #04081f;
+  border-color: var(--linsi-border-color);
+  color: var(--linsi-pure-white);
+}
+
+[data-theme='dark'] .copyButton:hover {
+  background: var(--linsi-neutral-darker);
+}

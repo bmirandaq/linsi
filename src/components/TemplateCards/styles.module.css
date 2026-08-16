@@ -1,0 +1,123 @@
+.grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin: 1.5rem 0 2rem;
+}
+
+.card {
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--linsi-border-color);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  justify-content: space-between;
+  padding: 1.25rem;
+  transition: border-color 0.15s ease;
+}
+
+.card:not(.cardDisabled):hover {
+  border-color: var(--linsi-brand-01-dark);
+}
+
+.cardDisabled {
+  background: var(--linsi-neutral-lightest);
+  border-style: dashed;
+  opacity: 0.8;
+}
+
+.cardHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.badge {
+  align-self: flex-start;
+  background: var(--linsi-brand-02-ultralighter);
+  border-radius: 4px;
+  color: var(--linsi-brand-02-base);
+  font-family: var(--ifm-heading-font-family);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  text-transform: uppercase;
+}
+
+.badgeDisabled {
+  background: var(--linsi-neutral-lighter);
+  color: var(--linsi-neutral-dark);
+}
+
+.title {
+  color: var(--linsi-neutral-darkest);
+  font-family: var(--ifm-heading-font-family);
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.cardFooter {
+  display: flex;
+}
+
+.actionButton {
+  align-items: center;
+  background: var(--linsi-button-background);
+  border-radius: 4px;
+  color: var(--linsi-button-text) !important;
+  display: inline-flex;
+  font-family: var(--ifm-heading-font-family);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  justify-content: center;
+  padding: 0.5rem 0.875rem;
+  text-align: center;
+  text-decoration: none !important;
+  transition: background 0.15s ease;
+  width: 100%;
+}
+
+.actionButton:not(.actionButtonDisabled):hover {
+  background: var(--linsi-button-hover-background);
+}
+
+.actionButtonDisabled {
+  background: var(--linsi-neutral-lighter) !important;
+  color: var(--linsi-neutral-dark) !important;
+  cursor: not-allowed;
+}
+
+[data-theme='dark'] .card {
+  background: var(--linsi-brand-02-darkest);
+  border-color: var(--linsi-border-color);
+}
+
+[data-theme='dark'] .cardDisabled {
+  background: #04081f;
+  border-color: var(--linsi-neutral-dark);
+}
+
+[data-theme='dark'] .card:not(.cardDisabled):hover {
+  border-color: var(--linsi-brand-01-lighter);
+}
+
+[data-theme='dark'] .badge {
+  background: var(--linsi-neutral-darker);
+  color: var(--linsi-brand-02-lightest);
+}
+
+[data-theme='dark'] .badgeDisabled {
+  background: var(--linsi-neutral-darker);
+  color: var(--linsi-neutral-light);
+}
+
+[data-theme='dark'] .title {
+  color: var(--linsi-pure-white);
+}
+
+[data-theme='dark'] .actionButtonDisabled {
+  background: var(--linsi-neutral-darker) !important;
+  color: var(--linsi-neutral-base) !important;
+}
