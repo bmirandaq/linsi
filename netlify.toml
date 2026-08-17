@@ -3,7 +3,7 @@
   publish = "build"
 
 [build.environment]
-  NODE_VERSION = "24"
+  NODE_VERSION = "20"
   BASE_URL = "/"
 
 [context.production.environment]
