@@ -4,13 +4,13 @@ title: Elementos
 ---
 # Elementos
 
----
-
 ### Seta
+
+---
 
 Conecta os elementos. 
 
-[img]
+![Setas](/img/uploads/setas.png)
 
 Tipos de seta: 
 
@@ -21,84 +21,130 @@ Tipos de seta:
 
 **Particularidades** 
 
-1. Setas podem ter rótulos ao decorrer da linha.
-2. Dependendo do contexto, há setas que podem vir a significar a mesma coisa. Exemplo: Comuns vs Positivas, Negativas vs Alternativas. Use a que mais fizer sentido e destaque ao cenário.
+1. Rótulos não são obrigatórios ao decorrer da linha, exceto quando presente elemento Condicional.
+2. Dependendo do contexto, há setas que podem vir a significar a mesma coisa. Exemplo: Comuns vs Positivas, Negativas vs Alternativas. Use a que mais fizer sentido e fornecer mais destaque ao cenário.
 
----
+
 
 ### Interface
 
+---
+
 Expõe o que é fornecido, visível e/ou o que é possível interagir.
 
-Tipos delemento Interface:
+![Interface](/img/uploads/interface.png)
+
+Tipos:
 
 **Tela**
-
-[img]
-
-É a interface primária: página, painel visível. Pode conter título, conteúdo e ações.
+É a interface primária: página, painel visível. É representado por um retângulo com borda cinza.
 
 **Janela**
+Interface que sobrepõe uma Tela, seja por completo ou parcialmente: modal, drawer, popover, qualquer elemento transitório que não substitui Tela.
 
-[img]
+É representado por um retângulo com borda cinza tracejada.
 
-Interface que sobrepõe uma tela, seja por completo ou parcialmente: modal, drawer, popover, qualquer elemento transitório que não substitui Tela.
+**Particularidades**
 
----
+Este elemento pode ser escrito em 3 partes:
+
+- **Título**: nomenclatura da etapa, estágio, cenário
+- **Conteúdo**: o que será visto, lido, percebido
+- **Ações**: o que a pessoa usuária pode fazer
+
+[img example]
 
 ### Processo
 
-Expõe o comportamento do sistema, seja uma reação pós-acionamento ou autônoma.
-
-Não necessariamente há visibilidade/percepção à pessoa usuária sobre o que for expresso em um elemento Processo. Reflexos possíveis: carregamento, skeleton, toaster. 
-
-Neste caso, é esperado apresentar elemento Interface (Tela ou Janela) para especificar qual é o reflexo.
-
 ---
+
+[img]
+
+Expõe o comportamento do sistema, seja pós-acionamento (por ação da pessoa usuária) ou autônoma (por determinação do próprio sistema).
+
+Não necessariamente há visibilidade/percepção à pessoa usuária sobre o que for expresso em um elemento Processo. Os reflexos possíveis são comportamentos como carregamento, skeleton, ou feedbacks diretos como toaster etc.
+
+Neste caso, é esperado que o elemento Interface (Tela ou Janela) esteja presente para especificar qual é o reflexo.
+
+[img example]
+
 
 ### Ação
 
-Expõe a interação ou acionamento realizado pela pessoa usuária durante o fluxo.  
-Pode ser uma ação completa ou apenas o rótulo do botão, link ou comando disparado.
-
 ---
+
+[img]
+
+Expõe a interação realizada pela pessoa usuária durante o fluxo. Pode ser o rótulo de um botão/link ou outra mais complexa.
+
+
 
 ### Condição
 
-Representa uma verificação que pode abrir dois ou mais caminhos no fluxo.  
-O rótulo da Condição deve ser escrito como uma pergunta.  
-
-Use perguntas afirmativas. Evite perguntas negativas porque dificultam a coerência dos rótulos nas setas subsequentes.  
-
-Setas que partem da Condição devem conter rótulo e precisam concordar nominalmente com a pergunta formulada.
-
 ---
+
+[img]
+
+Expõe uma verificação que pode abrir dois ou mais Caminhos no fluxo.
+
+Os rótulos sempre devem ser escritos em forma de pergunta. Exemplos: "Houve coleta de status X?", "Pessoa usuária acionou após X dias?"
+
+As setas a partir de Condição devem conter rótulo a fim de fornecer clareza sobre os Caminhos seguintes. Além disso, precisam concordar nominalmente com a pergunta.
+
+[img example]
+
+
 
 ### Início
 
-Representa o ponto de partida do fluxo.  
-Pode ser descartável em fluxos cujo início já esteja escancarado pelo contexto.
-
 ---
+
+[img]
+
+Expõe o ponto de partida do fluxo.
+
+É dispensável se início estiver bastante claro ao contexto.
+
+
 
 ### Fim
 
-Representa encerramento da jornada exposta.
-
 ---
+
+[img]
+
+Expõe o encerramento da jornada apresentada.
+
+
 
 ### Retomada
 
-Redirecionamento para outro fluxo ou jornada existente.
-
 ---
+
+[img]
+
+Sinaliza a continuidade da jornada em outro fluxo ou jornada existente.
+
+
 
 ### Nota
 
-Elemento auxiliar para explicações, regras de negócio e informações adicionais.
-
 ---
+
+[img]
+
+Expõe explicações, racional, regras de negócio e informações adicionais que forem pertinentes para o melhor entendimento do fluxograma.
+
+
 
 ### Comentário
 
-Elemento temporário para dúvidas, pontos em aberto e observações de trabalho.
+---
+
+[img]
+
+Expõe dúvidas ou pontos em aberto.
+
+É dispensável se optar pelo uso de função nativa da ferramenta que estiver sendo usada para construção do fluxograma. Exemplo: função comentar do próprio Figma
+
+[img-example]
