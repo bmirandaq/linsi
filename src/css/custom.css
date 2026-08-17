@@ -388,7 +388,7 @@ a:focus-visible {
   .theme-doc-sidebar-container [class*='sidebar']:not([class*='sidebarLogo']):not([class*='sidebarViewport']) {
     height: auto !important;
     overflow: visible !important;
-    padding-top: 0.75rem !important;
+    padding-top: 0.25rem !important;
   }
 
   /* Botão recolher — menor */
@@ -398,20 +398,23 @@ a:focus-visible {
     border-radius: 0 !important;
     border-top: 1px solid var(--linsi-border-color) !important;
     display: flex;
-    height: 28px !important;
+    height: 32px !important;
     justify-content: center;
-    min-height: 28px !important;
+    min-height: 32px !important;
     overflow: visible !important;
-    padding: 0 0.5rem !important;
+    padding: 0 !important;
     width: 100%;
   }
 
   .theme-doc-sidebar-container .button.button--secondary.button--outline svg {
+    clip-path: none !important;
     flex-shrink: 0;
-    height: 14px;
+    height: 16px;
     margin: 0 !important;
     overflow: visible !important;
-    width: 14px;
+    transform: scale(0.6) rotate(180deg);
+    transform-origin: center;
+    width: 16px;
   }
 }
 
