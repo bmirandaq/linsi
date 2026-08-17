@@ -46,7 +46,7 @@
 }
 
 .toggle:focus-visible {
-  border-radius: 4px;
+  border-radius: var(--linsi-radius-sm);
   outline: 3px solid var(--linsi-focus-color);
   outline-offset: 2px;
 }

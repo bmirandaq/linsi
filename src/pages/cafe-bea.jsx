@@ -28,17 +28,18 @@ export default function CafeBea() {
       description="LINSI é um projeto independente. Se te ajudou, ajude a mantê-la viva também">
       <main className={styles.main}>
         <div className={clsx('container', styles.container)}>
-          <div className={styles.card}>
-            <div className={styles.header}>
+          <div className={styles.inner}>
+            <header className={styles.header}>
               <Heading as="h1" className={styles.title}>
                 Pagar um café pra Bea ☕
               </Heading>
               <p className={styles.subtitle}>
-                LINSI é um projeto independente. Se te ajudou, ajude a mantê-la viva também
+                LINSI é um projeto independente. Se te ajudou, ajude a mantê-la viva
+                também
               </p>
-            </div>
+            </header>
 
-            <div className={styles.contentGrid}>
+            <div className={styles.contentStack}>
               <div className={styles.qrSection}>
                 <div className={styles.qrWrapper}>
                   <img
@@ -49,26 +50,29 @@ export default function CafeBea() {
                     height="260"
                   />
                 </div>
-                <span className={styles.qrCaption}>Abra o app do seu banco e escaneie o QR Code</span>
+                <span className={styles.qrCaption}>
+                  Abra o app do seu banco e escaneie o QR Code
+                </span>
               </div>
 
-              <div className={styles.infoSection}>
-                <div className={styles.fieldGroup}>
-                  <span className={styles.fieldLabel}>Código Pix</span>
-                  <textarea
-                    readOnly
-                    className={styles.pixTextarea}
-                    value={PIX_CODE}
-                    rows="3"
-                    aria-label="Código Pix"
-                  />
-                  <button
-                    type="button"
-                    className={clsx(styles.primaryCopyButton, copiedCode && styles.copiedButton)}
-                    onClick={copyToClipboard}>
-                    {copiedCode ? '✓ Código copiado!' : 'Copiar código Pix'}
-                  </button>
-                </div>
+              <div className={styles.fieldGroup}>
+                <span className={styles.fieldLabel}>Código Pix</span>
+                <textarea
+                  readOnly
+                  className={styles.pixTextarea}
+                  value={PIX_CODE}
+                  rows="3"
+                  aria-label="Código Pix"
+                />
+                <button
+                  type="button"
+                  className={clsx(
+                    styles.primaryCopyButton,
+                    copiedCode && styles.copiedButton,
+                  )}
+                  onClick={copyToClipboard}>
+                  {copiedCode ? 'Código copiado' : 'Copiar código Pix'}
+                </button>
               </div>
             </div>
           </div>

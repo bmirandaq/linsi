@@ -10,3 +10,6 @@ source/
 
 # Local Netlify folder
 .netlify
+
+# Cline AI agent rules
+.cline/

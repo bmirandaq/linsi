@@ -54,10 +54,19 @@
   --ifm-navbar-link-color: #253243;
   --ifm-toc-border-color: #dbdfe6;
   --ifm-hr-border-color: #dbdfe6;
-  --ifm-global-radius: 4px;
-  --ifm-alert-border-radius: 4px;
-  --ifm-code-border-radius: 4px;
-  --ifm-button-border-radius: 4px;
+
+  /* Radius */
+  --linsi-radius-sm: 0.5rem;
+  --linsi-radius-md: 0.75rem;
+  --linsi-radius-lg: 1rem;
+  --ifm-global-radius: var(--linsi-radius-md);
+  --ifm-alert-border-radius: var(--linsi-radius-md);
+  --ifm-code-border-radius: var(--linsi-radius-sm);
+  --ifm-button-border-radius: var(--linsi-radius-md);
+
+  /* Gutters laterais padronizados (home, pages, footer, navbar) */
+  --ifm-spacing-horizontal: 1.5rem;
+  --linsi-page-inline: var(--ifm-spacing-horizontal);
 }
 
 html[data-font-family='manrope'] {
@@ -70,6 +79,12 @@ html[data-font-family='inter'] {
 
 html[data-font-family='opendyslexic'] {
   --ifm-font-family-base: 'OpenDyslexic', sans-serif;
+  /* OpenDyslexic tem métricas maiores; compensa para manter escala visual */
+  font-size: 93.75%;
+}
+
+html[data-font-family='opendyslexic'] .theme-doc-markdown {
+  line-height: 1.85;
 }
 
 html[data-font-family='georgia'] {
@@ -184,7 +199,7 @@ h6,
   background-position: right 0.65rem center;
   background-size: 14px 14px;
   border: 1px solid var(--linsi-neutral-base);
-  border-radius: 4px;
+  border-radius: var(--linsi-radius-sm);
   color: var(--ifm-navbar-link-color);
   cursor: pointer;
   font-family: var(--ifm-font-family-base);
@@ -213,101 +228,80 @@ h6,
   border-color: var(--linsi-brand-01-lighter);
 }
 
-/* Busca - Botão ícone colapsado, expande no foco */
-.navbar .aa-Autocomplete {
+/* Busca — botão ícone (modal detached); sem input inline na navbar */
+:root {
+  --aa-primary-color-rgb: 151, 31, 26 !important;
+  --aa-muted-color-rgb: 75, 85, 101 !important;
+  --aa-text-color-rgb: 37, 50, 67 !important;
+  --aa-input-border-color-rgb: 175, 181, 191 !important;
+  --aa-background-color-rgb: 255, 255, 255 !important;
+  --aa-input-background-color-rgb: 255, 255, 255 !important;
+  --aa-icon-color-rgb: 37, 50, 67 !important;
+  --aa-search-input-height: 36px;
+}
+
+[data-theme='dark'] {
+  --aa-primary-color-rgb: 241, 177, 155 !important;
+  --aa-muted-color-rgb: 175, 181, 191 !important;
+  --aa-text-color-rgb: 245, 248, 253 !important;
+  --aa-input-border-color-rgb: 75, 85, 101 !important;
+  --aa-background-color-rgb: 6, 12, 43 !important;
+  --aa-input-background-color-rgb: 6, 12, 43 !important;
+  --aa-icon-color-rgb: 245, 248, 253 !important;
+}
+
+.navbar .aa-Autocomplete,
+.navbar .dsla-search-wrapper,
+.navbar [class*='searchBox'] {
   align-items: center;
   display: flex;
 }
 
-/* Esconde o DetachedSearchButton padrão do plugin se existir */
-.navbar .DocSearch-Button {
+.navbar .aa-DetachedSearchButton {
+  align-items: center;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: var(--linsi-radius-md) !important;
+  box-shadow: none !important;
+  color: var(--ifm-navbar-link-color) !important;
+  cursor: pointer;
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  height: 36px !important;
+  justify-content: center;
+  margin: 0 !important;
+  min-width: 36px !important;
+  padding: 0 !important;
+  width: 36px !important;
+}
+
+.navbar .aa-DetachedSearchButton:hover {
+  background: var(--linsi-neutral-lightest) !important;
+  border-color: var(--linsi-neutral-lighter) !important;
+}
+
+.navbar .aa-DetachedSearchButton:focus,
+.navbar .aa-DetachedSearchButton:focus-visible {
+  border-color: var(--linsi-focus-color) !important;
+  box-shadow: none !important;
+  outline: 3px solid var(--linsi-focus-color);
+  outline-offset: 2px;
+}
+
+.navbar .aa-DetachedSearchButtonIcon {
+  color: var(--ifm-navbar-link-color) !important;
+  height: 36px !important;
+  width: 36px !important;
+}
+
+.navbar .aa-DetachedSearchButtonPlaceholder,
+.navbar .aa-DetachedSearchButtonQuery {
   display: none !important;
 }
 
-.navbar .aa-Form {
-  align-items: center;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  cursor: pointer;
-  display: flex;
-  height: 36px;
-  min-width: 36px;
-  overflow: hidden;
-  padding: 0;
-  transition: width 0.2s ease, border-color 0.2s ease, background 0.2s ease;
-  width: 36px;
-}
-
-.navbar .aa-Form:hover {
-  background: var(--linsi-neutral-lightest);
-  border-color: var(--linsi-neutral-lighter);
-}
-
-.navbar .aa-SubmitButton {
-  align-items: center;
-  background: transparent;
-  border: none;
-  color: var(--ifm-navbar-link-color);
-  cursor: pointer;
-  display: flex;
-  flex-shrink: 0;
-  height: 36px;
-  justify-content: center;
-  padding: 0;
-  width: 36px;
-}
-
-.navbar .aa-InputWrapperPrefix {
-  display: none;
-}
-
-.navbar .aa-InputWrapper {
-  flex: 1;
-  overflow: hidden;
-  width: 0;
-}
-
-.navbar .aa-Input {
-  background: transparent;
-  border: none;
-  color: var(--ifm-navbar-link-color);
-  font-family: var(--ifm-font-family-base);
-  font-size: 0.875rem;
-  height: 36px;
-  opacity: 0;
-  padding: 0 0.5rem 0 0;
-  transition: opacity 0.15s ease;
-  width: 100%;
-}
-
-.navbar .aa-InputWrapperSuffix {
-  display: none;
-}
-
-.navbar .aa-Form:focus-within {
-  background: var(--ifm-navbar-background-color);
-  border-color: var(--linsi-neutral-base);
-  width: 220px;
-}
-
-.navbar .aa-Form:focus-within .aa-InputWrapper {
-  width: auto;
-}
-
-.navbar .aa-Form:focus-within .aa-Input {
-  cursor: text;
-  opacity: 1;
-}
-
-[data-theme='dark'] .navbar .aa-Form:hover {
-  background: var(--linsi-neutral-darker);
-  border-color: var(--linsi-neutral-dark);
-}
-
-[data-theme='dark'] .navbar .aa-Form:focus-within {
-  background: var(--linsi-brand-02-darkest);
-  border-color: var(--linsi-neutral-light);
+[data-theme='dark'] .navbar .aa-DetachedSearchButton:hover {
+  background: var(--linsi-neutral-darker) !important;
+  border-color: var(--linsi-neutral-dark) !important;
 }
 
 .navbar__link:hover,
@@ -334,7 +328,6 @@ a:focus-visible {
 /* Sidebar no Modo Claro - Fundo #ffffff idêntico à Navbar */
 [data-theme='light'] .theme-doc-sidebar-container {
   background: #ffffff !important;
-  border-right-color: var(--linsi-border-color) !important;
 }
 
 [data-theme='light'] .theme-doc-sidebar-container .menu__link {
@@ -368,11 +361,77 @@ a:focus-visible {
 
 
 .theme-doc-sidebar-container {
-  border-right-color: var(--linsi-border-color) !important;
+  border-color: var(--linsi-border-color) !important;
+}
+
+/* Sidebar: altura do conteúdo, radius, borda inferior, botão menor */
+@media (min-width: 997px) {
+  .theme-doc-sidebar-container {
+    align-self: flex-start !important;
+    background: var(--ifm-background-surface-color);
+    border: 1px solid var(--linsi-border-color) !important;
+    border-radius: var(--linsi-radius-md);
+    height: fit-content !important;
+    margin-top: 0 !important;
+    max-height: none !important;
+    overflow: hidden;
+  }
+
+  .theme-doc-sidebar-container > div {
+    height: auto !important;
+    max-height: none !important;
+    position: sticky;
+    top: calc(var(--ifm-navbar-height) + 0.5rem);
+  }
+
+  .theme-doc-sidebar-container [class*='sidebar']:not([class*='sidebarLogo']):not([class*='sidebarViewport']) {
+    height: auto !important;
+    padding-top: 0.75rem !important;
+  }
+
+  /* Botão recolher — menor */
+  .theme-doc-sidebar-container .button.button--secondary.button--outline {
+    border: none !important;
+    border-radius: 0 !important;
+    border-top: 1px solid var(--linsi-border-color) !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    padding: 0 !important;
+  }
+
+  .theme-doc-sidebar-container .button.button--secondary.button--outline svg {
+    height: 14px;
+    margin-top: 0 !important;
+    width: 14px;
+  }
+}
+
+/* Margens da Documentação alinhadas às demais páginas */
+@media (min-width: 997px) {
+  html.docs-doc-page [class*='docRoot'] {
+    box-sizing: border-box;
+    column-gap: var(--linsi-page-inline);
+    padding-left: var(--linsi-page-inline);
+    padding-right: var(--linsi-page-inline);
+    width: 100%;
+  }
+
+  /* Evita gutter duplo: o inset já vem do docRoot */
+  html.docs-doc-page [class*='docMainContainer'] > .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+@media (max-width: 996px) {
+  html.docs-doc-page [class*='docMainContainer'] > .container {
+    padding-left: var(--linsi-page-inline);
+    padding-right: var(--linsi-page-inline);
+  }
 }
 
 .menu__link {
-  border-radius: 4px;
+  border-radius: var(--linsi-radius-sm);
   color: var(--linsi-neutral-darker);
   line-height: 1.45;
 }
@@ -390,11 +449,11 @@ a:focus-visible {
 
 /* Documentos & Estrutura de Leitura */
 .theme-doc-wrapper {
+  background: var(--ifm-background-color);
   padding-top: 0.5rem;
 }
 
 .theme-doc-markdown {
-  flex: 1 0 auto;
   font-size: 1rem;
   line-height: 1.75;
 }
@@ -409,10 +468,22 @@ a:focus-visible {
   margin-top: 2.5rem;
 }
 
+.theme-doc-markdown hr {
+  background-color: var(--linsi-border-color);
+  border: 0;
+  flex: none;
+  height: 1px;
+  margin: 2rem 0;
+}
+
 .alert--secondary {
   --ifm-alert-background-color: var(--linsi-brand-02-ultralighter);
   --ifm-alert-border-color: var(--linsi-brand-02-base);
   --ifm-alert-foreground-color: var(--linsi-brand-02-darkest);
+}
+
+.alert--secondary .alert__icon {
+  display: none;
 }
 
 .alert--secondary a {
@@ -420,23 +491,7 @@ a:focus-visible {
   text-decoration-thickness: 2px;
 }
 
-/* Paginação — sem border, sempre ao final do conteúdo */
-.theme-doc-markdown {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-}
-
-[class*='docItemContainer'] {
-  display: flex;
-  flex-direction: column;
-  min-height: calc(100vh - var(--ifm-navbar-height) - 4rem);
-}
-
-[class*='docItemContainer'] article {
-  flex: 1;
-}
-
+/* Paginação — sem border */
 .pagination-nav {
   border: none !important;
   margin-top: 3rem;
@@ -446,16 +501,20 @@ a:focus-visible {
 .pagination-nav__link {
   background: transparent !important;
   border: none !important;
-  border-radius: 4px;
+  border-radius: var(--linsi-radius-sm);
   box-shadow: none !important;
   padding: 0.75rem 1rem;
   transition: background 0.15s ease, transform 0.15s ease;
 }
 
 .pagination-nav__link:hover {
-  background: var(--linsi-neutral-lightest) !important;
+  background: var(--linsi-brand-01-lightest) !important;
   border: none !important;
   transform: translateY(-1px);
+}
+
+[data-theme='light'] .pagination-nav__link:hover {
+  background: var(--linsi-brand-01-lightest) !important;
 }
 
 .pagination-nav__label {
@@ -465,6 +524,14 @@ a:focus-visible {
 
 
 /* Dark Theme Adjustments */
+[data-theme='dark'] .main-wrapper,
+[data-theme='dark'] .theme-doc-wrapper,
+[data-theme='dark'] [class*='docItemContainer'],
+[data-theme='dark'] [class*='docItemContainer'] article,
+[data-theme='dark'] .theme-doc-markdown {
+  background: var(--ifm-background-color);
+}
+
 [data-theme='dark'] .theme-doc-sidebar-container {
   background: var(--linsi-brand-02-darkest);
 }
@@ -523,6 +590,10 @@ a:focus-visible {
 }
 
 @media (max-width: 996px) {
+  .main-wrapper {
+    padding-top: 0.5rem;
+  }
+
   .linsi-font-selector-item {
     padding: 0.75rem;
   }
@@ -538,5 +609,24 @@ a:focus-visible {
   .linsi-font-selector__select {
     flex: 1;
     max-width: none;
+  }
+
+  .navbar .aa-DetachedSearchButton {
+    margin-left: 0.25rem !important;
+  }
+
+  .theme-doc-markdown > h1:first-child {
+    font-size: clamp(1.75rem, 8vw, 2.25rem);
+  }
+
+  .pagination-nav {
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .navbar__logo {
+    height: 40px;
+    width: 68px;
   }
 }

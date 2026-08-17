@@ -7,8 +7,5 @@ slug: /automacao
 # Automação
 
 :::secondary[Em breve]
-Esta seção está em desenvolvimento.
+Skill, plugin e agente em construção
 :::
-
-* Skill
-* Plugin Figma

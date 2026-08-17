@@ -1,107 +1,97 @@
 .main {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  min-height: calc(100vh - var(--ifm-navbar-height) - 200px);
-  padding: 3rem 1rem 4rem;
+  padding: 3rem 0 4rem;
+  text-align: left;
 }
 
+/* Gutters laterais via .container do Infima; conteúdo interno limitado à esquerda */
 .container {
-  max-width: 800px;
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
 }
 
-.card {
-  background: var(--ifm-background-surface-color);
-  border: 1px solid var(--linsi-border-color);
-  border-radius: 6px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-  padding: 2.5rem 2rem;
+.inner {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  max-width: 560px;
+  text-align: left;
+  width: 100%;
 }
 
 .header {
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.badge {
-  background: var(--linsi-brand-01-lightest);
-  border-radius: 4px;
-  color: var(--linsi-brand-01-dark);
-  display: inline-block;
-  font-family: var(--ifm-heading-font-family);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-  padding: 0.25rem 0.75rem;
+  margin-bottom: 2.5rem;
+  text-align: left;
+  width: 100%;
 }
 
 .title {
   color: var(--linsi-neutral-darkest);
-  font-size: 2rem;
+  font-size: clamp(1.75rem, 4vw, 2rem);
   font-weight: 800;
   letter-spacing: -0.02em;
   margin-bottom: 0.75rem;
+  text-align: left;
 }
 
 .subtitle {
   color: var(--linsi-neutral-dark);
   font-size: 1rem;
   line-height: 1.6;
-  margin: 0 auto;
-  max-width: 600px;
+  margin: 0;
+  max-width: 40rem;
+  text-align: left;
 }
 
-.contentGrid {
-  align-items: center;
-  display: grid;
-  gap: 2.5rem;
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 680px) {
-  .contentGrid {
-    grid-template-columns: 280px 1fr;
-  }
+.contentStack {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  text-align: left;
+  width: 100%;
 }
 
 .qrSection {
-  align-items: center;
+  align-items: flex-start;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  text-align: left;
+  width: 100%;
 }
 
 .qrWrapper {
   background: #ffffff;
   border: 1px solid var(--linsi-border-color);
-  border-radius: 6px;
+  border-radius: var(--linsi-radius-md);
   display: flex;
   padding: 0.75rem;
+  width: fit-content;
 }
 
 .qrImage {
-  border-radius: 4px;
+  border-radius: var(--linsi-radius-md);
   display: block;
   height: auto;
-  max-width: 100%;
+  max-width: min(260px, 100%);
 }
 
 .qrCaption {
   color: var(--linsi-neutral-dark);
-  font-size: 0.75rem;
-  text-align: center;
-}
-
-.infoSection {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  text-align: left;
 }
 
 .fieldGroup {
+  align-items: flex-start;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  text-align: left;
+  width: 100%;
 }
 
 .fieldLabel {
@@ -112,54 +102,10 @@
   text-transform: uppercase;
 }
 
-.fieldValue {
-  color: var(--linsi-neutral-darkest);
-  font-size: 1.05rem;
-  font-weight: 700;
-}
-
-.copyRow {
-  align-items: center;
-  display: flex;
-  gap: 0.5rem;
-}
-
-.codeSnippet {
-  background: var(--ifm-background-color);
-  border: 1px solid var(--linsi-border-color);
-  border-radius: 4px;
-  color: var(--linsi-neutral-darkest);
-  flex: 1;
-  font-size: 0.875rem;
-  overflow: hidden;
-  padding: 0.45rem 0.65rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.copyButton {
-  background: var(--ifm-background-color);
-  border: 1px solid var(--linsi-border-color);
-  border-radius: 4px;
-  color: var(--linsi-neutral-darkest);
-  cursor: pointer;
-  font-family: var(--ifm-font-family-base);
-  font-size: 0.8125rem;
-  font-weight: 600;
-  padding: 0.45rem 0.85rem;
-  transition: all 0.15s ease;
-  white-space: nowrap;
-}
-
-.copyButton:hover {
-  background: var(--linsi-neutral-lighter);
-  border-color: var(--linsi-neutral-base);
-}
-
 .pixTextarea {
-  background: var(--ifm-background-color);
+  background: var(--ifm-background-surface-color);
   border: 1px solid var(--linsi-border-color);
-  border-radius: 4px;
+  border-radius: var(--linsi-radius-md);
   color: var(--linsi-neutral-dark);
   font-family: monospace;
   font-size: 0.75rem;
@@ -173,7 +119,7 @@
   align-items: center;
   background: var(--linsi-button-background);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--linsi-radius-md);
   color: var(--linsi-button-text);
   cursor: pointer;
   display: inline-flex;
@@ -198,17 +144,6 @@
   color: #ffffff !important;
 }
 
-[data-theme='dark'] .card {
-  background: var(--linsi-brand-02-darkest);
-  border-color: var(--linsi-border-color);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-[data-theme='dark'] .badge {
-  background: var(--linsi-brand-01-darker);
-  color: var(--linsi-brand-01-lightest);
-}
-
 [data-theme='dark'] .title {
   color: var(--linsi-pure-white);
 }
@@ -217,32 +152,41 @@
   color: var(--linsi-neutral-lighter);
 }
 
+[data-theme='dark'] .qrCaption {
+  color: var(--linsi-neutral-lighter);
+}
+
 [data-theme='dark'] .fieldLabel {
   color: var(--linsi-neutral-light);
 }
 
-[data-theme='dark'] .fieldValue {
-  color: var(--linsi-pure-white);
-}
-
-[data-theme='dark'] .codeSnippet {
-  background: #04081f;
-  border-color: var(--linsi-border-color);
-  color: var(--linsi-pure-white);
-}
-
 [data-theme='dark'] .pixTextarea {
-  background: #04081f;
+  background: var(--linsi-brand-02-darkest);
   border-color: var(--linsi-border-color);
-  color: var(--linsi-neutral-light);
+  color: var(--linsi-neutral-lighter);
 }
 
-[data-theme='dark'] .copyButton {
-  background: #04081f;
-  border-color: var(--linsi-border-color);
-  color: var(--linsi-pure-white);
+@media (max-width: 576px) {
+  .main {
+    padding: 2rem 0 3rem;
+  }
+
+  .qrWrapper {
+    width: 100%;
+  }
+
+  .qrImage {
+    max-width: 100%;
+    width: 100%;
+  }
 }
 
-[data-theme='dark'] .copyButton:hover {
-  background: var(--linsi-neutral-darker);
+@media (prefers-reduced-motion: reduce) {
+  .primaryCopyButton {
+    transition: none;
+  }
+
+  .primaryCopyButton:hover {
+    transform: none;
+  }
 }

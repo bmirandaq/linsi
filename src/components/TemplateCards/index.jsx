@@ -4,17 +4,16 @@ import styles from './styles.module.css';
 
 const TEMPLATES = [
   {
-    id: 'figma-design',
-    title: 'Figma Design',
-    tool: 'Figma',
+    id: 'figjam',
+    title: 'FigJam',
     actionLabel: 'Acessar template',
     href: 'https://www.figma.com/community',
     disabled: false,
   },
   {
-    id: 'figjam',
-    title: 'FigJam',
-    tool: 'FigJam',
+    id: 'figma-design',
+    title: 'Figma Design',
+    description: 'Screenflow',
     actionLabel: 'Acessar template',
     href: 'https://www.figma.com/community',
     disabled: false,
@@ -22,7 +21,6 @@ const TEMPLATES = [
   {
     id: 'miro',
     title: 'Miro',
-    tool: 'Em breve',
     actionLabel: 'Em breve',
     href: '#',
     disabled: true,
@@ -30,7 +28,6 @@ const TEMPLATES = [
   {
     id: 'drawio',
     title: 'Draw.io',
-    tool: 'Em breve',
     actionLabel: 'Em breve',
     href: '#',
     disabled: true,
@@ -45,19 +42,19 @@ export default function TemplateCards() {
           key={item.id}
           className={clsx(styles.card, item.disabled && styles.cardDisabled)}>
           <div className={styles.cardHeader}>
-            <span
-              className={clsx(
-                styles.badge,
-                item.disabled && styles.badgeDisabled
-              )}>
-              {item.tool}
-            </span>
             <h3 className={styles.title}>{item.title}</h3>
+            {item.description ? (
+              <p className={styles.description}>{item.description}</p>
+            ) : null}
           </div>
 
           <div className={styles.cardFooter}>
             {item.disabled ? (
-              <span className={clsx(styles.actionButton, styles.actionButtonDisabled)}>
+              <span
+                className={clsx(
+                  styles.actionButton,
+                  styles.actionButtonDisabled,
+                )}>
                 Em breve
               </span>
             ) : (
