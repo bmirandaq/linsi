@@ -371,27 +371,23 @@ a:focus-visible {
     background: var(--ifm-background-surface-color);
     border: 1px solid var(--linsi-border-color) !important;
     border-radius: var(--linsi-radius-md);
-    display: flex;
-    flex-direction: column;
     height: fit-content !important;
     margin-top: 0 !important;
-    max-height: calc(100vh - var(--ifm-navbar-height) - 2rem);
-    overflow: hidden;
+    max-height: none !important;
+    overflow: visible !important;
   }
 
   .theme-doc-sidebar-container > div {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+    height: auto !important;
     max-height: none !important;
-    overflow-y: auto;
+    overflow: visible !important;
     position: sticky;
     top: calc(var(--ifm-navbar-height) + 0.5rem);
   }
 
   .theme-doc-sidebar-container [class*='sidebar']:not([class*='sidebarLogo']):not([class*='sidebarViewport']) {
     height: auto !important;
-    overflow: visible;
+    overflow: visible !important;
     padding-top: 0.75rem !important;
   }
 
@@ -402,10 +398,10 @@ a:focus-visible {
     border-radius: 0 !important;
     border-top: 1px solid var(--linsi-border-color) !important;
     display: flex;
-    flex-shrink: 0;
     height: 28px !important;
     justify-content: center;
     min-height: 28px !important;
+    overflow: visible !important;
     padding: 0 0.5rem !important;
     width: 100%;
   }
@@ -414,6 +410,7 @@ a:focus-visible {
     flex-shrink: 0;
     height: 14px;
     margin: 0 !important;
+    overflow: visible !important;
     width: 14px;
   }
 }
