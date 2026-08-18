@@ -5,6 +5,12 @@ slug: /glossario
 ---
 # Glossário
 
+---
+
+Vocabulário que você precisa ter em mente para navegar pela LINSI:
+
+
+
 ### Pessoa usuária
 
 Quem interage com o produto, plataforma ou serviço. Sinônimos: cliente, beneficiário
@@ -17,12 +23,6 @@ Pode englobar desde o primeiro contato até pós-uso, além de todas as possibil
 
 Pode ser uma visão ampla (macro), restrita (micro) ou específica.
 
-### Fluxo
-
-Sequência de etapas e/ou atividades realizadas para atingir um objetivo específico dentro de uma jornada. 
-
-Uma jornada pode ter vários fluxos, e um fluxo pode se entender como uma jornada.
-
 ### Diagrama
 
 Representação visual de relações e estruturas que se conectam.
@@ -30,6 +30,12 @@ Representação visual de relações e estruturas que se conectam.
 ### Fluxograma
 
 É um tipo de representação visual de diagrama, normalmente voltado a processos.
+
+### Fluxo
+
+Sequência de etapas e/ou atividades realizadas para atingir um objetivo específico dentro de uma jornada. 
+
+Uma jornada pode ter vários fluxos, e um fluxo pode se entender como uma jornada.
 
 ### Notação
 
@@ -43,23 +49,17 @@ Ponto de contato entre pessoa usuária e sistema (produto, plataforma ou serviç
 
 Protótipos, representações visuais, interfaces digitais das jornadas/fluxos.
 
-### Ação
-
-Algo que a pessoa faz durante o fluxo.
-
-### Interação
-
-Troca entre a pessoa e o sistema, envolvendo uma ação e uma resposta em sequência.
-
-### Comportamento
-
-Forma como o sistema age ou responde diante de uma ação (forma ativa) ou condição (forma independente, baseada em regra).
-
 ### Rótulo
 
 Texto curto que nomeia ou identifica um elemento ou informação na interface. 
 
 Também pode ser chamado de label (é o mesmo que rótulo, só que em inglês).
 
-> Não há consenso absoluto sobre todos os termos apresentados neste glossário. Na LINSI, eles são usados conforme as definições estabelecidas aqui.
+
+
+# Observações
+
+---
+
+Não há consenso absoluto sobre todos os termos apresentados neste glossário. Na LINSI, eles são usados conforme as definições estabelecidas aqui.
 
