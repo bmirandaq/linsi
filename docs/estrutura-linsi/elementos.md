@@ -10,7 +10,7 @@ title: Elementos
 
 Conecta os elementos. 
 
-![Setas](/img/uploads/setas.png)
+![Interface](/img/uploads/setas.png)
 
 Tipos de seta: 
 
@@ -24,63 +24,56 @@ Tipos de seta:
 1. Rótulos não são obrigatórios ao decorrer da linha, exceto quando presente elemento Condicional.
 2. Dependendo do contexto, há setas que podem vir a significar a mesma coisa. Exemplo: Comuns vs Positivas, Negativas vs Alternativas. Use a que mais fizer sentido e fornecer mais destaque ao cenário.
 
-
-
 ### Interface
 
 ---
 
 Expõe o que é fornecido, visível e/ou o que é possível interagir.
 
-![Interface](/img/uploads/interface.png)
+![Interface](/img/uploads/interface-tela.png)
 
-Tipos:
+Este elemento pode ser escrito em até 3 partes:
 
-**Tela**
-É a interface primária: página, painel visível. É representado por um retângulo com borda cinza.
+1. **Título**: nome da etapa, estado ou cenário representado.
+2. **Conteúdo**: o que está visível, disponível ou perceptível.
+3. **Ações**: o que a pessoa pode fazer.
 
-**Janela**
-Interface que sobrepõe uma Tela, seja por completo ou parcialmente: modal, drawer, popover, qualquer elemento transitório que não substitui Tela.
+Tipos de elemento Interface:
 
-É representado por um retângulo com borda cinza tracejada.
+1. **Tela:** página primária. É representado por um retângulo com borda cinza.
+2. **Janela:** sobrepõe uma Tela, seja por completo ou parcialmente: modal, drawer, popover, qualquer elemento transitório que não substitui Tela. É representado por um retângulo com borda cinza tracejada.
 
-**Particularidades**
+![Interface](/img/uploads/interface-janela-1.png)
 
-Este elemento pode ser escrito em 3 partes:
+![Interface](/img/uploads/interface-janela-2.png)
 
-- **Título**: nomenclatura da etapa, estágio, cenário
-- **Conteúdo**: o que será visto, lido, percebido
-- **Ações**: o que a pessoa usuária pode fazer
 
-[img example]
 
 ### Processo
-
 ---
 
-[img]
+Expõe um comportamento do sistema por consequência de uma ação da pessoa usuária ou de forma autônoma.
 
-Expõe o comportamento do sistema, seja pós-acionamento (por ação da pessoa usuária) ou autônoma (por determinação do próprio sistema).
+![Interface](/img/uploads/processo.png)
 
-Não necessariamente há visibilidade/percepção à pessoa usuária sobre o que for expresso em um elemento Processo. Os reflexos possíveis são comportamentos como carregamento, skeleton, ou feedbacks diretos como toaster etc.
+Não necessariamente há visibilidade/percepção à pessoa usuária sobre o que for expresso em um elemento Processo, no entanto. É esperado que o elemento Interface esteja presente para especificar qual é o reflexo.
 
-Neste caso, é esperado que o elemento Interface (Tela ou Janela) esteja presente para especificar qual é o reflexo.
+![Interface](/img/uploads/processo-interface-tela.png)
 
-[img example]
 
 
 ### Ação
-
 ---
 
-[img]
+![Interface](/img/uploads/acao.png)
 
-Expõe a interação realizada pela pessoa usuária durante o fluxo. Pode ser o rótulo de um botão/link ou outra mais complexa.
+Expõe a ação realizada pela pessoa usuária durante o fluxo. 
+
+Pode ser o rótulo de um botão ou link.
 
 
 
 ### Condição
-
 ---
 
 [img]
@@ -96,7 +89,6 @@ As setas a partir de Condição devem conter rótulo a fim de fornecer clareza s
 
 
 ### Início
-
 ---
 
 [img]
@@ -108,7 +100,6 @@ Expõe o ponto de partida do fluxo.
 
 
 ### Fim
-
 ---
 
 [img]
@@ -118,7 +109,6 @@ Expõe o encerramento da jornada apresentada.
 
 
 ### Retomada
-
 ---
 
 [img]
@@ -128,7 +118,6 @@ Sinaliza a continuidade da jornada em outro fluxo ou jornada existente.
 
 
 ### Nota
-
 ---
 
 [img]
@@ -138,7 +127,6 @@ Expõe explicações, racional, regras de negócio e informações adicionais qu
 
 
 ### Comentário
-
 ---
 
 [img]
