@@ -2,14 +2,22 @@
 
 MVP da plataforma pública de documentação da LINSI — Linguagem Simplificada de Fluxogramas de UX.
 
+## Site publicado
+
+A documentação de produção está disponível em:
+
+https://bmirandaq.github.io/linsi/
+
+O repositório `bmirandaq/linsi` é público. Todo commit enviado para a branch `main` dispara automaticamente o workflow `.github/workflows/deploy.yml`, que gera o site com Docusaurus e o publica no GitHub Pages. O workflow também pode ser executado manualmente pelo GitHub Actions.
+
 ## Editar conteúdo sem código
 
 O projeto está preparado para o [Pages CMS](https://app.pagescms.org):
 
 1. entre com a conta do GitHub;
-2. autorize o repositório privado `bmirandaq/linsi`;
+2. selecione o repositório público `bmirandaq/linsi`;
 3. edite **Página inicial** ou **Documentação**;
-4. salve para criar o commit e gerar uma nova prévia automaticamente.
+4. salve para criar o commit na `main` e publicar a atualização automaticamente.
 
 Imagens enviadas pelo editor são armazenadas em `static/img/uploads` e podem ser inseridas diretamente no conteúdo das páginas.
 
@@ -29,20 +37,6 @@ npm run build
 ```
 
 Os arquivos de produção são gerados em `build/`.
-
-## Prévia privada temporária
-
-Enquanto a documentação estiver em construção, o repositório permanece privado e o Netlify gera a prévia a partir da branch principal. A configuração está em `netlify.toml` e usa:
-
-- endereço temporário: `https://preview--linsi-359.netlify.app`;
-- comando de build: `npm run build`;
-- diretório publicado: `build`;
-- Node.js 24;
-- site servido na raiz (`BASE_URL=/`).
-
-O acesso à prévia exige login no Netlify e está restrito à proprietária do projeto.
-
-O workflow do GitHub Pages permanece disponível apenas para execução manual. Quando a documentação estiver pronta, torne o repositório público, habilite novamente o disparo por push e publique em `https://bmirandaq.github.io/linsi/`.
 
 ## Conteúdo editorial
 
