@@ -14,9 +14,7 @@ export default function Home() {
   const darkLogo = useBaseUrl('/img/linsi-logo-dark.svg');
 
   return (
-    <Layout
-      title="Linguagem Simplificada de Fluxogramas de UX"
-      description="LINSI — Linguagem Simplificada de Fluxogramas de UX">
+    <Layout description="LINSI — Linguagem Simplificada de Fluxogramas de UX">
       <main className={styles.main}>
         <section className={styles.intro} aria-labelledby="home-title">
           <div className={clsx('container', styles.layout)}>
