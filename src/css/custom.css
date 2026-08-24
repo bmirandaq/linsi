@@ -470,6 +470,17 @@ a:focus-visible {
   line-height: 1.75;
 }
 
+/* Imagens inseridas no conteúdo da documentação */
+.theme-doc-markdown img {
+  aspect-ratio: auto;
+  display: block;
+  height: auto;
+  margin-inline: 0;
+  max-height: 500px;
+  max-width: min(100%, 700px);
+  width: auto;
+}
+
 .theme-doc-markdown > h1:first-child {
   font-size: clamp(2.25rem, 5vw, 3.25rem);
   letter-spacing: -0.035em;
