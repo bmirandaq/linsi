@@ -12,7 +12,7 @@ const fontSelectorHtml = `
 `;
 
 const config = {
-  title: 'LINSI',
+  title: 'LINSI – Linguagem Simplificada de Fluxogramas de UX',
   tagline: 'Linguagem Simplificada de Fluxogramas de UX',
   favicon: 'img/favicon.png',
 
@@ -83,7 +83,7 @@ const config = {
           type: 'docSidebar',
           sidebarId: 'docsSidebar',
           position: 'left',
-          label: 'Documentação',
+          label: 'Manual',
         },
         {
           to: '/cafe-bea',

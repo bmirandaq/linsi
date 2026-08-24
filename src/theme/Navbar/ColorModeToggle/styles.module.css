@@ -71,3 +71,31 @@
     transition: none;
   }
 }
+
+@media (max-width: 996px) {
+  .toggle {
+    margin-right: 48px;
+  }
+}
+
+@media (min-width: 997px) and (max-width: 1200px) {
+  .toggle {
+    gap: 0;
+    padding-inline: 4px;
+  }
+
+  .label {
+    display: none;
+  }
+}
+
+@media (max-width: 576px) {
+  .toggle {
+    gap: 0;
+    padding-inline: 4px;
+  }
+
+  .label {
+    display: none;
+  }
+}

@@ -15,7 +15,7 @@ export default function NavbarColorModeToggle() {
       className={styles.toggle}
       role="switch"
       aria-checked={isDark}
-      aria-label={actionLabel}
+      aria-label={`${modeLabel}: ${actionLabel}`}
       title={actionLabel}
       onClick={() => setColorMode(isDark ? 'light' : 'dark')}>
       <span className={styles.label}>{modeLabel}</span>

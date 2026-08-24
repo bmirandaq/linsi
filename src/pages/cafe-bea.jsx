@@ -24,7 +24,7 @@ export default function CafeBea() {
 
   return (
     <Layout
-      title="Pagar um café pra Bea ☕ — LINSI"
+      title="Pagar um café pra Bea ☕"
       description="LINSI é um projeto independente. Se te ajudou, ajude a mantê-la viva também">
       <main className={styles.main}>
         <div className={clsx('container', styles.container)}>

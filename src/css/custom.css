@@ -168,6 +168,7 @@ h6,
 
 .navbar__link {
   font-weight: 600;
+  white-space: nowrap;
 }
 
 /* Seletor de Fonte */
@@ -470,6 +471,16 @@ a:focus-visible {
   line-height: 1.75;
 }
 
+.theme-doc-markdown img {
+  aspect-ratio: auto;
+  display: block;
+  height: auto;
+  margin-inline: 0;
+  max-height: 500px;
+  max-width: min(100%, 700px);
+  width: auto;
+}
+
 .theme-doc-markdown > h1:first-child {
   font-size: clamp(2.25rem, 5vw, 3.25rem);
   letter-spacing: -0.035em;
@@ -636,7 +647,31 @@ a:focus-visible {
   }
 }
 
+@media (min-width: 997px) and (max-width: 1200px) {
+  .linsi-font-selector {
+    gap: 0;
+  }
+
+  .linsi-font-selector__label {
+    display: none;
+  }
+
+  .linsi-font-selector__select {
+    max-width: 112px;
+  }
+
+  .navbar__item {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
 @media (max-width: 576px) {
+  /* Mantém os controles completos no menu lateral sem estourar a navbar. */
+  .navbar__items > .linsi-font-selector-item {
+    display: none;
+  }
+
   .navbar__logo {
     height: 40px;
     width: 68px;
