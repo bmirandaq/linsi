@@ -1,29 +1,28 @@
 ---
 sidebar_position: 1
 title: Princípios
-description: Direcionadores da LINSI
-slug: /principios
+slug: principios
 ---
 # Princípios LINSI
 
-A fim de responder melhor ao contexto em que experiências digitais mudam rápido, precisam de revisão constante e são consumidas por pessoas com repertórios diferentes, LINSI possui os seguintes princípios:
+Os princípios da LINSI mostram a forma como a notação entende e representa experiências. Eles orientam tanto seu uso quanto sua evolução.
 
-### 1) Centrada nas pessoas
+### Centrada nas pessoas
 
-Transcrever a perspectiva de quem percebe, ouve, visualiza e/ou interage
+Partir da perspectiva de quem vive a experiência, considerando sistemas, processos e regras a partir do impacto que têm nesse percurso.
 
-### 2) Simplificada
+### Simplificada
 
-Incluir apenas o que tem função e dispensar o resto
+Mostrar o que é necessário para entender a experiência, sem adicionar complexidade que não ajude na leitura.
 
-### 3) Sistêmica
+### Sistêmica
 
-Conectar o todo, protagonizando a visão de experiência da pessoa cliente/beneficiária
+Representar a experiência como um conjunto de partes que se relacionam, se desdobram e se conectam, sem perder a visão das pessoas usuárias como referência.
 
-### 4) Visualmente intuitiva
+### Visualmente intuitiva
 
-Organizar composição, elementos e conteúdo para reconhecimento imediato
+Organizar formas, conteúdo e composição de um jeito fácil de reconhecer, acompanhar e revisar.
 
-### 5) Adaptável
+### Adaptável
 
-Ajustar-se a diferentes contextos, escalas e necessidades
+Funcionar em diferentes contextos, escalas e níveis de detalhe sem perder sua lógica.
