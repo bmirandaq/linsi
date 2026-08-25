@@ -9,6 +9,7 @@ Elementos são as unidades visuais da LINSI. Cada Elemento possui uma função. 
 Use apenas os Elementos necessários para que a experiência seja compreendida no fluxograma.
 
 ## Seta
+
 ---
 
 Conecta os elementos e indica a direção de leitura do fluxo.
@@ -29,6 +30,7 @@ Quando não houver um resultado claramente positivo, negativo ou alternativo, us
 Os rótulos nas linhas das setas são opcionais, exceto nas setas que saem de uma Condição.
 
 ## Interface
+
 ---
 
 Representa aquilo que está disponível para a pessoa usuária em um ponto de contato do fluxo: o que ela vê, lê ou percebe e as ações que tem à disposição.
@@ -47,10 +49,21 @@ As Ações descritas dentro de uma Interface representam possibilidades disponí
 
 ### Tipos de Interface
 
-Em fluxos digitais, a Interface pode assumir 2 tipos:
+A Interface pode assumir 2 tipos:
 
-- **Tela:** ocupa o contexto principal naquele momento, é uma página ou tela. É representada por um retângulo com borda cinza.
-- **Janela:** apresenta um conteúdo transitório sobre uma Tela sem substituí-la, como modal, drawer ou popover. É representada por um retângulo com borda cinza tracejada.
+**Tela**
+---
+
+Contexto principal naquele momento, é uma página ou tela. Exemplo exibido mais acima. 
+
+É representada por um retângulo com borda cinza.
+
+**Janela**
+---
+
+Apresenta um conteúdo transitório sobre uma Tela sem substituí-la, como modal, drawer ou popover. 
+
+É representada por um retângulo com borda cinza tracejada.
 
 ![Estrutura do conteúdo de uma Janela modal](/img/uploads/interface-janela-1.png)
 
@@ -195,6 +208,7 @@ Pode ser dispensado quando a ferramenta utilizada oferecer função nativa de co
 
 
 ## Relação entre Elementos e Caminhos
+
 ---
 
 Até aqui, você entendeu como os Elementos pontuam e explicam acontecimentos ao longo do fluxograma. Os Caminhos mostram como esses Elementos se conectam em sequência, formando as diferentes continuidades possíveis.
