@@ -3,23 +3,32 @@ title: Por que fazer fluxogramas?
 sidebar_position: 2
 slug: pq-fluxogramas
 ---
-Com fluxogramas, você possui mais facilidade para obter e fornecer:
+Fluxogramas ajudam a tirar uma experiência da cabeça, de várias conversas espalhadas, e colocá-la em um formato que dá para conferir, discutir e revisar.
+
+Antes de avançar para protótipos ou desenvolvimento, eles ajudam a entender melhor o que está acontecendo e onde ainda existem dúvidas, problemas ou oportunidades.
+
+Na prática, estes são os principais benefícios:
 
 ### Diagnóstico
 
-Identificar gargalos, redundâncias e falhas. Ao visualizar o processo inteiro, fica fácil perceber onde algo trava, se repete ou onde é possível simplificar
+Quando a experiência está visível por inteiro, fica mais fácil perceber onde algo trava, é gargalo, se repete, gera dúvida ou pode ser simplificado.
 
 ### Clareza
 
-Fornece o raciocínio visível sobre o que acontece, quando acontece e por que acontece para qualquer pessoa, designer ou não. É uma fonte da verdade para consultas rápidas, revisões e onboarding
+Ajuda a mostrar o que acontece, em que ordem, quais possibilidades existem e como cada parte se conecta.
+
+Isso facilita tanto a consulta quanto a revisão do fluxo, inclusive por pessoas que não participaram de todas as decisões anteriores, onboarding etc.
 
 ### Alinhamento
 
-Formaliza o entendimento do que será feito. Deixa claro o que já foi definido, o que segue em aberto e o que precisa ser resolvido. É uma ponte entre áreas
+Ao formalizar o raciocínio em um fluxograma, cria-se  uma referência comum para conversar sobre a experiência.
+
+É mais fácil separar o que já foi decidido, o que ainda está em aberto e o que precisa de mais discussão entre as áreas envolvidas. Torna-se uma ponte entre elas.
 
 ### Economia
 
-Evita o desperdício de tempo na criação de protótipos ou desenvolvimento de forma precoce. É possível validar caminhos e decisões apenas com o fluxo, antes de investir em uma etapa mais complexa, demorada e custosa
+Problemas encontrados no fluxograma costumam ser mais simples de corrigir do que depois que a solução já virou protótipo ou código.
 
-> LINSI visa reduzir tanto o custo cognitivo quanto monetário para definir jornadas, fluxos e decisões.
+Por isso, discutir e ajustar decisões mais cedo pode reduzir retrabalho e evitar esforço desnecessário nas etapas seguintes.
 
+> LINSI busca reduzir o esforço para compreender, discutir e definir jornadas e fluxos — e, com isso, também evitar retrabalho e custos desnecessários.
