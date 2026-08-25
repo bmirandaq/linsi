@@ -365,7 +365,7 @@ a:focus-visible {
   border-color: var(--linsi-border-color) !important;
 }
 
-/* Sidebar: altura do conteúdo, radius, borda inferior, botão menor */
+/* Sidebar: acompanha a leitura e mantém o item ativo visível */
 @media (min-width: 997px) {
   .theme-doc-sidebar-container {
     align-self: flex-start !important;
@@ -374,22 +374,31 @@ a:focus-visible {
     border-radius: var(--linsi-radius-md);
     height: fit-content !important;
     margin-top: 0 !important;
-    max-height: none !important;
-    overflow: visible !important;
-  }
-
-  .theme-doc-sidebar-container > div {
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
+    max-height: calc(100vh - var(--ifm-navbar-height) - 1rem) !important;
+    overflow: hidden !important;
     position: sticky;
     top: calc(var(--ifm-navbar-height) + 0.5rem);
   }
 
+  .theme-doc-sidebar-container > div {
+    height: auto !important;
+    max-height: calc(100vh - var(--ifm-navbar-height) - 1rem) !important;
+    overflow: hidden !important;
+    position: static;
+  }
+
   .theme-doc-sidebar-container [class*='sidebar']:not([class*='sidebarLogo']):not([class*='sidebarViewport']) {
     height: auto !important;
-    overflow: visible !important;
+    max-height: calc(100vh - var(--ifm-navbar-height) - 1rem) !important;
+    overflow: hidden !important;
     padding-top: 0.25rem !important;
+  }
+
+  .theme-doc-sidebar-container .menu {
+    max-height: calc(100vh - var(--ifm-navbar-height) - 3rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
   }
 
   /* Botão recolher — menor */
@@ -503,9 +512,11 @@ a:focus-visible {
   --ifm-alert-background-color: var(--linsi-brand-02-ultralighter);
   --ifm-alert-border-color: var(--linsi-brand-02-base);
   --ifm-alert-foreground-color: var(--linsi-brand-02-darkest);
+  border-left: none;
 }
 
-.alert--secondary .alert__icon {
+.alert--secondary .alert__icon,
+.alert--secondary [class*='admonitionIcon'] {
   display: none;
 }
 
