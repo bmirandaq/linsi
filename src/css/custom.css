@@ -390,8 +390,10 @@ a:focus-visible {
   .theme-doc-sidebar-container [class*='sidebar']:not([class*='sidebarLogo']):not([class*='sidebarViewport']) {
     height: auto !important;
     max-height: calc(100vh - var(--ifm-navbar-height) - 1rem) !important;
+    min-width: 0;
     overflow: hidden !important;
     padding-top: 0.25rem !important;
+    width: 100% !important;
   }
 
   .theme-doc-sidebar-container .menu {
@@ -399,6 +401,7 @@ a:focus-visible {
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-gutter: stable;
+    width: 100%;
   }
 
   /* Botão recolher — menor */
@@ -647,6 +650,11 @@ a:focus-visible {
 
   .navbar .aa-DetachedSearchButton {
     margin-left: 0.25rem !important;
+  }
+
+  /* Compensa a seta inferior do SVG para alinhar opticamente o lettering ao hambúrguer. */
+  .navbar__items > .navbar__brand {
+    transform: translateY(4px);
   }
 
   .theme-doc-markdown > h1:first-child {
