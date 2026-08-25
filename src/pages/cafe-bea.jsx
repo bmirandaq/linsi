@@ -34,8 +34,15 @@ export default function CafeBea() {
                 Pagar um café pra Bea ☕
               </Heading>
               <p className={styles.subtitle}>
-                LINSI é um projeto independente. Se te ajudou, ajude a mantê-la viva
-                também
+                LINSI é um projeto independente. Se te ajudou, fique à vontade pra
+                mostrar sua gratidão que vou converter em cafés. Talvez um bolinho de
+                fubá? Adoro. Qualquer valor conta, tá?
+                <br />
+                <br />
+                Meus aussistentes, vulgo cachorros caramelos Leo e Cassie, sugeriram R$
+                10, se você estiver na dúvida. Ou R$ 25, se quiser patrocinar café +
+                lanchinho da tarde. Mais que isso então?... Aussistentes estão mais que
+                a fim de um petisco... Se eles merecem ou não, fica ao seu critério
               </p>
             </header>
 
