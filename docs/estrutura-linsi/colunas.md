@@ -5,35 +5,60 @@ slug: colunas
 ---
 # Colunas
 
-Colunas organizam a evolução horizontal do fluxo.
+Colunas são separações verticais que organizam partes relacionadas da experiência apresentada no fluxograma.
 
 [img]
 
-Elas podem representar uma **seção mais ampla** ou uma **etapa específica**, dependendo da escala e da complexidade do cenário.
+## Tipos de Colunas
 
-Uma seção pode agrupar várias etapas relacionadas. Em um fluxo mais detalhado, cada coluna pode representar um momento específico da experiência.
+Uma Coluna pode assumir diferentes funções de organização, conforme o recorte necessário no fluxograma:
 
-### Variações dentro da mesma coluna
+### Coluna do tipo Etapa
+---
 
-Quando há uma variação da **mesma etapa ou interface**, os cenários podem permanecer na mesma coluna.
+Pode corresponder a uma etapa propriamente dita ou a um recorte mais granular da experiência. Exemplos:
 
-Por exemplo: se uma Tela possui uma versão alternativa naquele mesmo momento do fluxo, podem estar na mesma coluna.
+- Formulário de cadastro;
+- Autenticação;
+- Escolha da forma de entrega do produto;
+- Pagamento.
 
 [img-example]
 
-Nesses casos, organize as variações nessa sequência, de cima para baixo:
 
-- cenário neutro ou positivo;
-- cenário alternativo, se houver;
-- cenário negativo, se houver.
+### Coluna do tipo Seção
+---
 
-Quando uma interação gera **novos desdobramentos do fluxo**, os resultados avançam para uma nova coluna e seguem por seus respectivos Caminhos.
+Reúne duas ou mais Etapas relacionadas. Exemplos: 
 
-[img]
+- Área não-logada;
+- Área logada;
+- Cliente sem acesso ao financiamento;
+- Cliente com financiamento aprovado.
 
-Em resumo:
+[img-example]
 
-- Variação do mesmo momento → mesma coluna
-- Novo desdobramento → próxima coluna
+É especialmente útil em fluxogramas extensos, que precisam de recortes maiores para facilitar localização, leitura e compreensão da experiência. 
 
-> Nem todo fluxo precisa de muitas colunas e nem todas precisam representar o mesmo nível de detalhe. Use apenas as necessárias para organizar a leitura sem fragmentar o fluxograma.
+Representações desse porte também são frequentemente chamadas de **big flows** (fluxos grandes).
+
+
+### Coluna do tipo Equivalência
+---
+
+Reúne Etapas e/ou Seções equivalentes de 2 ou mais Caminhos.
+
+Exemplo: em uma experiência de cadastro para compra, podem existir 3 Caminhos diferentes para adquirir o produto e, em todos eles, a pessoa passar por uma etapa de cadastro.
+
+[img-example]
+
+A equivalência não exige que os Caminhos apresentem exatamente os mesmos Elementos, tanto em forma quanto conteúdo. O que importa é que esses trechos cumpram uma função equivalente naquele recorte.
+
+Esse tipo de Coluna facilita a comparação e favorece a consistência entre esses cenários, sem alterar a independência de cada Caminho.
+
+
+## Observações
+
+O alinhamento vertical **não cria, por si só, uma Coluna** na concepção da LINSI. O agrupamento precisa ser proposital e possuir função na organização do fluxograma. 
+
+Isso pode ser comunicado pelo posicionamento dos Elementos, por um rótulo que identifique o recorte ou pela combinação de ambos.
