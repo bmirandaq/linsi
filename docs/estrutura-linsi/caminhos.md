@@ -1,42 +1,63 @@
 ---
-sidebar_position: 6
+sidebar_position: 5
 title: Caminhos
 slug: caminhos
 ---
 # Caminhos
+---
 
-Caminhos são as sequências que uma pessoa pode percorrer dentro do fluxo.
+Caminhos representam as continuidades possíveis da experiência apresentada pelo fluxograma.
+
+Um fluxograma pode possuir um ou mais Caminhos.
 
 [img]
 
-Um fluxo pode possuir apenas um Caminho ou se dividir em vários conforme surgem diferentes continuidades.
 
 
+## Quando deve existir um novo Caminho
 
-### Ordem dos Caminhos
+Quando uma escolha ou desdobramento passa a seguir uma sequência própria, separada daquela em que surgiu.
 
----
+Exemplos:
 
-Da mesma forma que ocorre em Colunas, siga este racional para a sequência de Caminhos:
-
-- caminhos principais, comuns ou positivos acima;
-- caminhos alternativos abaixo;
-- caminhos negativos nas posições inferiores.
-
-[img]
-
-**Evite reorganizar os cenários livremente a cada novo Caminho.** Por exemplo: colocar um negativo acima, depois um positivo abaixo e, mais adiante, outro alternativo acima.
-
-Mesmo que as setas estejam conectando corretamente, essa alternância dificulta acompanhar o fluxo e quebra a previsibilidade de leitura.
-
-
-
-### Convergência
-
----
-
-Caminhos podem voltar a se encontrar. Quando chegarem ao mesmo ponto, conecte-os novamente para manter a leitura clara.
+- Uma Condição, por via de regra, abre 2 ou mais Caminhos;
+- Um Processo que pode resultar em sucesso ou falha;
+- Uma alternativa ao Caminho principal ou de outro aspecto.
 
 [img-example]
 
-Não é necessário manter Caminhos separados depois que a diferença entre eles deixou de existir, muito menos repetir as próximas Interfaces em ambos.
+
+
+## Ordem dos Caminhos
+
+Para manter previsibilidade na leitura, siga esta hierarquia sempre que houver dois Caminhos ou mais:
+
+- Caminho principal acima de todos, independentemente de ser positivo, negativo ou comum, pois serve como referência para a organização dos demais;
+- Caminho positivo abaixo, se houver;
+- Caminho alternativo abaixo, se houver;
+- Caminho negativo na posição inferior, se houver.
+
+[img]
+
+Evite reorganizar livremente essa ordem ao longo do fluxograma. Colocar um Caminho negativo acima, depois um positivo abaixo e, mais adiante, inverter, aumenta o esforço de leitura mesmo quando as Setas estão corretamente aplicadas.
+
+[img-example-dont]
+
+
+
+## Convergência
+
+Caminhos podem voltar a se encontrar quando chegam ao mesmo ponto e passam a compartilhar a mesma continuidade, então podem ser conectados novamente e seguir como um único Caminho.
+
+[img-example]
+
+
+
+## Relação entre Caminhos e Colunas
+
+Organizam dimensões diferentes do fluxograma:
+
+- Caminhos representam a continuidade da experiência na leitura **horizontal** do fluxograma;
+- Colunas são recortes **verticais** que organizam as partes dessa experiência.
+
+Aprenda sobre Colunas na próxima página.
