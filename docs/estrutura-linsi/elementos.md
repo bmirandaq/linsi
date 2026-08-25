@@ -8,8 +8,6 @@ Elementos são as unidades visuais da LINSI. Cada Elemento possui uma função. 
 
 Use apenas os Elementos necessários para que a experiência seja compreendida no fluxograma.
 
-
-
 ## Seta
 ---
 
@@ -29,8 +27,6 @@ Escolha o tipo de seta pelo significado da continuidade, não apenas pelo destaq
 Quando não houver um resultado claramente positivo, negativo ou alternativo, use a seta Comum.
 
 Os rótulos nas linhas das setas são opcionais, exceto nas setas que saem de uma Condição.
-
-
 
 ## Interface
 ---
@@ -63,6 +59,7 @@ Em fluxos digitais, a Interface pode assumir 2 tipos:
 
 
 ## Processo
+
 ---
 
 Representa algo executado pelo sistema, seja como consequência de uma ação da pessoa ou de forma automática.
@@ -78,6 +75,7 @@ O Processo pode acontecer sem que a pessoa o perceba. Quando oferecer um resulta
 
 
 ## Ação
+
 ---
 
 Representa uma ação efetivamente realizada pela pessoa durante o fluxo. Geralmente corresponde a uma das possibilidades apresentadas na Interface anterior.
@@ -91,6 +89,7 @@ Quando aplicável, use o mesmo rótulo apresentado no botão, link ou controle d
 
 
 ## Condição
+
 ---
 
 Representa uma verificação que pode abrir 2 ou mais Caminhos.
@@ -110,6 +109,7 @@ As setas que saem da Condição devem sempre receber rótulos que respondam dire
 
 
 ## Início
+
 ---
 
 Representa o ponto de partida do fluxo.
@@ -123,6 +123,7 @@ Pode ser dispensado quando o ponto de partida já estiver claro pelo contexto, c
 
 
 ## Fim
+
 ---
 
 Representa o ponto em que um Caminho ou a jornada apresentada se encerra.
@@ -138,6 +139,7 @@ Pode ser dispensado quando o encerramento já estiver claro pelo contexto.
 
 
 ## Retomada
+
 ---
 
 Indica que o Caminho continua em outro ponto já representado, sem estender uma conexão direta pelo fluxograma.
@@ -155,6 +157,7 @@ O texto deve identificar claramente o destino. Quando ele estiver disponível em
 
 
 ## Nota
+
 ---
 
 Acrescenta um contexto necessário para compreender o fluxograma, mas não representa uma etapa da experiência.
@@ -174,6 +177,7 @@ A Nota deve contextualizar o fluxo, **não substituir algo que poderia ser repre
 
 
 ## Comentário
+
 ---
 
 Registra uma dúvida ou um ponto em aberto do fluxograma.
@@ -187,3 +191,12 @@ Diferente da Nota, que documenta um contexto já definido, o Comentário sinaliz
 Pode ser dispensado quando a ferramenta utilizada oferecer função nativa de comentários, como o próprio Figma.
 
 ![Comentário feito com o recurso nativo do Figma](/img/uploads/comentario-nativo.png)
+
+
+
+## Relação entre Elementos e Caminhos
+---
+
+Até aqui, você entendeu como os Elementos pontuam e explicam acontecimentos ao longo do fluxograma. Os Caminhos mostram como esses Elementos se conectam em sequência, formando as diferentes continuidades possíveis.
+
+Aprenda sobre Caminhos na próxima página.
