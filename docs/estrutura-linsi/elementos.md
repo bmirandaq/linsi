@@ -38,6 +38,7 @@ Representa aquilo que está disponível para a pessoa usuária em um ponto de co
 ![Estrutura do conteúdo de uma Interface do tipo Tela](/img/uploads/interface-tela.png)
 
 ### Estrutura do conteúdo
+---
 
 O elemento Interface pode reunir até 3 partes:
 
@@ -47,18 +48,14 @@ O elemento Interface pode reunir até 3 partes:
 
 As Ações descritas dentro de uma Interface representam possibilidades disponíveis. Para demonstrar qual delas foi efetivamente realizada em um Caminho, use o elemento Ação.
 
-### Tipos de Interface
-
-A Interface pode assumir 2 tipos:
-
-**Tela**
+### Interface do tipo Tela
 ---
 
 Contexto principal naquele momento, é uma página ou tela. Exemplo exibido mais acima. 
 
 É representada por um retângulo com borda cinza.
 
-**Janela**
+### Interface do tipo Janela
 ---
 
 Apresenta um conteúdo transitório sobre uma Tela sem substituí-la, como modal, drawer ou popover. 
