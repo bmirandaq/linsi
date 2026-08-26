@@ -14,11 +14,14 @@
   gap: 1.25rem;
   justify-content: space-between;
   padding: 1.25rem;
-  transition: border-color 0.15s ease;
+  transition: background-color var(--linsi-motion-base) var(--linsi-ease-standard),
+    border-color var(--linsi-motion-base) var(--linsi-ease-standard),
+    transform var(--linsi-motion-base) var(--linsi-ease-standard);
 }
 
 .card:not(.cardDisabled):hover {
   border-color: var(--linsi-brand-02-base);
+  transform: translateY(-2px);
 }
 
 .cardDisabled {
@@ -39,6 +42,7 @@
   font-size: 1.125rem;
   font-weight: 700;
   margin: 0;
+  transition: color var(--linsi-motion-base) var(--linsi-ease-standard);
 }
 
 .description {
@@ -46,6 +50,7 @@
   font-size: 0.9375rem;
   line-height: 1.45;
   margin: 0;
+  transition: color var(--linsi-motion-base) var(--linsi-ease-standard);
 }
 
 .cardFooter {
@@ -66,13 +71,21 @@
   padding: 0.5rem 0.875rem;
   text-align: center;
   text-decoration: none !important;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: background-color var(--linsi-motion-fast) var(--linsi-ease-standard),
+    border-color var(--linsi-motion-fast) var(--linsi-ease-standard),
+    color var(--linsi-motion-fast) var(--linsi-ease-standard),
+    transform var(--linsi-motion-fast) var(--linsi-ease-standard);
   width: 100%;
 }
 
 .actionButton:not(.actionButtonDisabled):hover {
   background: var(--linsi-brand-02-darkest);
   border-color: var(--linsi-brand-02-darkest);
+  transform: translateY(-1px);
+}
+
+.actionButton:not(.actionButtonDisabled):active {
+  transform: translateY(1px);
 }
 
 .actionButtonDisabled {
@@ -119,6 +132,21 @@
   background: var(--linsi-neutral-darker) !important;
   border-color: var(--linsi-neutral-darker) !important;
   color: var(--linsi-neutral-base) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .actionButton,
+  .title,
+  .description {
+    transition: none;
+  }
+
+  .card:not(.cardDisabled):hover,
+  .actionButton:not(.actionButtonDisabled):hover,
+  .actionButton:not(.actionButtonDisabled):active {
+    transform: none;
+  }
 }
 
 @media (max-width: 576px) {

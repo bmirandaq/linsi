@@ -7,6 +7,7 @@
   min-height: calc(100vh - var(--ifm-navbar-height));
   padding: 5rem 0 6rem;
   width: 100%;
+  transition: background-color var(--linsi-motion-base) var(--linsi-ease-standard);
 }
 
 /* Layout interno — gutters laterais só via .container Infima */
@@ -29,13 +30,18 @@
   border-radius: var(--linsi-radius-lg);
   min-height: 280px;
   width: 100%;
+  transition: background-color var(--linsi-motion-base) var(--linsi-ease-standard),
+    border-color var(--linsi-motion-base) var(--linsi-ease-standard);
 }
 
 .logo {
+  animation: homeElementEnter var(--linsi-motion-base) var(--linsi-ease-enter)
+    both;
   display: block;
   height: auto;
   margin-bottom: 3rem;
   width: 163px;
+  transition: filter var(--linsi-motion-base) var(--linsi-ease-standard);
 }
 
 [data-theme='dark'] .logo {
@@ -53,17 +59,23 @@
 }
 
 .subtitle {
+  animation: homeElementEnter var(--linsi-motion-base) var(--linsi-ease-enter)
+    40ms both;
   color: var(--linsi-home-subtitle);
   font-size: clamp(1.125rem, 2.5vw, 1.5rem);
   line-height: 1.5;
   margin: 0 0 2rem;
   max-width: 600px;
+  transition: color var(--linsi-motion-base) var(--linsi-ease-standard);
 }
 
 .positioningCopy {
+  animation: homeElementEnter var(--linsi-motion-base) var(--linsi-ease-enter)
+    80ms both;
   color: var(--linsi-home-copy);
   margin-bottom: 2.5rem;
   max-width: 680px;
+  transition: color var(--linsi-motion-base) var(--linsi-ease-standard);
 }
 
 .positioningCopy p {
@@ -77,13 +89,18 @@
 }
 
 .primaryAction {
+  animation: homeElementEnter var(--linsi-motion-base) var(--linsi-ease-enter)
+    120ms both;
   background: var(--linsi-button-background);
   border: 2px solid var(--linsi-button-background);
   border-radius: var(--linsi-radius-md);
   color: var(--linsi-button-text);
   font-size: 1rem;
   padding: 0.75rem 1.25rem;
-  transition: background-color 120ms ease, border-color 120ms ease;
+  transition: background-color var(--linsi-motion-fast) var(--linsi-ease-standard),
+    border-color var(--linsi-motion-fast) var(--linsi-ease-standard),
+    color var(--linsi-motion-fast) var(--linsi-ease-standard),
+    transform var(--linsi-motion-fast) var(--linsi-ease-standard);
 }
 
 .primaryAction:hover {
@@ -91,12 +108,29 @@
   border-color: var(--linsi-button-hover-background);
   color: var(--linsi-button-text);
   text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.primaryAction:active {
+  transform: translateY(1px);
 }
 
 .primaryAction:focus-visible {
   box-shadow: 0 0 0 2px var(--linsi-button-focus-inner),
     0 0 0 5px var(--linsi-focus-color);
   outline: none;
+}
+
+@keyframes homeElementEnter {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 996px) {
@@ -128,7 +162,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .logo,
+  .subtitle,
+  .positioningCopy,
   .primaryAction {
+    animation: none;
     transition: none;
+  }
+
+  .primaryAction:hover,
+  .primaryAction:active {
+    transform: none;
   }
 }
