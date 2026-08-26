@@ -3,63 +3,163 @@ sidebar_position: 3
 title: Glossário
 slug: /glossario
 ---
+
 # Glossário
 
----
+Aqui você encontra alguns termos usados ao longo da documentação. Como eles podem ter definições diferentes em outros contextos, considere os significados abaixo ao navegar pela LINSI.
 
-Vocabulário que você precisa ter em mente para navegar pela LINSI:
-
-
-
-### Pessoa usuária
-
-Quem interage com o produto, plataforma ou serviço. Sinônimos: cliente, beneficiário
-
-### Jornada
-
-Sequência de etapas, interações e experiências ao longo do relacionamento com o produto. 
-
-Pode englobar desde o primeiro contato até pós-uso, além de todas as possibilidades de ponto de contato, digitais ou não. 
-
-Pode ser uma visão ampla (macro), restrita (micro) ou específica.
+<section className="glossary" aria-label="Termos do glossário">
+  <article className="glossary-entry">
+    <div className="glossary-term">
 
 ### Diagrama
 
-Representação visual de relações e estruturas que se conectam.
+      <span className="glossary-support">Diagram</span>
+    </div>
+    <div className="glossary-definition">
 
-### Fluxograma
+Representação visual que mostra relações entre estruturas ou partes que se conectam.
 
-É um tipo de representação visual de diagrama, normalmente voltado a processos.
+    </div>
+  </article>
+
+  <article className="glossary-entry">
+    <div className="glossary-term">
 
 ### Fluxo
 
-Sequência de etapas e/ou atividades realizadas para atingir um objetivo específico dentro de uma jornada. 
+      <span className="glossary-support">Flow</span>
+    </div>
+    <div className="glossary-definition">
 
-Uma jornada pode ter vários fluxos, e um fluxo pode se entender como uma jornada.
+Sequência de etapas e/ou atividades realizadas para alcançar um objetivo específico dentro de uma jornada.
 
-### Notação
+Uma jornada pode reunir vários fluxos. Dependendo do recorte, um fluxo também pode ser entendido como uma jornada.
 
-Sistema de símbolos para representar ideias, conceitos ou processos. A própria LINSI é uma notação, além de framework.
+    </div>
+  </article>
+
+  <article className="glossary-entry">
+    <div className="glossary-term">
+
+### Fluxograma
+
+      <span className="glossary-support">Flowchart</span>
+    </div>
+    <div className="glossary-definition">
+
+Tipo de diagrama usado para representar visualmente uma sequência, normalmente relacionada a processos.
+
+    </div>
+  </article>
+
+  <article className="glossary-entry">
+    <div className="glossary-term">
 
 ### Interface
 
-Ponto de contato entre pessoa usuária e sistema (produto, plataforma ou serviço), físico ou digital. 
+    </div>
+    <div className="glossary-definition">
 
-### Telas
+Ponto de contato entre a pessoa usuária e um sistema, como um produto, plataforma ou serviço. Pode ser físico ou digital.
 
-Protótipos, representações visuais, interfaces digitais das jornadas/fluxos.
+    </div>
+  </article>
+
+  <article className="glossary-entry">
+    <div className="glossary-term">
+
+### Jornada
+
+      <span className="glossary-support">Journey</span>
+    </div>
+    <div className="glossary-definition">
+
+Sequência de etapas, interações e experiências ao longo da relação de uma pessoa com um produto.
+
+Pode começar no primeiro contato e seguir até o pós-uso, incluindo pontos de contato digitais ou não.
+
+Pode representar uma visão mais ampla (macro), mais restrita (micro) ou específica.
+
+    </div>
+  </article>
+
+  <article className="glossary-entry">
+    <div className="glossary-term">
+
+### Notação
+
+      <span className="glossary-support">Notation</span>
+    </div>
+    <div className="glossary-definition">
+
+Sistema de símbolos usado para representar ideias, conceitos ou processos.
+
+LINSI é uma notação visual.
+
+    </div>
+  </article>
+
+  <article className="glossary-entry">
+    <div className="glossary-term">
+
+### Pessoa usuária
+
+      <span className="glossary-support">User</span>
+    </div>
+    <div className="glossary-definition">
+
+Quem interage com um produto, plataforma ou serviço.
+
+Dependendo do contexto, também pode ser chamada de cliente ou beneficiário.
+
+    </div>
+  </article>
+
+  <article className="glossary-entry">
+    <div className="glossary-term">
+
+### Protótipo
+
+      <span className="glossary-support">Prototype</span>
+    </div>
+    <div className="glossary-definition">
+
+Representação de uma solução criada para explorar, demonstrar ou testar como ela pode funcionar antes de sua implementação final.
+
+Pode variar em nível de detalhe, desde estruturas simples até simulações próximas da experiência real.
+
+    </div>
+  </article>
+
+  <article className="glossary-entry">
+    <div className="glossary-term">
 
 ### Rótulo
 
-Texto curto que nomeia ou identifica um elemento ou informação na interface. 
+      <span className="glossary-support">Label</span>
+    </div>
+    <div className="glossary-definition">
 
-Também pode ser chamado de label (é o mesmo que rótulo, só que em inglês).
+Texto curto que nomeia ou identifica um elemento ou uma informação em uma interface.
 
+    </div>
+  </article>
 
+  <article className="glossary-entry">
+    <div className="glossary-term">
 
-# Observações
+### Tela
 
----
+      <span className="glossary-support">Screen</span>
+    </div>
+    <div className="glossary-definition">
 
-Não há consenso absoluto sobre todos os termos apresentados neste glossário. Na LINSI, eles são usados conforme as definições estabelecidas aqui.
+Representação visual de uma interface digital em determinado momento de uma jornada ou fluxo.
+
+Pode ser sinônimo de protótipo.
+
+    </div>
+  </article>
+</section>
 
