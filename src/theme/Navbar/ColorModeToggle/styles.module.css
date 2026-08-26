@@ -18,6 +18,7 @@
   line-height: 1;
   min-width: 72px;
   text-align: right;
+  transition: color var(--linsi-motion-base) var(--linsi-ease-standard);
 }
 
 .track {
@@ -27,7 +28,8 @@
   display: block;
   height: 26px;
   padding: 3px;
-  transition: background-color 120ms ease, border-color 120ms ease;
+  transition: background-color var(--linsi-motion-base) var(--linsi-ease-standard),
+    border-color var(--linsi-motion-fast) var(--linsi-ease-standard);
   width: 48px;
 }
 
@@ -37,7 +39,8 @@
   display: block;
   height: 18px;
   transform: translateX(0);
-  transition: background-color 120ms ease, transform 120ms ease;
+  transition: background-color var(--linsi-motion-base) var(--linsi-ease-standard),
+    transform var(--linsi-motion-fast) var(--linsi-ease-standard);
   width: 18px;
 }
 
@@ -67,7 +70,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .track,
-  .thumb {
+  .thumb,
+  .label {
     transition: none;
   }
 }
