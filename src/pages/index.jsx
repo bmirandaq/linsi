@@ -2,7 +2,6 @@ import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
-import ThemedImage from '@theme/ThemedImage';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import homeContent from '@site/content/home.json';
@@ -10,8 +9,7 @@ import homeContent from '@site/content/home.json';
 import styles from './index.module.css';
 
 export default function Home() {
-  const lightLogo = useBaseUrl('/img/linsi-logo.svg');
-  const darkLogo = useBaseUrl('/img/linsi-logo-dark.svg');
+  const logo = useBaseUrl('/img/linsi-logo.svg');
 
   return (
     <Layout description="LINSI — Linguagem Simplificada de Fluxogramas de UX">
@@ -19,13 +17,10 @@ export default function Home() {
         <section className={styles.intro} aria-labelledby="home-title">
           <div className={clsx('container', styles.layout)}>
             <div className={styles.copyColumn}>
-              <ThemedImage
+              <img
                 className={styles.logo}
                 alt="LINSI"
-                sources={{
-                  light: lightLogo,
-                  dark: darkLogo,
-                }}
+                src={logo}
                 width="163"
                 height="96"
               />
