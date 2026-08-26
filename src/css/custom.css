@@ -141,6 +141,23 @@ body {
     color var(--linsi-motion-base) var(--linsi-ease-standard);
 }
 
+.material-symbols-outlined {
+  direction: ltr;
+  display: inline-block;
+  font-family: 'Material Symbols Outlined Variable';
+  font-feature-settings: 'liga';
+  font-size: 24px;
+  font-style: normal;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-weight: 400;
+  letter-spacing: normal;
+  line-height: 1;
+  text-rendering: optimizeLegibility;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+}
+
 /* Espaçamento entre Navbar e Body */
 .main-wrapper {
   padding-top: 1rem;
@@ -196,6 +213,7 @@ h6,
   align-items: center;
   display: flex;
   gap: 0.75rem;
+  position: relative;
 }
 
 .linsi-font-selector__label {
@@ -209,10 +227,6 @@ h6,
   -webkit-appearance: none;
   -moz-appearance: none;
   background-color: var(--ifm-navbar-background-color);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234b5565' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.65rem center;
-  background-size: 14px 14px;
   border: 1px solid var(--linsi-neutral-base);
   border-radius: var(--linsi-radius-sm);
   color: var(--ifm-navbar-link-color);
@@ -231,13 +245,20 @@ h6,
   border-color: var(--linsi-brand-01-dark);
 }
 
+.linsi-font-selector__icon {
+  color: var(--ifm-navbar-link-color);
+  font-size: 20px;
+  pointer-events: none;
+  position: absolute;
+  right: 0.45rem;
+}
+
 .linsi-font-selector__select:focus-visible {
   outline: 3px solid var(--linsi-focus-color);
   outline-offset: 2px;
 }
 
 [data-theme='dark'] .linsi-font-selector__select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f5f8fd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   border-color: var(--linsi-neutral-light);
 }
 
@@ -309,10 +330,26 @@ h6,
 }
 
 .navbar .aa-DetachedSearchButtonIcon {
+  align-items: center;
   color: var(--ifm-navbar-link-color) !important;
+  display: inline-flex;
   height: 36px !important;
+  justify-content: center;
   transition: color var(--linsi-motion-fast) var(--linsi-ease-standard);
   width: 36px !important;
+}
+
+.navbar .aa-DetachedSearchButtonIcon svg {
+  display: none;
+}
+
+.navbar .aa-DetachedSearchButtonIcon::before {
+  content: 'search';
+  font-family: 'Material Symbols Outlined Variable';
+  font-size: 24px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-weight: 400;
+  line-height: 1;
 }
 
 .navbar .aa-DetachedSearchButtonPlaceholder,
@@ -323,6 +360,24 @@ h6,
 [data-theme='dark'] .navbar .aa-DetachedSearchButton:hover {
   background: var(--linsi-neutral-darker) !important;
   border-color: var(--linsi-neutral-dark) !important;
+}
+
+.aa-DetachedContainer:has(.aa-Input:placeholder-shown) .aa-Panel {
+  display: none;
+}
+
+.aa-DetachedOverlay {
+  animation: linsi-search-backdrop-enter var(--linsi-motion-base)
+    var(--linsi-ease-enter);
+}
+
+.aa-DetachedContainer {
+  animation: linsi-search-container-enter var(--linsi-motion-base)
+    var(--linsi-ease-enter);
+}
+
+.aa-ItemContentDescription {
+  color: rgb(var(--aa-muted-color-rgb));
 }
 
 .navbar__link:hover,
@@ -515,6 +570,38 @@ a:focus-visible {
   background: var(--linsi-brand-01-lightest);
   color: var(--linsi-brand-01-darkest);
   font-weight: 700;
+}
+
+.linsi-sidebar-section {
+  margin-bottom: 1rem;
+}
+
+.linsi-sidebar-section > .menu__list-item-collapsible {
+  align-items: center;
+  background: transparent !important;
+  cursor: default;
+  display: flex;
+  gap: 0.625rem;
+}
+
+.linsi-sidebar-section > .menu__list-item-collapsible::after {
+  background: var(--linsi-border-color);
+  content: '';
+  flex: 1;
+  height: 1px;
+}
+
+.linsi-sidebar-section > .menu__list-item-collapsible > .menu__link {
+  background: transparent !important;
+  color: var(--ifm-font-color-base) !important;
+  cursor: default;
+  flex: 0 1 auto;
+  font-weight: 700;
+  pointer-events: none;
+}
+
+.linsi-sidebar-section > .menu__list {
+  padding-left: 0;
 }
 
 /* Documentos & Estrutura de Leitura */
@@ -717,6 +804,60 @@ a:focus-visible {
   color: var(--linsi-brand-01-lighter);
 }
 
+@keyframes linsi-search-backdrop-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes linsi-search-container-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.985) translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.theme-back-to-top-button {
+  background: var(--ifm-background-surface-color) !important;
+  border: 1px solid var(--linsi-border-color) !important;
+  color: var(--ifm-font-color-base) !important;
+}
+
+.theme-back-to-top-button::after {
+  align-items: center;
+  background: none;
+  content: 'arrow_upward';
+  display: flex;
+  font-family: 'Material Symbols Outlined Variable';
+  font-size: 24px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-weight: 400;
+  height: 100%;
+  justify-content: center;
+  line-height: 1;
+  mask: none;
+  width: 100%;
+}
+
+.theme-back-to-top-button:hover {
+  border-color: var(--ifm-color-primary) !important;
+  color: var(--ifm-color-primary) !important;
+}
+
+.theme-back-to-top-button:focus-visible {
+  outline: 3px solid var(--linsi-focus-color);
+  outline-offset: 3px;
+}
+
 @keyframes linsi-page-enter {
   from {
     opacity: 0;
@@ -849,6 +990,53 @@ a:focus-visible {
 
   .pagination-nav {
     margin-top: 2rem;
+  }
+
+  .navbar-sidebar__close {
+    align-items: center;
+    display: inline-flex;
+    height: 44px;
+    justify-content: center;
+    min-width: 44px;
+  }
+
+  .navbar-sidebar__back,
+  .navbar-sidebar .menu__link {
+    align-items: center;
+    display: flex;
+    min-height: 48px;
+  }
+
+  .navbar-sidebar .navbar__item {
+    align-items: center;
+    display: flex;
+    min-height: 48px;
+  }
+
+  .navbar-sidebar .aa-DetachedSearchButton,
+  .navbar-sidebar [role='switch'] {
+    height: 44px !important;
+    min-width: 44px !important;
+  }
+
+  .navbar-sidebar .linsi-font-selector__select {
+    height: 48px;
+  }
+
+  .navbar-sidebar .menu__list-item + .menu__list-item {
+    margin-top: 4px;
+  }
+
+  .navbar-sidebar .menu__list > .menu__list-item:first-child > .menu__link {
+    font-weight: 400;
+  }
+
+  [class*='tocCollapsibleContent'] .table-of-contents__link {
+    align-items: center;
+    display: flex;
+    min-height: 44px;
+    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
   }
 }
 

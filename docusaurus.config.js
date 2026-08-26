@@ -8,6 +8,7 @@ const fontSelectorHtml = `
       <option value="opendyslexic">OpenDyslexic</option>
       <option value="georgia">Georgia</option>
     </select>
+    <span class="material-symbols-outlined linsi-font-selector__icon" aria-hidden="true">expand_more</span>
   </label>
 `;
 
