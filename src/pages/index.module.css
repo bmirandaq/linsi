@@ -38,6 +38,10 @@
   width: 163px;
 }
 
+[data-theme='dark'] .logo {
+  filter: invert(1);
+}
+
 .visuallyHidden {
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
