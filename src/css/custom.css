@@ -755,6 +755,46 @@ a:focus-visible {
   }
 }
 
+/* Glossário */
+.glossary {
+  border-top: 1px solid var(--linsi-border-color);
+}
+
+.glossary-entry {
+  display: grid;
+  grid-template-columns: minmax(10rem, 13.125rem) minmax(0, 1fr);
+  gap: 2.125rem;
+  padding-block: 1.5rem;
+  border-bottom: 1px solid var(--linsi-border-color);
+}
+
+.glossary-term h3 {
+  margin: 0;
+}
+
+.glossary-support {
+  display: block;
+  margin-top: 0.3125rem;
+  color: var(--linsi-neutral-base);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.glossary-definition > :first-child {
+  margin-top: 0;
+}
+
+.glossary-definition > :last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 700px) {
+  .glossary-entry {
+    grid-template-columns: 1fr;
+    gap: 0.625rem;
+  }
+}
+
 
 
 @media (prefers-reduced-motion: reduce) {
@@ -842,3 +882,4 @@ a:focus-visible {
     width: 68px;
   }
 }
+
