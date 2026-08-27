@@ -7,13 +7,14 @@
     "start": "docusaurus start",
     "prebuild": "npm run test:security && npm run test:ui",
     "build": "docusaurus build",
-    "postbuild": "npm run test:icons",
+    "postbuild": "npm run test:icons && npm run test:assets",
     "clear": "docusaurus clear",
     "serve": "docusaurus serve",
     "postinstall": "node scripts/patch-image-size.cjs",
     "test:security": "node scripts/test-image-size-security.cjs",
     "test:ui": "node scripts/test-ui-regressions.cjs",
-    "test:icons": "node scripts/audit-material-symbols.cjs"
+    "test:icons": "node scripts/audit-material-symbols.cjs",
+    "test:assets": "node scripts/test-built-assets.cjs"
   },
   "dependencies": {
     "@cmfcmf/docusaurus-search-local": "^2.0.1",

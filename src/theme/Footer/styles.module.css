@@ -217,10 +217,6 @@
     width: 138px;
   }
 
-  [data-theme='light'] .logo {
-    margin-bottom: 12px;
-  }
-
   .brandCopy {
     font-size: 0.875rem;
     line-height: 1.6;
