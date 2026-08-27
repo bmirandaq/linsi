@@ -1006,6 +1006,130 @@ a:focus-visible {
   }
 }
 
+/* Por que fazer fluxogramas */
+.flow-benefits {
+  margin-top: 0;
+}
+
+.flow-benefits__lead {
+  margin: 0 0 2rem;
+}
+
+.flow-benefits__grid {
+  border-bottom: 1px solid var(--linsi-border-color);
+  border-top: 1px solid var(--linsi-border-color);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.flow-benefit {
+  min-width: 0;
+  padding: 2.125rem 3.25rem 3.375rem 0;
+  position: relative;
+}
+
+.flow-benefit:nth-child(even) {
+  padding-left: 2.375rem;
+  padding-right: 2.25rem;
+}
+
+.flow-benefit:nth-child(-n + 2) {
+  border-bottom: 1px solid var(--linsi-border-color);
+}
+
+.flow-benefit:nth-child(odd) {
+  border-right: 1px solid var(--linsi-border-color);
+}
+
+.flow-benefit h3 {
+  font-size: 1.35rem;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin: 0 0 0.875rem;
+}
+
+.flow-benefit p {
+  margin: 0 0 0.875rem;
+}
+
+.flow-benefit p:last-of-type {
+  margin-bottom: 0;
+}
+
+.flow-benefit__icon {
+  bottom: 1.125rem;
+  color: var(--linsi-brand-02-base);
+  font-size: 2rem;
+  opacity: 0.72;
+  pointer-events: none;
+  position: absolute;
+  right: 1.125rem;
+  user-select: none;
+}
+
+.flow-benefit:nth-child(even) .flow-benefit__icon {
+  right: 0.25rem;
+}
+
+.flow-statement {
+  margin-top: 4.75rem;
+  max-width: 52.5rem;
+  padding: 0.5rem 0;
+}
+
+.flow-statement p {
+  color: var(--ifm-heading-color);
+  font-family: var(--ifm-heading-font-family);
+  font-size: clamp(1.22rem, 2.3vw, 1.56rem);
+  letter-spacing: -0.018em;
+  line-height: 1.52;
+  margin: 0;
+  max-width: 48rem;
+}
+
+.flow-statement strong {
+  font-weight: 700;
+}
+
+[data-theme='dark'] .flow-benefit__icon {
+  color: var(--linsi-brand-01-lighter);
+}
+
+@media (max-width: 700px) {
+  .flow-benefits__grid {
+    display: block;
+  }
+
+  .flow-benefit,
+  .flow-benefit:nth-child(even) {
+    border-bottom: 1px solid var(--linsi-border-color);
+    box-sizing: border-box;
+    min-width: 0;
+    padding: 1.875rem 2.875rem 3.125rem 0;
+    width: 100%;
+  }
+
+  .flow-benefit:nth-child(odd),
+  .flow-benefit:nth-child(even) {
+    border-right: 0;
+  }
+
+  .flow-benefit:last-child {
+    border-bottom: 0;
+  }
+
+  .flow-benefit__icon,
+  .flow-benefit:nth-child(even) .flow-benefit__icon {
+    bottom: 1rem;
+    font-size: 1.875rem;
+    right: 0;
+  }
+
+  .flow-statement {
+    margin-top: 3.625rem;
+  }
+}
+
 /* Glossário */
 .glossary {
   border-top: 1px solid var(--linsi-border-color);
