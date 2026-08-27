@@ -154,8 +154,26 @@ body {
   line-height: 1;
   text-rendering: optimizeLegibility;
   text-transform: none;
+  vertical-align: middle;
   white-space: nowrap;
   word-wrap: normal;
+}
+
+.linsi-icon-external-link {
+  margin-left: 0.3rem;
+}
+
+.linsi-coffee-link::before {
+  content: 'coffee';
+  display: inline-block;
+  font-family: 'Material Symbols Outlined Variable';
+  font-feature-settings: 'liga';
+  font-size: 20px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+  font-weight: 400;
+  line-height: 1;
+  margin-right: 0.35rem;
+  vertical-align: -0.2em;
 }
 
 /* Espaçamento entre Navbar e Body */
@@ -352,6 +370,45 @@ h6,
   line-height: 1;
 }
 
+/* O Algolia injeta SVGs no modal em runtime; estes estados usam a fonte oficial. */
+.aa-SubmitIcon,
+.aa-ClearIcon,
+.aa-LoadingIcon,
+.aa-ItemActionButton svg {
+  display: none !important;
+}
+
+.aa-SubmitButton::before,
+.aa-ClearButton::before,
+.aa-LoadingIndicator::before,
+.aa-ItemActionButton::before {
+  display: inline-block;
+  font-family: 'Material Symbols Outlined Variable';
+  font-feature-settings: 'liga';
+  font-size: 22px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.aa-SubmitButton::before {
+  content: 'search';
+}
+
+.aa-ClearButton::before {
+  content: 'close';
+}
+
+.aa-LoadingIndicator::before {
+  animation: linsi-material-spin 800ms linear infinite;
+  content: 'progress_activity';
+}
+
+.aa-ItemActionButton::before {
+  content: 'keyboard_return';
+  font-size: 20px;
+}
+
 .navbar .aa-DetachedSearchButtonPlaceholder,
 .navbar .aa-DetachedSearchButtonQuery {
   display: none !important;
@@ -497,15 +554,12 @@ a:focus-visible {
     width: 100%;
   }
 
-  .theme-doc-sidebar-container .button.button--secondary.button--outline svg {
-    clip-path: none !important;
+  .theme-doc-sidebar-container
+    .button.button--secondary.button--outline
+    .material-symbols-outlined {
     flex-shrink: 0;
-    height: 16px;
+    font-size: 20px !important;
     margin: 0 !important;
-    overflow: visible !important;
-    transform: scale(0.6) rotate(180deg);
-    transform-origin: center;
-    width: 16px;
   }
 }
 
@@ -549,7 +603,25 @@ a:focus-visible {
 
 .menu__caret::before,
 .menu__link--sublist-caret::after {
+  align-items: center;
+  background: none !important;
+  content: 'expand_more';
+  display: inline-flex;
+  filter: none !important;
+  font-family: 'Material Symbols Outlined Variable';
+  font-feature-settings: 'liga';
+  font-size: 20px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+  font-weight: 400;
+  justify-content: center;
+  line-height: 1;
+  transform: rotate(0deg);
   transition: transform var(--linsi-motion-fast) var(--linsi-ease-standard);
+}
+
+.menu__list-item--collapsed .menu__link--sublist-caret::after,
+.menu__list-item--collapsed .menu__caret::before {
+  transform: rotate(-90deg);
 }
 
 .menu__list-item-collapsible + .menu__list {
@@ -636,9 +708,20 @@ a:focus-visible {
 }
 
 .theme-doc-markdown .hash-link {
+  font-size: 0;
   transform: translateX(-3px);
   transition: opacity var(--linsi-motion-fast) var(--linsi-ease-enter),
     transform var(--linsi-motion-fast) var(--linsi-ease-enter);
+}
+
+.theme-doc-markdown .hash-link::before {
+  content: 'link';
+  font-family: 'Material Symbols Outlined Variable';
+  font-feature-settings: 'liga';
+  font-size: 20px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+  font-weight: 400;
+  line-height: 1;
 }
 
 .theme-doc-markdown .hash-link:focus,
@@ -720,7 +803,28 @@ a:focus-visible {
 .pagination-nav__link--prev .pagination-nav__label::before,
 .pagination-nav__link--next .pagination-nav__label::after {
   display: inline-block;
+  font-family: 'Material Symbols Outlined Variable';
+  font-feature-settings: 'liga';
+  font-size: 20px;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+  font-weight: 400;
+  line-height: 1;
+  vertical-align: -0.15em;
   transition: transform var(--linsi-motion-fast) var(--linsi-ease-standard);
+}
+
+.pagination-nav__link--prev .pagination-nav__label::before {
+  content: 'arrow_back';
+  margin-right: 0.25rem;
+}
+
+.pagination-nav__link--next .pagination-nav__label::after {
+  content: 'arrow_forward';
+  margin-left: 0.25rem;
+}
+
+[class*='admonitionIcon'] > .material-symbols-outlined {
+  color: var(--ifm-alert-foreground-color);
 }
 
 .pagination-nav__link--prev:hover .pagination-nav__label::before {
@@ -802,6 +906,12 @@ a:focus-visible {
 
 [data-theme='dark'] .pagination-nav__label {
   color: var(--linsi-brand-01-lighter);
+}
+
+@keyframes linsi-material-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes linsi-search-backdrop-enter {
@@ -979,7 +1089,7 @@ a:focus-visible {
     margin-left: 0.25rem !important;
   }
 
-  /* Compensa a seta inferior do SVG para alinhar opticamente o lettering ao hambúrguer. */
+  /* Compensa a seta inferior da marca para alinhar opticamente o lettering ao menu. */
   .navbar__items > .navbar__brand {
     transform: translateY(4px);
   }

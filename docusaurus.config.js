@@ -88,8 +88,9 @@ const config = {
         },
         {
           to: '/cafe-bea',
-          label: 'Pagar café pra Bea ☕',
+          label: 'Pagar café pra Bea',
           position: 'left',
+          className: 'linsi-coffee-link',
         },
         {
           href: 'https://github.com/bmirandaq/linsi/discussions/new/choose',
