@@ -1,0 +1,182 @@
+.grid {
+  --principle-hover-opacity: 0.9;
+  --principle-hover-surface: var(--ifm-background-surface-color);
+
+  column-gap: 4rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  list-style: none;
+  margin: 4.5rem 0 0;
+  padding: 0;
+  row-gap: 4.25rem;
+}
+
+.grid :global(.principle) {
+  cursor: default;
+  isolation: isolate;
+  min-width: 0;
+  position: relative;
+}
+
+.grid :global(.principle:nth-child(5)) {
+  grid-column: 1;
+}
+
+.grid :global(.principle)::before {
+  background: var(--principle-hover-surface);
+  border-radius: 1.25rem;
+  content: '';
+  filter: blur(18px);
+  inset: -1.625rem -1.875rem;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transition: background-color 260ms var(--linsi-ease-standard),
+    filter 260ms var(--linsi-ease-standard),
+    opacity 260ms var(--linsi-ease-standard);
+  z-index: 0;
+}
+
+.grid :global(.principle:hover)::before {
+  filter: blur(24px);
+  opacity: var(--principle-hover-opacity);
+}
+
+:global([data-theme='dark']) .grid {
+  --principle-hover-opacity: 0.76;
+  --principle-hover-surface: color-mix(
+    in srgb,
+    var(--ifm-background-color) 76%,
+    var(--linsi-pure-black) 24%
+  );
+}
+
+.grid :global(.principle-content),
+.grid :global(.principle-rail) {
+  position: relative;
+  z-index: 1;
+}
+
+.grid :global(.principle-index) {
+  color: var(--ifm-color-primary);
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
+.grid :global(.principle-content h2) {
+  font-size: clamp(1.3rem, 2.2vw, 1.6rem);
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  margin: 0 0 0.75rem;
+}
+
+.grid :global(.principle-content p) {
+  color: var(--ifm-font-color-base);
+  font-size: 0.985rem;
+  line-height: 1.72;
+  margin: 0;
+}
+
+.grid :global(.principle-rail) {
+  background: var(--linsi-border-color);
+  height: 2px;
+  margin-top: 1.5rem;
+  overflow: hidden;
+}
+
+.grid :global(.principle-rail__draw) {
+  background: var(--ifm-color-primary);
+  inset: 0;
+  position: absolute;
+  transform: scaleX(1);
+  transform-origin: left;
+  transition: background-color 180ms var(--linsi-ease-standard),
+    transform 700ms var(--linsi-ease-standard);
+}
+
+.grid :global(.principle:nth-child(even) .principle-rail__draw) {
+  transform-origin: right;
+}
+
+.grid :global(.principle:hover .principle-rail__draw) {
+  background: var(--linsi-brand-01-base);
+}
+
+@keyframes principle-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes principle-rise-in {
+  from {
+    transform: translateY(8px);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes principle-rail-draw {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .grid :global(.principle-content) {
+    animation: principle-fade-in 760ms var(--linsi-ease-standard) both,
+      principle-rise-in 920ms var(--linsi-ease-standard) both;
+    animation-range: entry 5% cover 32%;
+    animation-timeline: view(), view();
+  }
+
+  .grid :global(.principle-rail__draw) {
+    animation: principle-rail-draw 700ms var(--linsi-ease-standard) both;
+    animation-range: entry 5% cover 32%;
+    animation-timeline: view();
+  }
+}
+
+@media (max-width: 760px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 3.25rem;
+  }
+
+  .grid :global(.principle:nth-child(5)) {
+    grid-column: auto;
+  }
+
+  .grid :global(.principle-rail__draw) {
+    transform-origin: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid :global(.principle-content) {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .grid :global(.principle-rail__draw) {
+    animation: none !important;
+    transform: scaleX(1) !important;
+    transition: none !important;
+  }
+}
