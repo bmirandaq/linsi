@@ -27,12 +27,19 @@
 }
 
 .title {
+  align-items: center;
   color: var(--linsi-neutral-darkest);
+  display: flex;
   font-size: clamp(1.75rem, 4vw, 2rem);
   font-weight: 800;
   letter-spacing: -0.02em;
   margin-bottom: 0.75rem;
   text-align: left;
+}
+
+.titleIcon {
+  flex-shrink: 0;
+  margin-left: 0.35em;
 }
 
 .subtitle {
@@ -123,6 +130,7 @@
   color: var(--linsi-button-text);
   cursor: pointer;
   display: inline-flex;
+  gap: 0.5rem;
   font-family: var(--ifm-heading-font-family);
   font-size: 0.9375rem;
   font-weight: 700;

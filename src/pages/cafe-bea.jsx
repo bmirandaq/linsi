@@ -3,6 +3,7 @@ import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import clsx from 'clsx';
+import MaterialSymbol from '@site/src/components/MaterialSymbol';
 import styles from './cafe-bea.module.css';
 
 const PIX_CODE =
@@ -24,14 +25,15 @@ export default function CafeBea() {
 
   return (
     <Layout
-      title="Pagar um café pra Bea ☕"
+      title="Pagar um café pra Bea"
       description="LINSI é um projeto independente. Se te ajudou, ajude a mantê-la viva também">
       <main className={styles.main}>
         <div className={clsx('container', styles.container)}>
           <div className={styles.inner}>
             <header className={styles.header}>
               <Heading as="h1" className={styles.title}>
-                Pagar um café pra Bea ☕
+                Pagar um café pra Bea
+                <MaterialSymbol name="coffee" size="1em" className={styles.titleIcon} />
               </Heading>
               <p className={styles.subtitle}>
                 LINSI é um projeto independente. Se te ajudou, fique à vontade pra
@@ -78,6 +80,10 @@ export default function CafeBea() {
                     copiedCode && styles.copiedButton,
                   )}
                   onClick={copyToClipboard}>
+                  <MaterialSymbol
+                    name={copiedCode ? 'check' : 'content_copy'}
+                    size={20}
+                  />
                   {copiedCode ? 'Código copiado' : 'Copiar código Pix'}
                 </button>
               </div>
