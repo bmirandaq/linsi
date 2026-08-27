@@ -48,9 +48,30 @@ for (const file of [
 }
 
 let materialSymbolCount = 0;
+let navbarContributionChecked = false;
 for (const file of listFiles(buildDirectory, (entry) => entry.endsWith('.html'))) {
   const html = fs.readFileSync(file, 'utf8');
   materialSymbolCount += (html.match(/material-symbols-outlined/g) ?? []).length;
+
+  if (!navbarContributionChecked) {
+    const navbarContribution = html.match(
+      /<a\b(?=[^>]*class="[^"]*linsi-contribute-link)(?=[^>]*href="https:\/\/github\.com\/bmirandaq\/linsi\/discussions\/new\/choose")[^>]*>[\s\S]*?<\/a>/i,
+    )?.[0];
+
+    if (navbarContribution) {
+      navbarContributionChecked = true;
+      if (
+        !/class="[^"]*material-symbols-outlined[^"]*"[\s\S]*?>open_in_new<\/span>/i.test(
+          navbarContribution,
+        )
+      ) {
+        fail('Quero contribuir na navbar não usa o Material Symbol open_in_new.');
+      }
+      if (/<svg\b/i.test(navbarContribution)) {
+        fail('Quero contribuir na navbar contém SVG em vez de Material Symbols.');
+      }
+    }
+  }
 
   for (const match of html.matchAll(/<svg\b[^>]*>[\s\S]*?<\/svg>/gi)) {
     const svg = match[0];
@@ -63,6 +84,10 @@ for (const file of listFiles(buildDirectory, (entry) => entry.endsWith('.html'))
 
 if (materialSymbolCount === 0) {
   fail('Nenhum Material Symbol foi encontrado no HTML gerado.');
+}
+
+if (!navbarContributionChecked) {
+  fail('Não foi possível localizar Quero contribuir na navbar gerada.');
 }
 
 const customCss = fs.readFileSync(path.join(sourceDirectory, 'css', 'custom.css'), 'utf8');
@@ -92,7 +117,7 @@ for (const {description, pattern} of [
   },
   {
     description: 'atalho de café na navbar',
-    pattern: /\.linsi-coffee-link::before\s*\{[^}]*content:\s*'coffee';/,
+    pattern: /\.linsi-coffee-link::after\s*\{[^}]*content:\s*'coffee';/,
   },
 ]) {
   if (!pattern.test(customCss)) {
@@ -108,5 +133,8 @@ if (failures.length > 0) {
 
 console.log(
   `Auditoria de ícones aprovada: ${materialSymbolCount} ocorrências Material Symbols e nenhum SVG funcional visível.`,
+);
+console.log(
+  'Navbar validada: Quero contribuir usa material-symbols-outlined/open_in_new e não contém SVG.',
 );
 console.log('Exceções preservadas: logos, favicon, QR Code e imagens editoriais/de conteúdo.');

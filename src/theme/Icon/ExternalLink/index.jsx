@@ -4,8 +4,6 @@ import {translate} from '@docusaurus/Translate';
 import MaterialSymbol from '@site/src/components/MaterialSymbol';
 
 export default function IconExternalLink({
-  width = 14,
-  height,
   className,
   ...props
 }) {
@@ -13,10 +11,10 @@ export default function IconExternalLink({
     <MaterialSymbol
       {...props}
       name="open_in_new"
-      size={width ?? height}
+      size={18}
       className={clsx('linsi-icon-external-link', className)}
       label={translate({
-        id: 'theme.IconExternalLink.ariaLabel',
+        id: 'linsi.IconExternalLink.ariaLabel',
         message: '(abre em uma nova aba)',
         description: 'Rótulo acessível do ícone de link externo',
       })}

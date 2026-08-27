@@ -1,0 +1,41 @@
+.expandButton {
+  align-items: center;
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--linsi-border-color);
+  border-radius: var(--linsi-radius-sm);
+  color: var(--ifm-font-color-base);
+  cursor: pointer;
+  display: flex;
+  height: 44px;
+  justify-content: center;
+  padding: 0;
+  width: 100%;
+}
+
+.expandButton:hover {
+  background: var(--docusaurus-collapse-button-bg-hover);
+  color: var(--ifm-color-primary);
+}
+
+.expandButton:focus-visible {
+  outline: 3px solid var(--linsi-focus-color);
+  outline-offset: 3px;
+}
+
+.expandButtonIcon {
+  transform: rotate(0);
+}
+
+[dir='rtl'] .expandButtonIcon {
+  transform: rotate(180deg);
+}
+
+@media (min-width: 997px) {
+  .expandButton {
+    height: 100%;
+    inset: 0;
+    min-height: 240px;
+    position: absolute;
+    width: 100%;
+  }
+}

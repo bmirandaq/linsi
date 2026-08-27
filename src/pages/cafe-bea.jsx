@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -10,29 +10,44 @@ const PIX_CODE =
   '00020126430014BR.GOV.BCB.PIX0121bmirandaqux@gmail.com5204000053039865802BR5915Beatriz Miranda6011Paulista/PE62190515CAFEPRABEALINSI6304262F';
 
 export default function CafeBea() {
-  const [copiedCode, setCopiedCode] = useState(false);
+  const [copyStatus, setCopyStatus] = useState('idle');
   const qrCodeUrl = useBaseUrl('/img/pix-qrcode.png');
+
+  useEffect(() => {
+    if (copyStatus !== 'success') {
+      return undefined;
+    }
+
+    const timeout = window.setTimeout(() => setCopyStatus('idle'), 2500);
+    return () => window.clearTimeout(timeout);
+  }, [copyStatus]);
 
   const copyToClipboard = async () => {
     try {
+      if (!navigator.clipboard) {
+        throw new Error('Clipboard API indisponível');
+      }
+
       await navigator.clipboard.writeText(PIX_CODE);
-      setCopiedCode(true);
-      setTimeout(() => setCopiedCode(false), 2500);
+      setCopyStatus('success');
     } catch (err) {
+      setCopyStatus('error');
       console.error('Falha ao copiar texto: ', err);
     }
   };
 
+  const copiedCode = copyStatus === 'success';
+
   return (
     <Layout
-      title="Pagar um café pra Bea"
+      title="Pagar café pra Bea"
       description="LINSI é um projeto independente. Se te ajudou, ajude a mantê-la viva também">
       <main className={styles.main}>
         <div className={clsx('container', styles.container)}>
           <div className={styles.inner}>
             <header className={styles.header}>
               <Heading as="h1" className={styles.title}>
-                Pagar um café pra Bea
+                Pagar café pra Bea
                 <MaterialSymbol name="coffee" size="1em" className={styles.titleIcon} />
               </Heading>
               <p className={styles.subtitle}>
@@ -80,11 +95,13 @@ export default function CafeBea() {
                     copiedCode && styles.copiedButton,
                   )}
                   onClick={copyToClipboard}>
+                  <span aria-live="polite">
+                    {copiedCode ? 'Código copiado' : 'Copiar código Pix'}
+                  </span>
                   <MaterialSymbol
                     name={copiedCode ? 'check' : 'content_copy'}
                     size={20}
                   />
-                  {copiedCode ? 'Código copiado' : 'Copiar código Pix'}
                 </button>
               </div>
             </div>

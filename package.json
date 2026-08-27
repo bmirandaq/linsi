@@ -5,13 +5,14 @@
   "scripts": {
     "prestart": "npm run test:security",
     "start": "docusaurus start",
-    "prebuild": "npm run test:security",
+    "prebuild": "npm run test:security && npm run test:ui",
     "build": "docusaurus build",
     "postbuild": "npm run test:icons",
     "clear": "docusaurus clear",
     "serve": "docusaurus serve",
     "postinstall": "node scripts/patch-image-size.cjs",
     "test:security": "node scripts/test-image-size-security.cjs",
+    "test:ui": "node scripts/test-ui-regressions.cjs",
     "test:icons": "node scripts/audit-material-symbols.cjs"
   },
   "dependencies": {

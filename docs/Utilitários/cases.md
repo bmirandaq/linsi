@@ -1,6 +1,10 @@
 ---
 title: Cases
 sidebar_position: 9
+slug: /cases
 ---
-Callout Em breve  
-Cases/exemplos com aplicação da LINSI
+# Cases
+
+:::secondary[Em breve]
+Cases e exemplos de aplicação da LINSI estão em construção.
+:::

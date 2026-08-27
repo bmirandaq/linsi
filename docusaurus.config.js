@@ -12,6 +12,15 @@ const fontSelectorHtml = `
   </label>
 `;
 
+const fontPreferenceInitScript = `
+  try {
+    var fontPreference = window.localStorage.getItem('linsi-font-family');
+    if (['manrope', 'inter', 'opendyslexic', 'georgia'].includes(fontPreference)) {
+      document.documentElement.dataset.fontFamily = fontPreference;
+    }
+  } catch (_) {}
+`;
+
 const config = {
   title: 'LINSI – Linguagem Simplificada de Fluxogramas de UX',
   tagline: 'Linguagem Simplificada de Fluxogramas de UX',
@@ -33,6 +42,14 @@ const config = {
     defaultLocale: 'pt-BR',
     locales: ['pt-BR'],
   },
+
+  headTags: [
+    {
+      tagName: 'script',
+      attributes: {},
+      innerHTML: fontPreferenceInitScript,
+    },
+  ],
 
   presets: [
     [
@@ -69,7 +86,7 @@ const config = {
     colorMode: {
       defaultMode: 'light',
       disableSwitch: false,
-      respectPrefersColorScheme: false,
+      respectPrefersColorScheme: true,
     },
     navbar: {
       logo: {
@@ -96,11 +113,7 @@ const config = {
           href: 'https://github.com/bmirandaq/linsi/discussions/new/choose',
           label: 'Quero contribuir',
           position: 'left',
-        },
-        {
-          href: 'https://github.com/bmirandaq/linsi/discussions/new?category=ajuda',
-          label: 'Pedir ajuda',
-          position: 'left',
+          className: 'linsi-contribute-link',
         },
         {
           type: 'search',

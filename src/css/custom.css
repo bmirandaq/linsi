@@ -86,8 +86,6 @@ html[data-font-family='inter'] {
 
 html[data-font-family='opendyslexic'] {
   --ifm-font-family-base: 'OpenDyslexic', sans-serif;
-  /* OpenDyslexic tem métricas maiores; compensa para manter escala visual */
-  font-size: 93.75%;
 }
 
 html[data-font-family='opendyslexic'] .theme-doc-markdown {
@@ -163,8 +161,7 @@ body {
   margin-left: 0.3rem;
 }
 
-.linsi-coffee-link::before {
-  content: 'coffee';
+.linsi-coffee-link::after {
   display: inline-block;
   font-family: 'Material Symbols Outlined Variable';
   font-feature-settings: 'liga';
@@ -172,8 +169,12 @@ body {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
   font-weight: 400;
   line-height: 1;
-  margin-right: 0.35rem;
+  margin-left: 0.35rem;
   vertical-align: -0.2em;
+}
+
+.linsi-coffee-link::after {
+  content: 'coffee';
 }
 
 /* Espaçamento entre Navbar e Body */
@@ -495,7 +496,8 @@ a:focus-visible {
 
 .theme-doc-sidebar-container {
   border-color: var(--linsi-border-color) !important;
-  transition: background-color var(--linsi-motion-base) var(--linsi-ease-standard),
+  transition: width var(--ifm-transition-fast) ease,
+    background-color var(--linsi-motion-base) var(--linsi-ease-standard),
     border-color var(--linsi-motion-base) var(--linsi-ease-standard),
     color var(--linsi-motion-base) var(--linsi-ease-standard);
 }
@@ -508,8 +510,9 @@ a:focus-visible {
     border: 1px solid var(--linsi-border-color) !important;
     border-radius: var(--linsi-radius-md);
     height: fit-content !important;
+    margin-bottom: 1rem !important;
     margin-top: 0 !important;
-    max-height: calc(100vh - var(--ifm-navbar-height) - 1rem) !important;
+    max-height: calc(100vh - var(--ifm-navbar-height) - 1.5rem) !important;
     overflow: hidden !important;
     position: sticky;
     top: calc(var(--ifm-navbar-height) + 0.5rem);
@@ -517,14 +520,14 @@ a:focus-visible {
 
   .theme-doc-sidebar-container > div {
     height: auto !important;
-    max-height: calc(100vh - var(--ifm-navbar-height) - 1rem) !important;
+    max-height: calc(100vh - var(--ifm-navbar-height) - 1.5rem) !important;
     overflow: hidden !important;
     position: static;
   }
 
   .theme-doc-sidebar-container [class*='sidebar']:not([class*='sidebarLogo']):not([class*='sidebarViewport']) {
     height: auto !important;
-    max-height: calc(100vh - var(--ifm-navbar-height) - 1rem) !important;
+    max-height: calc(100vh - var(--ifm-navbar-height) - 1.5rem) !important;
     min-width: 0;
     overflow: hidden !important;
     padding-top: 0.25rem !important;
@@ -534,7 +537,6 @@ a:focus-visible {
   .theme-doc-sidebar-container .menu {
     max-height: calc(100vh - var(--ifm-navbar-height) - 3rem);
     overflow-y: auto;
-    overscroll-behavior: contain;
     scrollbar-gutter: stable;
     width: 100%;
   }
@@ -561,6 +563,35 @@ a:focus-visible {
     font-size: 20px !important;
     margin: 0 !important;
   }
+
+  .theme-doc-sidebar-container[class*='docSidebarContainerHidden'] {
+    border: 0 !important;
+    border-radius: 0;
+    height: calc(100vh - var(--ifm-navbar-height) - 1.5rem) !important;
+    margin-bottom: 0 !important;
+    max-height: calc(100vh - var(--ifm-navbar-height) - 1.5rem) !important;
+    min-height: 240px;
+    overflow: visible !important;
+  }
+
+  .theme-doc-sidebar-container[class*='docSidebarContainerHidden']
+    > [class*='sidebarViewport'] {
+    height: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    width: var(--doc-sidebar-hidden-width);
+  }
+
+  .theme-doc-sidebar-container[class*='docSidebarContainerHidden']
+    [class*='expandButton'] {
+    background: var(--ifm-background-surface-color);
+    border: 1px solid var(--linsi-border-color);
+    border-radius: var(--linsi-radius-sm);
+    height: 100%;
+    inset: 0;
+    position: absolute;
+    width: 100%;
+  }
 }
 
 /* Margens da Documentação alinhadas às demais páginas */
@@ -568,9 +599,21 @@ a:focus-visible {
   html.docs-doc-page [class*='docRoot'] {
     box-sizing: border-box;
     column-gap: var(--linsi-page-inline);
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
     padding-left: var(--linsi-page-inline);
     padding-right: var(--linsi-page-inline);
     width: 100%;
+  }
+
+  html.docs-doc-page [class*='docMainContainer'] {
+    max-width: none;
+    min-width: 0;
+    width: 100%;
+  }
+
+  html.docs-doc-page [class*='docItemWrapperEnhanced'] {
+    max-width: var(--ifm-container-width) !important;
   }
 
   /* Evita gutter duplo: o inset já vem do docRoot */
@@ -646,6 +689,10 @@ a:focus-visible {
 
 .linsi-sidebar-section {
   margin-bottom: 1rem;
+}
+
+.menu__list > :not(.linsi-sidebar-section) + .linsi-sidebar-section {
+  margin-top: 1rem;
 }
 
 .linsi-sidebar-section > .menu__list-item-collapsible {
@@ -1209,13 +1256,21 @@ a:focus-visible {
     max-width: none;
   }
 
+  .navbar__items--right {
+    column-gap: 0.625rem;
+  }
+
   .navbar .aa-DetachedSearchButton {
-    margin-left: 0.25rem !important;
+    margin: 0 !important;
   }
 
   /* Compensa a seta inferior da marca para alinhar opticamente o lettering ao menu. */
   .navbar__items > .navbar__brand {
     transform: translateY(4px);
+  }
+
+  .navbar__toggle + .navbar__brand {
+    margin-left: 0.75rem;
   }
 
   .theme-doc-markdown > h1:first-child {

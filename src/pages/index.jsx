@@ -19,7 +19,8 @@ export default function Home() {
             <div className={styles.copyColumn}>
               <img
                 className={styles.logo}
-                alt="LINSI"
+                alt=""
+                aria-hidden="true"
                 src={logo}
                 width="163"
                 height="96"

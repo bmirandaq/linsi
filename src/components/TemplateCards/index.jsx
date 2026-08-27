@@ -62,6 +62,7 @@ export default function TemplateCards() {
                 href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={`${item.actionLabel}: ${item.title} (abre em uma nova aba)`}
                 className={styles.actionButton}>
                 {item.actionLabel}
               </a>

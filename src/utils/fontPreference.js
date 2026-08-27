@@ -29,7 +29,14 @@ export function applyStoredFontPreference() {
     return DEFAULT_FONT_PREFERENCE;
   }
 
-  const storedValue = window.localStorage.getItem(FONT_PREFERENCE_STORAGE_KEY);
+  let storedValue;
+
+  try {
+    storedValue = window.localStorage.getItem(FONT_PREFERENCE_STORAGE_KEY);
+  } catch {
+    storedValue = DEFAULT_FONT_PREFERENCE;
+  }
+
   return applyFontPreference(storedValue);
 }
 
@@ -37,7 +44,11 @@ export function storeFontPreference(value) {
   const normalizedValue = applyFontPreference(value);
 
   if (typeof window !== 'undefined') {
-    window.localStorage.setItem(FONT_PREFERENCE_STORAGE_KEY, normalizedValue);
+    try {
+      window.localStorage.setItem(FONT_PREFERENCE_STORAGE_KEY, normalizedValue);
+    } catch {
+      // A preferência continua aplicada nesta sessão mesmo sem armazenamento.
+    }
   }
 
   return normalizedValue;

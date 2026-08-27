@@ -135,14 +135,38 @@
 
 @media (max-width: 996px) {
   .layout {
+    align-items: start;
+    gap: 0;
     grid-template-columns: 1fr;
-    gap: 2.5rem;
+  }
+
+  .copyColumn {
+    display: contents;
+  }
+
+  .logo {
+    order: 1;
+  }
+
+  .subtitle {
+    order: 2;
   }
 
   .mediaColumn {
     aspect-ratio: 16 / 10;
+    margin-bottom: 2.5rem;
     max-width: 520px;
     min-height: 200px;
+    order: 3;
+  }
+
+  .positioningCopy {
+    order: 4;
+  }
+
+  .primaryAction {
+    justify-self: start;
+    order: 5;
   }
 }
 

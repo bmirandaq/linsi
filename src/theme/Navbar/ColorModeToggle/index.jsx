@@ -1,9 +1,10 @@
 import React from 'react';
+import clsx from 'clsx';
 import {useColorMode} from '@docusaurus/theme-common';
 
 import styles from './styles.module.css';
 
-export default function NavbarColorModeToggle() {
+export default function NavbarColorModeToggle({className}) {
   const {colorMode, setColorMode} = useColorMode();
   const isDark = colorMode === 'dark';
   const modeLabel = isDark ? 'Modo escuro' : 'Modo claro';
@@ -12,7 +13,7 @@ export default function NavbarColorModeToggle() {
   return (
     <button
       type="button"
-      className={styles.toggle}
+      className={clsx(styles.toggle, className)}
       role="switch"
       aria-checked={isDark}
       aria-label={`${modeLabel}: ${actionLabel}`}

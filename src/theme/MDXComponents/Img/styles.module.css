@@ -46,6 +46,13 @@
   transform: translateY(0);
 }
 
+@media (hover: none), (pointer: coarse) {
+  .affordance {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .backdrop {
   align-items: center;
   animation: backdrop-enter var(--linsi-motion-base) var(--linsi-ease-enter);
