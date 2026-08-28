@@ -14,7 +14,7 @@ Use apenas os Elementos necessários para que a experiência seja compreendida n
 
 Conecta os elementos e indica a direção de leitura do fluxo.
 
-![Setas Comum, Alternativa, Positiva e Negativa](/img/uploads/setas.png)
+![Setas Comum, Alternativa, Positiva e Negativa](/img/uploads/Elementos/setas.png)
 
 ### Tipos de seta
 
@@ -35,7 +35,7 @@ Os rótulos nas linhas das setas são opcionais, exceto nas setas que saem de um
 
 Representa aquilo que está disponível para a pessoa usuária em um ponto de contato do fluxo: o que ela vê, lê ou percebe e as ações que tem à disposição.
 
-![Estrutura do conteúdo de uma Interface do tipo Tela](/img/uploads/interface-tela.png)
+![Estrutura do conteúdo de uma Interface do tipo Tela](/img/uploads/Elementos/interface-tela.png)
 
 ### Estrutura do conteúdo
 ---
@@ -62,9 +62,9 @@ Apresenta um conteúdo transitório sobre uma Tela sem substituí-la, como modal
 
 É representada por um retângulo com borda cinza tracejada.
 
-![Estrutura do conteúdo de uma Janela modal](/img/uploads/interface-janela-1.png)
+![Estrutura do conteúdo de uma Janela modal](/img/uploads/Elementos/interface-janela-1.png)
 
-![Estrutura do conteúdo de uma Janela de filtros](/img/uploads/interface-janela-2.png)
+![Estrutura do conteúdo de uma Janela de filtros](/img/uploads/Elementos/interface-janela-2.png)
 
 
 
@@ -74,11 +74,11 @@ Apresenta um conteúdo transitório sobre uma Tela sem substituí-la, como modal
 
 Representa algo executado pelo sistema, seja como consequência de uma ação da pessoa ou de forma automática.
 
-![Exemplo de Processo](/img/uploads/processo.png)
+![Exemplo de Processo](/img/uploads/Elementos/processo.png)
 
 O Processo pode acontecer sem que a pessoa o perceba. Quando oferecer um resultado visível, use uma Interface para representar o reflexo dessa execução na experiência.
 
-![Processo seguido da Interface que apresenta seu reflexo](/img/uploads/processo-interface-tela.png)
+![Processo seguido da Interface que apresenta seu reflexo](/img/uploads/Elementos/processo-interface-tela.png)
 
 É representado por um retângulo com fundo cinza.
 
@@ -90,7 +90,7 @@ O Processo pode acontecer sem que a pessoa o perceba. Quando oferecer um resulta
 
 Representa uma ação efetivamente realizada pela pessoa durante o fluxo. Geralmente corresponde a uma das possibilidades apresentadas na Interface anterior.
 
-![Exemplo de Ação](/img/uploads/acao.png)
+![Exemplo de Ação](/img/uploads/Elementos/acao.png)
 
 Quando aplicável, use o mesmo rótulo apresentado no botão, link ou controle da interface. Prefira textos diretos e no infinitivo como 'Finalizar pedido', 'Editar cadastro' ou 'Acessar detalhes'.
 
@@ -104,7 +104,7 @@ Quando aplicável, use o mesmo rótulo apresentado no botão, link ou controle d
 
 Representa uma verificação que pode abrir 2 ou mais Caminhos.
 
-![Condição com setas rotuladas como Sim e Não](/img/uploads/condicao.png)
+![Condição com setas rotuladas como Sim e Não](/img/uploads/Elementos/condicao.png)
 
 O texto da Condição deve ser escrito como uma pergunta direta. Exemplos:
 
@@ -124,7 +124,7 @@ As setas que saem da Condição devem sempre receber rótulos que respondam dire
 
 Representa o ponto de partida do fluxo.
 
-![Exemplo de Início](/img/uploads/inicio.png)
+![Exemplo de Início](/img/uploads/Elementos/inicio.png)
 
 Pode ser dispensado quando o ponto de partida já estiver claro pelo contexto, como quando a primeira Interface do tipo Tela já cumpre essa função.
 
@@ -138,7 +138,7 @@ Pode ser dispensado quando o ponto de partida já estiver claro pelo contexto, c
 
 Representa o ponto em que um Caminho ou a jornada apresentada se encerra.
 
-![Exemplo de Fim](/img/uploads/fim.png)
+![Exemplo de Fim](/img/uploads/Elementos/fim.png)
 
 É especialmente útil quando for necessário deixar explícito que não há outra continuidade ou quando Caminhos terminarem em pontos distintos.
 
@@ -154,13 +154,13 @@ Pode ser dispensado quando o encerramento já estiver claro pelo contexto.
 
 Indica que o Caminho continua em outro ponto já representado, sem estender uma conexão direta pelo fluxograma.
 
-![Exemplo de Retomada](/img/uploads/retomada.png)
+![Exemplo de Retomada](/img/uploads/Elementos/retomada.png)
 
 Pode ser usada quando a continuidade estiver em outro fluxo, jornada ou quando inserir uma conexão distante pode comprometer a leitura do fluxograma.
 
 O texto deve identificar claramente o destino. Quando ele estiver disponível em outra página ou arquivo, insira o link.
 
-![Retomada com link para outro fluxo](/img/uploads/retomada-link.png)
+![Retomada com link para outro fluxo](/img/uploads/Elementos/retomada-link.png)
 
 É representada por um paralelogramo cinza.
 
@@ -172,13 +172,13 @@ O texto deve identificar claramente o destino. Quando ele estiver disponível em
 
 Acrescenta um contexto necessário para compreender o fluxograma, mas não representa uma etapa da experiência.
 
-![Exemplo de Nota longa](/img/uploads/nota.png)
+![Exemplo de Nota longa](/img/uploads/Elementos/nota.png)
 
 Pode registrar regras de negócio, restrições técnicas, racionais de decisão, limitações de integração ou outras informações relevantes para a leitura.
 
 Alinhe o texto de notas mais extensas à esquerda para facilitar a leitura. Notas curtas podem ter o texto centralizado.
 
-![Exemplo de Nota curta](/img/uploads/nota-curta.png)
+![Exemplo de Nota curta](/img/uploads/Elementos/nota-curta.png)
 
 A Nota deve contextualizar o fluxo, **não substituir algo que poderia ser representado por outro elemento.**
 
@@ -192,7 +192,7 @@ A Nota deve contextualizar o fluxo, **não substituir algo que poderia ser repre
 
 Registra uma dúvida ou um ponto em aberto do fluxograma.
 
-![Exemplo de Comentário](/img/uploads/comentario.png)
+![Exemplo de Comentário](/img/uploads/Elementos/comentario.png)
 
 Diferente da Nota, que documenta um contexto já definido, o Comentário sinaliza algo que ainda precisa ser discutido ou resolvido.
 
@@ -200,7 +200,7 @@ Diferente da Nota, que documenta um contexto já definido, o Comentário sinaliz
 
 Pode ser dispensado quando a ferramenta utilizada oferecer função nativa de comentários, como o próprio Figma.
 
-![Comentário feito com o recurso nativo do Figma](/img/uploads/comentario-nativo.png)
+![Comentário feito com o recurso nativo do Figma](/img/uploads/Elementos/comentario-nativo.png)
 
 
 
