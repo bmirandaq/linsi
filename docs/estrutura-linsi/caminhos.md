@@ -69,8 +69,6 @@ Colocar um Caminho negativo acima, depois um positivo abaixo e, mais adiante, in
 
 Caminhos podem voltar a se encontrar quando chegam ao mesmo ponto e passam a compartilhar a mesma continuidade, então podem ser conectados novamente e seguir como um único Caminho.
 
-[img-example]
-
 ![Convergência de Caminhos](/img/uploads/Caminhos/convergencia.png)
 
 
