@@ -82,6 +82,10 @@ const config = {
     ],
   ],
 
+  clientModules: [
+    './src/scripts/clear-search-on-reopen.js',
+  ],
+
   themeConfig: {
     colorMode: {
       defaultMode: 'light',
