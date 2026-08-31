@@ -25,7 +25,7 @@ const REASONS = [
 ];
 
 const CONTACT_API_URL = 'https://linsi-form-handler.bmirandaqux.workers.dev';
-const TURNSTILE_SITE_KEY = '0x4AAAAAAEjIIV8ZHpYobikz';
+const TURNSTILE_SITE_KEY = '';
 
 export default function Contato() {
   const [motivo, setMotivo] = useState('contribuir');
@@ -107,7 +107,9 @@ export default function Contato() {
       setErrorMsg('');
 
       try {
-        const turnstileToken = await getTurnstileToken();
+        const turnstileToken = TURNSTILE_SITE_KEY
+          ? await getTurnstileToken()
+          : 'skip';
 
         if (!CONTACT_API_URL) {
           await new Promise((r) => setTimeout(r, 650));

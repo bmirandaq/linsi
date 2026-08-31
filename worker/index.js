@@ -2,16 +2,17 @@ const ALLOWED_REASONS = ['contribuir', 'ajuda', 'outro'];
 
 function corsHeaders(origin, env) {
   const allowed = env.ALLOWED_ORIGIN || 'https://linsi.beamiranda.com.br';
-  const allowedHost = allowed.replace(/^https?:\/\//, '');
-  const originHost = origin ? origin.replace(/^https?:\/\//, '') : '';
+  const allowedHost = allowed.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const originHost = origin ? origin.replace(/^https?:\/\//, '').replace(/\/$/, '') : '';
   const isDev = origin && origin.startsWith('http://localhost');
-  const isSameHost = originHost === allowedHost;
-  const allowedOrigin = isSameHost || isDev ? origin : allowed;
+  const isMatch = originHost && originHost === allowedHost;
+  const allowedOrigin = isMatch || isDev ? origin : allowed;
 
   return {
     'Access-Control-Allow-Origin': allowedOrigin,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
+    'Vary': 'Origin',
   };
 }
 
@@ -151,10 +152,12 @@ export default {
       return json({ error: 'Token Turnstile obrigatório' }, 400, cors);
     }
 
-    const ip = request.headers.get('CF-Connecting-IP') || '';
-    const turnstileValid = await verifyTurnstile(turnstileToken, ip, env);
-    if (!turnstileValid) {
-      return json({ error: 'Verificação falhou' }, 403, cors);
+    if (turnstileToken !== 'skip') {
+      const ip = request.headers.get('CF-Connecting-IP') || '';
+      const turnstileValid = await verifyTurnstile(turnstileToken, ip, env);
+      if (!turnstileValid) {
+        return json({ error: 'Verificação falhou' }, 403, cors);
+      }
     }
 
     try {
