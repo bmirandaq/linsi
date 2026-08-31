@@ -80,13 +80,21 @@ export default function Contato() {
   }, []);
 
   const getTurnstileToken = useCallback(() => {
-    if (!TURNSTILE_SITE_KEY || !window.turnstile) return Promise.resolve(null);
+    if (!TURNSTILE_SITE_KEY || !window.turnstile || !turnstileWidgetId.current) {
+      return Promise.resolve(null);
+    }
     return new Promise((resolve) => {
       const timeout = setTimeout(() => resolve(null), 5000);
-      window.turnstile.execute(turnstileWidgetId.current, (token) => {
+      try {
+        window.turnstile.reset(turnstileWidgetId.current);
+        window.turnstile.execute(turnstileWidgetId.current, (token) => {
+          clearTimeout(timeout);
+          resolve(token);
+        });
+      } catch {
         clearTimeout(timeout);
-        resolve(token);
-      });
+        resolve(null);
+      }
     });
   }, []);
 

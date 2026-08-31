@@ -2,8 +2,11 @@ const ALLOWED_REASONS = ['contribuir', 'ajuda', 'outro'];
 
 function corsHeaders(origin, env) {
   const allowed = env.ALLOWED_ORIGIN || 'https://linsi.beamiranda.com.br';
+  const allowedHost = allowed.replace(/^https?:\/\//, '');
+  const originHost = origin ? origin.replace(/^https?:\/\//, '') : '';
   const isDev = origin && origin.startsWith('http://localhost');
-  const allowedOrigin = origin === allowed || isDev ? origin : allowed;
+  const isSameHost = originHost === allowedHost;
+  const allowedOrigin = isSameHost || isDev ? origin : allowed;
 
   return {
     'Access-Control-Allow-Origin': allowedOrigin,
