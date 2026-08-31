@@ -114,7 +114,7 @@ const config = {
           className: 'linsi-coffee-link',
         },
         {
-          to: '/contato',
+          to: '/contribuir',
           label: 'Contribuir ou pedir ajuda',
           position: 'left',
           className: 'linsi-contribute-link',

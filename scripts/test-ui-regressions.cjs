@@ -60,7 +60,7 @@ assert.match(
 
 assert.match(
   footer,
-  /to="\/contato"/,
+  /to="\/contribuir"/,
   'O destino de Quero contribuir no footer deve apontar para /contato.',
 );
 assert.match(
