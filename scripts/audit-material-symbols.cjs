@@ -55,7 +55,7 @@ for (const file of listFiles(buildDirectory, (entry) => entry.endsWith('.html'))
 
   if (!navbarContributionChecked) {
     const navbarContribution = html.match(
-      /<a\b(?=[^>]*class="[^"]*linsi-contribute-link)(?=[^>]*href="\/contato")[^>]*>[\s\S]*?<\/a>/i,
+      /<a\b(?=[^>]*class="[^"]*linsi-contribute-link)(?=[^>]*href="\/contribuir")[^>]*>[\s\S]*?<\/a>/i,
     )?.[0];
 
     if (navbarContribution) {

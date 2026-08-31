@@ -1,7 +1,7 @@
 import React, {useState, useCallback, useRef, useEffect} from 'react';
 import Layout from '@theme/Layout';
 import MaterialSymbol from '@site/src/components/MaterialSymbol';
-import styles from './contato.module.css';
+import styles from './contribuir.module.css';
 
 const REASONS = [
   {
@@ -64,7 +64,9 @@ export default function Contato() {
   const getTurnstileToken = useCallback(() => {
     if (!TURNSTILE_SITE_KEY || !window.turnstile) return Promise.resolve(null);
     return new Promise((resolve) => {
+      const timeout = setTimeout(() => resolve(null), 5000);
       window.turnstile.execute(turnstileWidgetId.current, (token) => {
+        clearTimeout(timeout);
         resolve(token);
       });
     });
@@ -91,6 +93,9 @@ export default function Contato() {
           return;
         }
 
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+
         const res = await fetch(CONTACT_API_URL, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
@@ -102,7 +107,10 @@ export default function Contato() {
             mensagem,
             turnstileToken,
           }),
+          signal: controller.signal,
         });
+
+        clearTimeout(timeout);
 
         if (!res.ok) throw new Error('Erro ao enviar');
 
