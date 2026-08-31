@@ -193,16 +193,17 @@ export default function Contato() {
             ))}
           </div>
 
-          {status === 'success' ? (
+          {status === 'success' && (
             <div className={styles.feedback} role="status" aria-live="polite">
-              <strong>Mensagem enviada</strong>
+              <strong>Mensagem recebida</strong>
               <br />
               Oi! Aqui é a Bea, criadora da LINSI. Já, já te retorno, tá certo?
               Guenta aí =)
             </div>
-          ) : (
-            <form className={styles.form} onSubmit={handleSubmit}>
-              <input type="hidden" name="motivo" value={motivo} />
+          )}
+
+          <form className={styles.form} onSubmit={handleSubmit}>
+            <input type="hidden" name="motivo" value={motivo} />
 
               <div className={styles.contactRow}>
                 <div className={styles.field}>
@@ -274,7 +275,6 @@ export default function Contato() {
                 </div>
               )}
             </form>
-          )}
         </div>
       </main>
     </Layout>
