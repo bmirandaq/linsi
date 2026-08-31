@@ -27,7 +27,7 @@ export default function CafeBea() {
   const copyToClipboard = async () => {
     try {
       if (!navigator.clipboard) {
-        throw new Error('Clipboard API indispon\u00edvel');
+        throw new Error('Clipboard API indisponível');
       }
 
       await navigator.clipboard.writeText(PIX_CODE);
@@ -42,27 +42,27 @@ export default function CafeBea() {
 
   return (
     <Layout
-      title="Pagar caf\u00e9 pra Bea"
-      description="LINSI \u00e9 um projeto independente. Se te ajudou, ajude a mant\u00ea-la viva tamb\u00e9m">
+      title="Pagar café pra Bea"
+      description="LINSI é um projeto independente. Se te ajudou, ajude a mantê-la viva também">
       <main className={styles.main}>
         <div className={clsx('container', styles.container)}>
           <div className={styles.inner}>
             <div className={styles.contentStack}>
               <header className={styles.header}>
                 <Heading as="h1" className={styles.title}>
-                  Pagar caf\u00e9 pra Bea
+                  Pagar café pra Bea
                   <MaterialSymbol name="coffee" size="1em" className={styles.titleIcon} />
                 </Heading>
                 <p className={styles.paragraph1}>
-                  LINSI \u00e9 um projeto independente. Se te ajudou, fique \u00e0 vontade pra
-                  mostrar sua gratid\u00e3o que vou converter em caf\u00e9s. Talvez um bolinho de
-                  fub\u00e1? Adoro. Qualquer valor conta, t\u00e1?
+                  LINSI é um projeto independente. Se te ajudou, fique à vontade pra
+                  mostrar sua gratidão que vou converter em cafés. Talvez um bolinho de
+                  fubá? Adoro. Qualquer valor conta, tá?
                 </p>
               </header>
 
               <div className={styles.leftCol}>
                 <p className={styles.paragraph2}>
-                  Aproveite pra conhecer meus aussistentes, <em>Leo</em> e <em>Cassie</em>. Sugeriram o valor de R$ 10, se voc\u00ea estiver na d\u00favida de quanto enviar. Ou R$ 25, se quiser patrocinar caf\u00e9 + lanchinho da tarde. Mais que isso ent\u00e3o?... Os aussistentes est\u00e3o mais que a fim de um petisco... Se eles merecem ou n\u00e3o, fica ao seu crit\u00e9rio
+                  Aproveite pra conhecer meus aussistentes, <em>Leo</em> e <em>Cassie</em>. Sugeriram o valor de R$ 10, se você estiver na dúvida de quanto enviar. Ou R$ 25, se quiser patrocinar café + lanchinho da tarde. Mais que isso então?... Os aussistentes estão mais que a fim de um petisco... Se eles merecem ou não, fica ao seu critério
                 </p>
                 <img
                   src={leocassieLightUrl}
@@ -93,13 +93,13 @@ export default function CafeBea() {
                 </div>
 
                 <div className={styles.fieldGroup}>
-                  <span className={styles.fieldLabel}>C\u00f3digo Pix</span>
+                  <span className={styles.fieldLabel}>Código Pix</span>
                   <textarea
                     readOnly
                     className={styles.pixTextarea}
                     value={PIX_CODE}
                     rows="3"
-                    aria-label="C\u00f3digo Pix"
+                    aria-label="Código Pix"
                   />
                   <button
                     type="button"
@@ -109,7 +109,7 @@ export default function CafeBea() {
                     )}
                     onClick={copyToClipboard}>
                     <span aria-live="polite">
-                      {copiedCode ? 'C\u00f3digo copiado' : 'Copiar c\u00f3digo Pix'}
+                      {copiedCode ? 'Código copiado' : 'Copiar código Pix'}
                     </span>
                     <MaterialSymbol
                       name={copiedCode ? 'check' : 'content_copy'}
