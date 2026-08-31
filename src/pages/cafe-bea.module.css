@@ -3,6 +3,7 @@
   text-align: left;
 }
 
+/* Gutters laterais via .container do Infima; conteúdo interno limitado à esquerda */
 .container {
   align-items: flex-start;
   display: flex;
@@ -14,12 +15,15 @@
   align-items: flex-start;
   display: flex;
   flex-direction: column;
+  max-width: 560px;
   text-align: left;
   width: 100%;
 }
 
 .header {
+  margin-bottom: 2.5rem;
   text-align: left;
+  width: 100%;
 }
 
 .title {
@@ -38,7 +42,7 @@
   margin-left: 0.35em;
 }
 
-.paragraph1 {
+.subtitle {
   color: var(--linsi-neutral-dark);
   font-size: 1rem;
   line-height: 1.6;
@@ -47,46 +51,8 @@
   text-align: left;
 }
 
-.paragraph2 {
-  color: var(--linsi-neutral-dark);
-  font-size: 1rem;
-  line-height: 1.6;
-  margin: 0 0 2rem;
-}
-
-.leocassieImg {
-  border-radius: var(--linsi-radius-md);
-  display: block;
-  height: auto;
-  max-width: 280px;
-  width: 100%;
-}
-
-.leocassieImgDark {
-  border-radius: var(--linsi-radius-md);
-  display: none;
-  height: auto;
-  max-width: 280px;
-  width: 100%;
-}
-
 .contentStack {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  text-align: left;
-  width: 100%;
-}
-
-.leftCol {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  text-align: left;
-  width: 100%;
-}
-
-.rightCol {
+  align-items: flex-start;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -192,75 +158,11 @@
   color: #ffffff !important;
 }
 
-/* Desktop: 2 columns — header + leftCol in col 1, rightCol in col 2 */
-@media (min-width: 577px) {
-  .contentStack {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 2rem;
-    align-items: start;
-  }
-
-  .header {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  .leftCol {
-    grid-column: 1;
-    grid-row: 2;
-  }
-
-  .rightCol {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-  }
-}
-
-/* Mobile: stack in order header → rightCol → leftCol */
-@media (max-width: 576px) {
-  .main {
-    padding: 2rem 0 3rem;
-  }
-
-  .header {
-    order: 1;
-  }
-
-  .rightCol {
-    order: 2;
-  }
-
-  .leftCol {
-    order: 3;
-    gap: 0;
-  }
-
-  .qrWrapper {
-    width: 100%;
-  }
-
-  .qrImage {
-    max-width: 100%;
-    width: 100%;
-  }
-}
-
 [data-theme='dark'] .title {
   color: var(--linsi-pure-white);
 }
 
-[data-theme='dark'] .leocassieImg {
-  display: none;
-}
-
-[data-theme='dark'] .leocassieImgDark {
-  display: block;
-}
-
-[data-theme='dark'] .paragraph1,
-[data-theme='dark'] .paragraph2 {
+[data-theme='dark'] .subtitle {
   color: var(--linsi-neutral-lighter);
 }
 
@@ -276,6 +178,21 @@
   background: var(--linsi-brand-02-darkest);
   border-color: var(--linsi-border-color);
   color: var(--linsi-neutral-lighter);
+}
+
+@media (max-width: 576px) {
+  .main {
+    padding: 2rem 0 3rem;
+  }
+
+  .qrWrapper {
+    width: 100%;
+  }
+
+  .qrImage {
+    max-width: 100%;
+    width: 100%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
