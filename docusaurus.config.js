@@ -26,7 +26,7 @@ const config = {
   tagline: 'Linguagem Simplificada de Fluxogramas de UX',
   favicon: 'img/favicon.png',
 
-  url: process.env.SITE_URL ?? process.env.URL ?? 'http://localhost:3000',
+  url: process.env.SITE_URL ?? 'http://localhost:3000',
   baseUrl: process.env.BASE_URL ?? '/',
   organizationName: 'bmirandaq',
   projectName: 'linsi',
@@ -114,8 +114,8 @@ const config = {
           className: 'linsi-coffee-link',
         },
         {
-          href: 'https://github.com/bmirandaq/linsi/discussions/new/choose',
-          label: 'Quero contribuir',
+          to: '/contato',
+          label: 'Contribuir ou pedir ajuda',
           position: 'left',
           className: 'linsi-contribute-link',
         },

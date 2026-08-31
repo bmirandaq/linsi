@@ -55,18 +55,11 @@ for (const file of listFiles(buildDirectory, (entry) => entry.endsWith('.html'))
 
   if (!navbarContributionChecked) {
     const navbarContribution = html.match(
-      /<a\b(?=[^>]*class="[^"]*linsi-contribute-link)(?=[^>]*href="https:\/\/github\.com\/bmirandaq\/linsi\/discussions\/new\/choose")[^>]*>[\s\S]*?<\/a>/i,
+      /<a\b(?=[^>]*class="[^"]*linsi-contribute-link)(?=[^>]*href="\/contato")[^>]*>[\s\S]*?<\/a>/i,
     )?.[0];
 
     if (navbarContribution) {
       navbarContributionChecked = true;
-      if (
-        !/class="[^"]*material-symbols-outlined[^"]*"[\s\S]*?>open_in_new<\/span>/i.test(
-          navbarContribution,
-        )
-      ) {
-        fail('Quero contribuir na navbar não usa o Material Symbol open_in_new.');
-      }
       if (/<svg\b/i.test(navbarContribution)) {
         fail('Quero contribuir na navbar contém SVG em vez de Material Symbols.');
       }
