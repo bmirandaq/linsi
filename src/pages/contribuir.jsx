@@ -48,13 +48,21 @@ export default function Contato() {
     script.async = true;
     script.onload = () => {
       if (cancelled || !window.turnstile || !turnstileRef.current) return;
-      turnstileWidgetId.current = window.turnstile.render(turnstileRef.current, {
-        sitekey: TURNSTILE_SITE_KEY,
-        size: 'invisible',
-        'error-callback': () => {
-          turnstileWidgetId.current = null;
-        },
-      });
+      try {
+        turnstileWidgetId.current = window.turnstile.render(turnstileRef.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          size: 'invisible',
+          appearance: 'always',
+          'error-callback': () => {
+            turnstileWidgetId.current = null;
+          },
+          'timeout-callback': () => {
+            turnstileWidgetId.current = null;
+          },
+        });
+      } catch {
+        turnstileWidgetId.current = null;
+      }
     };
     script.onerror = () => {
       turnstileWidgetId.current = null;
@@ -64,7 +72,9 @@ export default function Contato() {
     return () => {
       cancelled = true;
       if (turnstileWidgetId.current && window.turnstile) {
-        window.turnstile.remove(turnstileWidgetId.current);
+        try {
+          window.turnstile.remove(turnstileWidgetId.current);
+        } catch {}
       }
     };
   }, []);
