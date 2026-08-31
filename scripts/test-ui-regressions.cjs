@@ -60,13 +60,8 @@ assert.match(
 
 assert.match(
   footer,
-  /href="https:\/\/github\.com\/bmirandaq\/linsi\/discussions\/new\/choose"/,
-  'O destino de Quero contribuir foi alterado.',
-);
-assert.match(
-  footer,
-  /name="open_in_new"/,
-  'O footer precisa usar o ligature name válido do ícone externo.',
+  /to="\/contato"/,
+  'O destino de Quero contribuir no footer deve apontar para /contato.',
 );
 assert.match(
   footerCss,

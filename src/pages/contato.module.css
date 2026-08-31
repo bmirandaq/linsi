@@ -1,0 +1,251 @@
+.page {
+  min-height: 100vh;
+  padding: 32px 20px 56px;
+}
+
+.shell {
+  margin: 0 auto;
+  max-width: 760px;
+  width: 100%;
+}
+
+.header {
+  margin-bottom: 0;
+}
+
+.title {
+  color: var(--linsi-neutral-darkest);
+  font-family: var(--ifm-heading-font-family);
+  font-size: clamp(1.75rem, 4vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 20px;
+}
+
+.subtitle {
+  color: var(--linsi-home-subtitle);
+  font-size: 1rem;
+  line-height: 1.55;
+  margin: 0 0 20px;
+}
+
+/* ── Reason cards ── */
+
+.reasonGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 28px;
+}
+
+.reasonCard {
+  align-items: flex-start;
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--linsi-border-color);
+  border-radius: var(--linsi-radius-lg);
+  color: var(--ifm-font-color-base);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  min-height: 170px;
+  padding: 18px;
+  text-align: left;
+  transition: border-color var(--linsi-motion-fast) var(--linsi-ease-standard),
+    transform var(--linsi-motion-fast) var(--linsi-ease-standard),
+    box-shadow var(--linsi-motion-fast) var(--linsi-ease-standard);
+}
+
+.reasonCard:hover {
+  border-color: var(--linsi-neutral-base);
+  transform: translateY(-1px);
+}
+
+.reasonCard[aria-pressed='true'] {
+  border-color: var(--linsi-brand-01-dark);
+  box-shadow: 0 0 0 1px var(--linsi-brand-01-dark);
+}
+
+[data-theme='dark'] .reasonCard[aria-pressed='true'] {
+  border-color: var(--linsi-brand-01-lighter);
+  box-shadow: 0 0 0 1px var(--linsi-brand-01-lighter);
+}
+
+.reasonTitle {
+  color: var(--ifm-heading-color);
+  font-family: var(--ifm-heading-font-family);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 0 0 8px;
+}
+
+.reasonCopy {
+  color: var(--linsi-home-subtitle);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.reasonIcon {
+  color: var(--linsi-brand-01-dark);
+  margin-top: auto;
+  padding-top: 20px;
+}
+
+[data-theme='dark'] .reasonIcon {
+  color: var(--linsi-brand-01-lighter);
+}
+
+/* ── Form ── */
+
+.form {
+  display: grid;
+  gap: 16px;
+}
+
+.contactRow {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+}
+
+.field label {
+  color: var(--ifm-font-color-base);
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.field input,
+.field textarea {
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--linsi-border-color);
+  border-radius: var(--linsi-radius-md);
+  color: var(--ifm-font-color-base);
+  font: inherit;
+  outline: none;
+  padding: 12px 14px;
+  transition: border-color var(--linsi-motion-fast) var(--linsi-ease-standard),
+    box-shadow var(--linsi-motion-fast) var(--linsi-ease-standard);
+  width: 100%;
+}
+
+.field input {
+  min-height: 46px;
+}
+
+.field textarea {
+  line-height: 1.55;
+  min-height: 150px;
+  resize: vertical;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--linsi-neutral-base);
+  opacity: 1;
+}
+
+.field input:focus,
+.field textarea:focus {
+  border-color: var(--linsi-focus-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--linsi-focus-color) 18%, transparent);
+}
+
+/* ── Submit ── */
+
+.submit {
+  background: var(--linsi-button-background);
+  border: 0;
+  border-radius: var(--linsi-radius-md);
+  color: var(--linsi-button-text);
+  cursor: pointer;
+  font-family: var(--ifm-heading-font-family);
+  font-weight: 700;
+  min-height: 46px;
+  padding: 0 18px;
+  transition: background-color var(--linsi-motion-fast) var(--linsi-ease-standard),
+    transform var(--linsi-motion-fast) var(--linsi-ease-standard);
+}
+
+.submit:hover {
+  background: var(--linsi-button-hover-background);
+  transform: translateY(-1px);
+}
+
+.submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+/* ── Feedback ── */
+
+.feedback {
+  background: #eef8f1;
+  border: 1px solid #b7ddc0;
+  border-radius: var(--linsi-radius-md);
+  color: #285c32;
+  line-height: 1.5;
+  margin-top: 8px;
+  padding: 14px 16px;
+}
+
+[data-theme='dark'] .feedback {
+  background: #183525;
+  border-color: #316747;
+  color: #d6f1dd;
+}
+
+.error {
+  border: 1px solid #e23929;
+  border-radius: var(--linsi-radius-md);
+  color: #c5221f;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-top: 8px;
+  padding: 14px 16px;
+}
+
+[data-theme='dark'] .error {
+  background: #3b1419;
+  border-color: #e23929;
+  color: #f8b4b1;
+}
+
+[data-theme='dark'] .title {
+  color: var(--linsi-pure-white);
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 700px) {
+  .page {
+    padding: 24px 16px 40px;
+  }
+
+  .header {
+    margin-bottom: 22px;
+  }
+
+  .reasonGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .reasonCard {
+    min-height: 148px;
+  }
+
+  .contactRow {
+    grid-template-columns: 1fr;
+  }
+
+  .submit {
+    width: 100%;
+  }
+}

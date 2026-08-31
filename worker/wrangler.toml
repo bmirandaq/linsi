@@ -1,0 +1,13 @@
+name = "linsi-form-handler"
+main = "index.js"
+compatibility_date = "2025-08-31"
+
+[vars]
+ALLOWED_ORIGIN = "https://linsi.beamiranda.com.br"
+
+# Descomente e configure via: wrangler secret put TURNSTILE_SECRET_KEY
+# Descomente e configure via: wrangler secret put NOTION_API_KEY
+# Descomente e configure via: wrangler secret put NOTION_DATABASE_ID
+# Descomente e configure via: wrangler secret put RESEND_API_KEY
+# Descomente e configure via: wrangler secret put CONTACT_TO_EMAIL
+# Descomente e configure via: wrangler secret put CONTACT_FROM_EMAIL

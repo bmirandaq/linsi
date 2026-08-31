@@ -64,19 +64,11 @@ export default function Footer() {
             </p>
             <ul className={styles.navList}>
               <li>
-                <a
+                <Link
                   className={`${styles.link} ${styles.linkWithIcon}`}
-                  href="https://github.com/bmirandaq/linsi/discussions/new/choose"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Quero contribuir (abre em uma nova aba)">
+                  to="/contato">
                   Quero contribuir
-                  <MaterialSymbol
-                    className={styles.navIcon}
-                    name="open_in_new"
-                    size={18}
-                  />
-                </a>
+                </Link>
               </li>
               <li>
                 <Link
