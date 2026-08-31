@@ -185,15 +185,6 @@ export default function Contato() {
             ))}
           </div>
 
-          {status === 'success' && (
-            <div className={styles.feedback} role="status" aria-live="polite">
-              <strong>Mensagem recebida</strong>
-              <br />
-              Oi! Aqui é a Bea, criadora da LINSI. Já, já te retorno, tá certo?
-              Guenta aí =)
-            </div>
-          )}
-
           <form className={styles.form} onSubmit={handleSubmit}>
             <input type="hidden" name="motivo" value={motivo} />
 
@@ -267,6 +258,15 @@ export default function Contato() {
                 </div>
               )}
             </form>
+
+          {status === 'success' && (
+            <div className={styles.feedback} role="status" aria-live="polite">
+              <strong>Mensagem recebida</strong>
+              <br />
+              Oi! Aqui é a Bea, criadora da LINSI. Já, já te retorno, tá certo?
+              Guenta aí =)
+            </div>
+          )}
         </div>
       </main>
     </Layout>
