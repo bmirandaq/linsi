@@ -41,20 +41,28 @@ export default function Contato() {
   useEffect(() => {
     if (!TURNSTILE_SITE_KEY || typeof window === 'undefined') return;
 
+    let cancelled = false;
+
     const script = document.createElement('script');
     script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
     script.async = true;
     script.onload = () => {
-      if (window.turnstile && turnstileRef.current) {
-        turnstileWidgetId.current = window.turnstile.render(turnstileRef.current, {
-          sitekey: TURNSTILE_SITE_KEY,
-          size: 'invisible',
-        });
-      }
+      if (cancelled || !window.turnstile || !turnstileRef.current) return;
+      turnstileWidgetId.current = window.turnstile.render(turnstileRef.current, {
+        sitekey: TURNSTILE_SITE_KEY,
+        size: 'invisible',
+        'error-callback': () => {
+          turnstileWidgetId.current = null;
+        },
+      });
+    };
+    script.onerror = () => {
+      turnstileWidgetId.current = null;
     };
     document.head.appendChild(script);
 
     return () => {
+      cancelled = true;
       if (turnstileWidgetId.current && window.turnstile) {
         window.turnstile.remove(turnstileWidgetId.current);
       }
@@ -230,7 +238,7 @@ export default function Contato() {
                 />
               </div>
 
-              {TURNSTILE_SITE_KEY && <div ref={turnstileRef} />}
+              {TURNSTILE_SITE_KEY && <div ref={turnstileRef} className={styles.turnstile} />}
 
               <button
                 className={styles.submit}
