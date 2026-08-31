@@ -114,10 +114,6 @@ export default function Contato() {
         if (!CONTACT_API_URL) {
           await new Promise((r) => setTimeout(r, 650));
           setStatus('success');
-          setNome('');
-          setEmail('');
-          setAssunto('');
-          setMensagem('');
           return;
         }
 
@@ -143,10 +139,6 @@ export default function Contato() {
         if (!res.ok) throw new Error('Erro ao enviar');
 
         setStatus('success');
-        setNome('');
-        setEmail('');
-        setAssunto('');
-        setMensagem('');
       } catch {
         setStatus('error');
         setErrorMsg(
