@@ -257,16 +257,16 @@ export default function Contato() {
                   {errorMsg}
                 </div>
               )}
-            </form>
 
-          {status === 'success' && (
-            <div className={styles.feedback} role="status" aria-live="polite">
-              <strong>Mensagem recebida</strong>
-              <br />
-              Oi! Aqui é a Bea, criadora da LINSI. Já, já te retorno, tá certo?
-              Guenta aí =)
-            </div>
-          )}
+              {status === 'success' && (
+                <div className={styles.feedback} role="status" aria-live="polite">
+                  <strong>Mensagem recebida</strong>
+                  <br />
+                  Oi! Aqui é a Bea, criadora da LINSI. Já, já te retorno, tá certo?
+                  Guenta aí =)
+                </div>
+              )}
+            </form>
         </div>
       </main>
     </Layout>
