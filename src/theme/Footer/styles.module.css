@@ -58,10 +58,13 @@
 }
 
 .logo {
-  display: block;
   height: auto;
   margin: 0 0 26px;
   width: 170px;
+}
+
+.logoLight {
+  display: block;
 }
 
 .logoDark {
@@ -173,6 +176,7 @@
 
 [data-theme='dark'] .logoLight {
   display: none;
+  margin: 0;
 }
 
 [data-theme='dark'] .logoDark {
