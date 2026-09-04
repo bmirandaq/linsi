@@ -5,15 +5,14 @@ slug: colunas
 ---
 # Colunas
 
-Colunas são separações verticais que organizam partes relacionadas da experiência apresentada no fluxograma.
+Colunas são recortes verticais que ajudam a estruturar a leitura e a deixar mais claro os diferentes momentos, agrupamentos e relações no fluxograma da experiência apresentada.
 
-Uma Coluna pode assumir diferentes funções de organização, conforme o recorte necessário no fluxograma:
-
-## Coluna do tipo Etapa
-
+## Coluna Etapa
 ---
 
-Pode corresponder a uma etapa propriamente dita ou a um recorte mais granular da experiência. Exemplos:
+Auto-explicativo: organiza uma etapa específica da experiência.
+
+Uma Etapa pode reunir diferentes Elementos e/ou mais de um Caminho. Exemplos:
 
 - Formulário de cadastro;
 - Autenticação;
@@ -24,41 +23,41 @@ Pode corresponder a uma etapa propriamente dita ou a um recorte mais granular da
 
 
 
-## Coluna do tipo Seção
-
+## Coluna Seção
 ---
 
-Reúne duas ou mais Etapas relacionadas. Exemplos: 
+Diferente da Coluna Etapa, esta Coluna irá agrupar partes relacionadas de forma mais ampla. Portanto pode: 
 
-- Área não-logada;
-- Área logada;
-- Cliente sem acesso ao financiamento;
-- Cliente com financiamento aprovado.
+- Reunir diferentes Etapas 
+- Trechos que não precisem estar organizados como Etapas.
 
 ![Coluna Seção](/img/uploads/Colunas/coluna-secao.png)
 
-É especialmente útil em fluxogramas extensos, que precisam de recortes maiores para facilitar localização, leitura e compreensão da experiência. 
+A Coluna Seção é especialmente útil em fluxogramas extensos.
 
 > Representações desse porte também são frequentemente chamadas de **big flows** (fluxos grandes).
 
-## Coluna do tipo Equivalência
 
+
+## Coluna Equivalência
 ---
 
-Reúne Etapas e/ou Seções equivalentes de 2 ou mais Caminhos.
-
-Exemplo: em uma experiência de cadastro para compra, podem existir 3 Caminhos diferentes para adquirir o produto e, em todos eles, a pessoa passar por uma etapa de cadastro.
+Esta Coluna tem por objetivo evidenciar trechos de 2 ou mais Caminhos que cumprem uma função equivalente naquele ponto da experiência.
 
 ![Coluna Equivalência](/img/uploads/Colunas/coluna-equivalencia.png)
 
-Diferente das outras colunas, Equivalência é um agrupamento totalmente visual. Ou seja, é dispensável rótulo para este cenário.
+A equivalência não exige que esses trechos apresentem exatamente os mesmos Elementos, conteúdos ou comportamentos. O que importa é que cumpram uma função equivalente (quase igual, similar) dentro de seus respectivos Caminhos.
 
-A equivalência não exige que os Caminhos apresentem exatamente os mesmos Elementos, tanto em forma quanto conteúdo. O que importa é que esses trechos cumpram uma função equivalente naquele recorte.
+Ela facilita a comparação entre esses Caminhos, então é mais fácil perceber se:
 
-Esse tipo de Coluna facilita a comparação e favorece a consistência entre esses cenários, sem alterar a independência de cada Caminho.
+1. Representam necessidades reais de cada experiência ou;
+2. Revela inconsistências não intencionais.
 
-## Observações
 
-O alinhamento vertical **não cria, por si só, uma Coluna** na concepção da LINSI. O agrupamento precisa ser proposital e possuir função na organização do fluxograma. 
 
-Isso pode ser comunicado pelo posicionamento dos Elementos, por um rótulo que identifique o recorte ou pela combinação de ambos.
+## Outras considerações
+---
+
+A aplicação da Coluna Equivalência deve ser realizada de forma puramente visual, sendo o rótulo dispensado.
+
+O alinhamento vertical também **não cria, por si só, uma Coluna**. A composição visual pode comunicar o agrupamento, mas precisa corresponder a uma relação real entre os trechos representados.
