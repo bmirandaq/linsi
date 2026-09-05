@@ -1,8 +1,8 @@
 .grid {
   display: grid;
-  gap: 1.25rem;
+  gap: var(--linsi-space-24);
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  margin: 1.5rem 0 2rem;
+  margin: var(--linsi-space-24) 0 var(--linsi-space-32);
 }
 
 .card {
@@ -11,9 +11,9 @@
   border-radius: var(--linsi-radius-md);
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: var(--linsi-space-24);
   justify-content: space-between;
-  padding: 1.25rem;
+  padding: var(--linsi-space-24);
   transition: background-color var(--linsi-motion-base) var(--linsi-ease-standard),
     border-color var(--linsi-motion-base) var(--linsi-ease-standard),
     transform var(--linsi-motion-base) var(--linsi-ease-standard);
@@ -33,7 +33,7 @@
 .cardHeader {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: var(--linsi-space-8);
 }
 
 .title {
@@ -68,7 +68,7 @@
   font-size: 0.8125rem;
   font-weight: 700;
   justify-content: center;
-  padding: 0.5rem 0.875rem;
+  padding: var(--linsi-space-8) var(--linsi-space-16);
   text-align: center;
   text-decoration: none !important;
   transition: background-color var(--linsi-motion-fast) var(--linsi-ease-standard),

@@ -1,0 +1,24 @@
+/* =========================================================
+   LINSI — Spacing system
+   Primitive scale + semantic layout aliases
+
+   Layout/composition spacing must use this scale. Mechanical
+   dimensions (borders, icon sizes, control geometry, transforms)
+   are intentionally outside the spacing system.
+   ========================================================= */
+
+:root {
+  --linsi-space-4: 4px;
+  --linsi-space-8: 8px;
+  --linsi-space-16: 16px;
+  --linsi-space-24: 24px;
+  --linsi-space-32: 32px;
+  --linsi-space-48: 48px;
+  --linsi-space-64: 64px;
+  --linsi-space-80: 80px;
+  --linsi-space-96: 96px;
+
+  --ifm-spacing-horizontal: var(--linsi-space-24);
+  --linsi-page-inline: var(--linsi-space-24);
+  --linsi-doc-column-gap: var(--linsi-space-48);
+}

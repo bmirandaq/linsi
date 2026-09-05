@@ -38,18 +38,18 @@
 .container {
   margin: 0 auto;
   max-width: 1320px;
-  padding: 54px 38px 24px;
+  padding: var(--linsi-space-48) var(--linsi-space-32) var(--linsi-space-24);
   width: 100%;
 }
 
 .main {
   align-items: start;
-  column-gap: 48px;
+  column-gap: var(--linsi-space-48);
   display: grid;
   grid-template-columns: minmax(340px, 1fr) auto auto;
   min-height: 245px;
   min-width: 0;
-  padding-bottom: 52px;
+  padding-bottom: var(--linsi-space-48);
 }
 
 .brand {
@@ -59,7 +59,7 @@
 
 .logo {
   height: auto;
-  margin: 0 0 26px;
+  margin: 0 0 var(--linsi-space-24);
   width: 170px;
 }
 
@@ -84,13 +84,13 @@
   font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.07em;
-  margin: 0 0 18px;
+  margin: 0 0 var(--linsi-space-16);
   text-transform: uppercase;
 }
 
 .navList {
   display: grid;
-  gap: 12px;
+  gap: var(--linsi-space-16);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -117,7 +117,7 @@
 .linkWithIcon {
   align-items: center;
   display: inline-flex;
-  gap: 0.35rem;
+  gap: var(--linsi-space-4);
   max-width: 100%;
 }
 
@@ -143,9 +143,9 @@
   display: flex;
   flex-wrap: wrap;
   font-size: 0.78125rem;
-  gap: 8px 24px;
+  gap: var(--linsi-space-8) var(--linsi-space-24);
   line-height: 1.5;
-  padding-top: 19px;
+  padding-top: var(--linsi-space-16);
 }
 
 .legal p {
@@ -155,7 +155,7 @@
 .creatorLink {
   align-items: baseline;
   display: inline-flex;
-  gap: 4px;
+  gap: var(--linsi-space-4);
   vertical-align: baseline;
 }
 
@@ -202,14 +202,14 @@
 
 @media (max-width: 780px) {
   .container {
-    padding: 34px 20px 22px;
+    padding: var(--linsi-space-32) var(--linsi-space-16) var(--linsi-space-24);
   }
 
   .main {
-    gap: 34px 18px;
+    gap: var(--linsi-space-32) var(--linsi-space-16);
     grid-template-columns: repeat(2, minmax(0, 1fr));
     min-height: auto;
-    padding-bottom: 34px;
+    padding-bottom: var(--linsi-space-32);
   }
 
   .brand {
@@ -217,7 +217,7 @@
   }
 
   .logo {
-    margin-bottom: 19px;
+    margin-bottom: var(--linsi-space-16);
     width: 138px;
   }
 
@@ -229,11 +229,11 @@
 
   .navLabel {
     font-size: 0.625rem;
-    margin-bottom: 13px;
+    margin-bottom: var(--linsi-space-16);
   }
 
   .navList {
-    gap: 2px;
+    gap: var(--linsi-space-4);
   }
 
   .navList .link {
@@ -241,7 +241,7 @@
     display: flex;
     font-size: 0.8125rem;
     min-height: 44px;
-    padding: 8px 0;
+    padding: var(--linsi-space-8) 0;
     width: 100%;
   }
 
@@ -249,18 +249,17 @@
     align-items: flex-start;
     flex-direction: column;
     font-size: 0.71875rem;
-    gap: 10px;
-    padding-top: 16px;
+    gap: var(--linsi-space-8);
+    padding-top: var(--linsi-space-16);
   }
-
 }
 
 @media (max-width: 360px) {
   .container {
-    padding-inline: 16px;
+    padding-inline: var(--linsi-space-16);
   }
 
   .main {
-    column-gap: 12px;
+    column-gap: var(--linsi-space-16);
   }
 }

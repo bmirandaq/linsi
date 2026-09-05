@@ -2,13 +2,13 @@
   --principle-hover-opacity: 0.9;
   --principle-hover-surface: var(--ifm-background-surface-color);
 
-  column-gap: 4rem;
+  column-gap: var(--linsi-space-64);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   list-style: none;
-  margin: 4.5rem 0 0;
+  margin: var(--linsi-space-64) 0 0;
   padding: 0;
-  row-gap: 4.25rem;
+  row-gap: var(--linsi-space-64);
 }
 
 .grid :global(.principle) {
@@ -64,14 +64,14 @@
   font-weight: 400;
   letter-spacing: 0.08em;
   line-height: 1;
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--linsi-space-8);
 }
 
 .grid :global(.principle-content h2) {
   font-size: clamp(1.3rem, 2.2vw, 1.6rem);
   letter-spacing: -0.025em;
   line-height: 1.2;
-  margin: 0 0 0.75rem;
+  margin: 0 0 var(--linsi-space-16);
 }
 
 .grid :global(.principle-content p) {
@@ -84,7 +84,7 @@
 .grid :global(.principle-rail) {
   background: var(--linsi-border-color);
   height: 2px;
-  margin-top: 1.5rem;
+  margin-top: var(--linsi-space-24);
   overflow: hidden;
 }
 
@@ -151,10 +151,11 @@
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 768px) {
   .grid {
     grid-template-columns: minmax(0, 1fr);
-    row-gap: 3.25rem;
+    overflow-x: clip;
+    row-gap: var(--linsi-space-48);
   }
 
   .grid :global(.principle:nth-child(5)) {
