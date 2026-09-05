@@ -61,7 +61,11 @@ const config = {
         },
         blog: false,
         theme: {
-          customCss: ['./src/css/custom.css', './src/css/palette-v2.css'],
+          customCss: [
+            './src/css/custom.css',
+            './src/css/palette-v2.css',
+            './src/css/layout-fixes.css',
+          ],
         },
       },
     ],

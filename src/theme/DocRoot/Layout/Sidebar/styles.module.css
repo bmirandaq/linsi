@@ -31,6 +31,7 @@
   }
 
   .sidebarViewportHidden {
-    height: 100%;
+    height: var(--linsi-sidebar-expanded-height, 240px);
+    max-height: var(--linsi-sidebar-expanded-height, 240px);
   }
 }
