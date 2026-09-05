@@ -70,7 +70,7 @@ jobs:
           SMOKE_BASE_URL: http://127.0.0.1:3000
 
       - name: Validar whitespace do diff
-        run: git diff --check
+        run: git -c core.whitespace=cr-at-eol diff --check
 
       - name: Persistir migração validada
         run: |
