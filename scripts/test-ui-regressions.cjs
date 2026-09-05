@@ -7,6 +7,7 @@ const read = (relativePath) =>
   fs.readFileSync(path.join(root, relativePath), 'utf8');
 
 const customCss = read('src/css/custom.css');
+const spacingCss = read('src/css/spacing.css');
 const layoutFixesCss = read('src/css/layout-fixes.css');
 const footer = read('src/theme/Footer/index.jsx');
 const footerCss = read('src/theme/Footer/styles.module.css');
@@ -80,9 +81,9 @@ assert.match(
   'O override final da sidebar colapsada precisa preservar a altura expandida.',
 );
 assert.match(
-  layoutFixesCss,
-  /--linsi-doc-column-gap:\s*calc\(var\(--linsi-page-inline\) \* 2\);/,
-  'O gap estrutural da documentação deve equivaler ao espaço entre conteúdo e índice.',
+  spacingCss,
+  /--linsi-doc-column-gap:\s*var\(--linsi-space-48\);/,
+  'O gap estrutural da documentação deve usar o token de 48px.',
 );
 assert.match(
   layoutFixesCss,
@@ -96,14 +97,14 @@ assert.match(
 );
 assert.match(
   layoutFixesCss,
-  /html\.docs-doc-page \.main-wrapper\s*\{[\s\S]*?padding-bottom:\s*64px;/,
-  'As páginas da documentação precisam manter 64px antes do footer.',
+  /html\.docs-doc-page \.main-wrapper\s*\{[\s\S]*?padding-bottom:\s*var\(--linsi-space-64\);/,
+  'As páginas da documentação precisam manter 64px antes do footer via token.',
 );
 
 assert.match(
   footer,
   /to="\/contribuir"/,
-  'O destino de Quero contribuir no footer deve apontar para /contato.',
+  'O destino de Quero contribuir no footer deve apontar para /contribuir.',
 );
 assert.match(
   footerCss,
@@ -112,8 +113,8 @@ assert.match(
 );
 assert.match(
   footerCss,
-  /\.creatorLink\s*\{[\s\S]*?gap:\s*4px;/,
-  'O símbolo da Bea deve manter 4px de distância do nome.',
+  /\.creatorLink\s*\{[\s\S]*?gap:\s*var\(--linsi-space-4\);/,
+  'O símbolo da Bea deve manter 4px de distância do nome via token.',
 );
 assert.match(
   footerCss,
@@ -148,8 +149,8 @@ assert.match(
 );
 assert.match(
   customCss,
-  /\.navbar__items--right\s*\{[^}]*column-gap:\s*0\.625rem;/,
-  'Busca e switch precisam de separação explícita na navbar mobile.',
+  /\.navbar__items--right\s*\{[^}]*column-gap:\s*var\(--linsi-space-8\);/,
+  'Busca e switch precisam manter 8px de separação na navbar mobile.',
 );
 assert.match(
   navbarSearchCss,
@@ -178,4 +179,4 @@ assert.doesNotMatch(
   'O feedback do Pix deve permanecer no próprio botão.',
 );
 
-console.log('UI regression contracts passed: sidebar, docs spacing, footer spacing and mobile viewport.');
+console.log('UI regression contracts passed: sidebar, docs spacing, footer spacing, navbar mobile and key page behavior.');
