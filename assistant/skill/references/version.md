@@ -3,7 +3,7 @@
 ## Estado atual
 
 - Assistente: Fase 1 em fechamento tecnico para beta
-- Versao alvo: `v0.1-beta`
+- Versao alvo: `0.1-beta`
 - Branch de trabalho: `assistant-phase-1`
 - Suporte oficial inicial: ChatGPT e Codex CLI
 - Fonte conceitual: `docs/` do repositorio `bmirandaq/linsi`
@@ -31,7 +31,7 @@ O background tecnico nao integra a fonte conceitual da LINSI. Seu versionamento 
 
 ## Compatibilidade da beta
 
-A versao `v0.1-beta` tera suporte oficial apenas nos hosts validados nesta rodada:
+A versao `0.1-beta` tera suporte oficial apenas nos hosts validados nesta rodada:
 
 - ChatGPT;
 - Codex CLI.
