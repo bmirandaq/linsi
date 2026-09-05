@@ -4,11 +4,12 @@ Estes casos protegem o formato textual contra distorções da estrutura LINSI.
 
 Avaliar em conjunto com `../evaluation.md` e `../../skill/references/output-text.md`.
 
-## OT01 — Seta mantém relação entre Elementos
+## OT01 — Seta permanece dentro de Elementos
 
 **Entrada:** continuidade `Interface -> Ação`.
 
 **Esperado:**
+- `Seta` permanece tratada como Elemento na estrutura conceitual da referência;
 - representar origem, Seta e destino de forma associada;
 - não listar `[Seta Comum]` como bloco sem relação identificável.
 
@@ -25,6 +26,7 @@ Avaliar em conjunto com `../evaluation.md` e `../../skill/references/output-text
 **Entrada:** Interface oferece `Finalizar pedido` e a pessoa realiza essa ação.
 
 **Esperado:**
+- representar sempre o subtipo da Interface;
 - `Ações:` dentro da Interface registra possibilidade;
 - `[Ação] Finalizar pedido` aparece separadamente na continuidade.
 
@@ -34,7 +36,7 @@ Avaliar em conjunto com `../evaluation.md` e `../../skill/references/output-text
 
 **Esperado:**
 - `[Processo]` representa a execução do sistema;
-- `[Interface]` representa o resultado percebido quando ele fizer parte da experiência.
+- `[Interface - Tela]` ou `[Interface - Janela]` representa o resultado percebido quando ele fizer parte da experiência.
 
 ## OT05 — Nota não entra na sequência
 
@@ -49,10 +51,19 @@ Avaliar em conjunto com `../evaluation.md` e `../../skill/references/output-text
 **Entrada:** falta uma informação que afeta a proposta atual.
 
 **Esperado:**
-- usar `Pontos em aberto da proposta` quando necessário;
+- usar `Pontos em aberto da proposta` apenas quando a ausência for crítica e não puder ser inferida com segurança;
+- quando houver hipótese razoável, registrar em `Premissas`;
 - não inserir Elemento `Comentário` no output gerado pela Assistente.
 
-## OT07 — Fluxo sem Colunas
+## OT07 — Escopo sempre aparece
+
+**Entrada:** qualquer proposta de fluxo, inclusive simples.
+
+**Esperado:**
+- incluir `Escopo` para validação;
+- não omitir Escopo em nome da proporcionalidade.
+
+## OT08 — Fluxo sem Colunas
 
 **Entrada:** fluxo com Caminho principal e negativo, sem Colunas.
 
@@ -61,7 +72,7 @@ Avaliar em conjunto com `../evaluation.md` e `../../skill/references/output-text
 - seguir a hierarquia documentada quando houver mais de um Caminho;
 - indicar origem e entrada de Caminho secundário quando necessário.
 
-## OT08 — Caminhos e Colunas aparecem juntos
+## OT09 — Caminhos e Colunas aparecem juntos
 
 **Entrada:** fluxo com duas Colunas e dois Caminhos.
 
@@ -70,25 +81,25 @@ Avaliar em conjunto com `../evaluation.md` e `../../skill/references/output-text
 - dentro de cada Coluna, apresentar os Caminhos de cima para baixo;
 - não criar uma descrição completa de Caminhos e só depois outra descrição separada de Colunas.
 
-## OT09 — Continuidade de um Caminho entre Colunas
+## OT10 — Continuidade de um Caminho entre Colunas
 
 **Entrada:** Caminho principal atravessa três Colunas.
 
 **Esperado:**
-- manter o mesmo nome do Caminho nos trechos correspondentes;
+- manter o mesmo Caminho reconhecível nos trechos correspondentes;
 - mostrar em cada Coluna apenas os Elementos daquele trecho;
 - permitir reconhecer a continuidade horizontal entre Colunas.
 
-## OT10 — Novo Caminho nasce dentro da Coluna correta
+## OT11 — Novo Caminho nasce dentro da Coluna correta
 
 **Entrada:** uma Condição na Coluna `Pagamento` abre Caminho negativo.
 
 **Esperado:**
 - apresentar o novo Caminho dentro da mesma Coluna em que ocorre o desdobramento;
-- registrar `Origem` e `Entrada` quando necessário;
+- registrar `Origem` e `Entrada` quando a origem não estiver evidente no bloco;
 - não duplicar a Seta de saída em duas partes diferentes do output.
 
-## OT11 — Coluna Seção preserva Etapas existentes
+## OT12 — Coluna Seção preserva Etapas existentes
 
 **Entrada:** Seção `Checkout` reúne Etapas `Endereço`, `Entrega` e `Pagamento`.
 
@@ -96,32 +107,36 @@ Avaliar em conjunto com `../evaluation.md` e `../../skill/references/output-text
 - manter as Etapas dentro da Seção na ordem visual correspondente;
 - não inventar Etapas para trechos que não estejam organizados assim.
 
-## OT12 — Equivalência mostra os Caminhos no mesmo bloco
+## OT13 — Equivalência sem título visual
 
 **Entrada:** Coluna Equivalência entre trechos de dois Caminhos.
 
 **Esperado:**
-- colocar os trechos equivalentes dentro do mesmo bloco de Coluna;
+- indicar quais Elementos, em quais Caminhos, estão alinhados verticalmente por equivalência;
 - preservar a identidade de cada Caminho;
-- não tornar obrigatório rótulo visual da Coluna Equivalência.
+- não inventar título para a Coluna Equivalência no fluxograma visual;
+- aceitar `[Coluna Equivalência]` apenas como marcador do formato textual da Assistente.
 
-## OT13 — Convergência aparece onde acontece
+## OT14 — Convergência permanece dentro de Caminhos
 
 **Entrada:** dois Caminhos convergem na Coluna `Entrega`.
 
 **Esperado:**
-- registrar a Convergência dentro desse ponto da estrutura;
+- `Convergência` permanece tratada como parte da estrutura de Caminhos, nunca como Elemento ou conceito independente;
+- registrar a Convergência no ponto em que acontece;
 - identificar Caminhos envolvidos e destino compartilhado;
 - escrever a continuidade comum uma única vez depois da Convergência.
 
-## OT14 — Ordem conceitual das convenções
+## OT15 — Ordem conceitual das convenções
 
 **Esperado:**
+- `Seta` permanece dentro da seção `Elementos`;
 - as convenções de Elementos aparecem na ordem: Seta, Interface, Processo, Ação, Condição, Início, Fim, Retomada e Nota;
 - a explicação de Caminhos e Colunas vem depois dos Elementos;
+- `Convergência` permanece subordinada a Caminhos;
 - a ordem da referência não reorganiza a sequência real de um fluxo concreto.
 
-## OT15 — Metadados não viram estrutura do fluxograma
+## OT16 — Metadados não viram estrutura do fluxograma
 
 **Entrada:** proposta com Escopo, Premissa e ponto em aberto.
 
@@ -129,15 +144,16 @@ Avaliar em conjunto com `../evaluation.md` e `../../skill/references/output-text
 - esses itens permanecem como metadados da proposta;
 - não são transformados em Elementos ou relações da modelagem sem motivo.
 
-## OT16 — Proporcionalidade
+## OT17 — Proporcionalidade sem remover Escopo
 
 **Entrada:** fluxo linear simples, sem hipóteses, Colunas ou pontos em aberto.
 
 **Esperado:**
-- omitir seções desnecessárias;
+- manter `Escopo`;
+- omitir Premissas, Colunas, Pontos em aberto e rótulo de Caminho quando não forem necessários;
 - não preencher template vazio apenas por consistência formal.
 
-## OT17 — Reconstrução com Caminhos e Colunas
+## OT18 — Reconstrução com Caminhos e Colunas
 
 **Entrada:** output com duas Colunas, dois Caminhos e uma Convergência.
 
