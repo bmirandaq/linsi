@@ -11,6 +11,7 @@
     "clear": "docusaurus clear",
     "serve": "docusaurus serve",
     "postinstall": "node scripts/patch-image-size.cjs",
+    "typecheck": "tsc --noEmit",
     "test:security": "node scripts/test-image-size-security.cjs",
     "test:ui": "node scripts/test-ui-regressions.cjs",
     "test:colors": "node scripts/test-color-tokens.cjs",
@@ -32,6 +33,13 @@
     "prism-react-renderer": "^2.4.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "3.10.2",
+    "@docusaurus/tsconfig": "3.10.2",
+    "@docusaurus/types": "3.10.2",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "~5.9.3"
   },
   "overrides": {
     "serialize-javascript": "7.1.0",

@@ -1,13 +1,21 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  type ComponentPropsWithoutRef,
+  type MouseEvent,
+} from 'react';
 import {createPortal} from 'react-dom';
 
 import styles from './styles.module.css';
 
-export default function MDXImg({alt = '', ...props}) {
+type Props = ComponentPropsWithoutRef<'img'>;
+
+export default function MDXImg({alt = '', ...props}: Props) {
   const [open, setOpen] = useState(false);
-  const triggerRef = useRef(null);
-  const imageRef = useRef(null);
-  const closeRef = useRef(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const trigger = triggerRef.current;
@@ -17,7 +25,7 @@ export default function MDXImg({alt = '', ...props}) {
       return undefined;
     }
 
-    let animationFrame;
+    let animationFrame = 0;
     const syncTriggerWidth = () => {
       cancelAnimationFrame(animationFrame);
       animationFrame = requestAnimationFrame(() => {
@@ -58,7 +66,7 @@ export default function MDXImg({alt = '', ...props}) {
       appRoot.setAttribute('aria-hidden', 'true');
     }
 
-    const handleKeyDown = (event) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
         setOpen(false);
@@ -91,6 +99,12 @@ export default function MDXImg({alt = '', ...props}) {
 
   const accessibleName = alt ? `Ampliar imagem: ${alt}` : 'Ampliar imagem';
 
+  const handleBackdropClick = (event: MouseEvent<HTMLDivElement>) => {
+    if (event.target === event.currentTarget) {
+      setOpen(false);
+    }
+  };
+
   return (
     <>
       <button
@@ -99,7 +113,6 @@ export default function MDXImg({alt = '', ...props}) {
         className={styles.trigger}
         aria-label={accessibleName}
         onClick={() => setOpen(true)}>
-        {/* eslint-disable-next-line jsx-a11y/alt-text */}
         <img
           ref={imageRef}
           decoding="async"
@@ -120,11 +133,7 @@ export default function MDXImg({alt = '', ...props}) {
             role="dialog"
             aria-modal="true"
             aria-label={alt ? `Imagem ampliada: ${alt}` : 'Imagem ampliada'}
-            onClick={(event) => {
-              if (event.target === event.currentTarget) {
-                setOpen(false);
-              }
-            }}>
+            onClick={handleBackdropClick}>
             <button
               ref={closeRef}
               type="button"
@@ -135,7 +144,6 @@ export default function MDXImg({alt = '', ...props}) {
                 close
               </span>
             </button>
-            {/* eslint-disable-next-line jsx-a11y/alt-text */}
             <img className={styles.expandedImage} alt={alt} {...props} />
           </div>,
           document.body,

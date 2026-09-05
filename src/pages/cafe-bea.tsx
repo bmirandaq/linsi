@@ -9,8 +9,10 @@ import styles from './cafe-bea.module.css';
 const PIX_CODE =
   '00020126430014BR.GOV.BCB.PIX0121bmirandaqux@gmail.com5204000053039865802BR5915Beatriz Miranda6011Paulista/PE62190515CAFEPRABEALINSI6304262F';
 
+type CopyStatus = 'idle' | 'success' | 'error';
+
 export default function CafeBea() {
-  const [copyStatus, setCopyStatus] = useState('idle');
+  const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle');
   const qrCodeUrl = useBaseUrl('/img/pix-qrcode.png');
   const leocassieLightUrl = useBaseUrl('/img/leocassie-light.png');
   const leocassieDarkUrl = useBaseUrl('/img/leocassie-dark.png');
@@ -24,7 +26,7 @@ export default function CafeBea() {
     return () => window.clearTimeout(timeout);
   }, [copyStatus]);
 
-  const copyToClipboard = async () => {
+  const copyToClipboard = async (): Promise<void> => {
     try {
       if (!navigator.clipboard) {
         throw new Error('Clipboard API indisponível');
@@ -32,9 +34,9 @@ export default function CafeBea() {
 
       await navigator.clipboard.writeText(PIX_CODE);
       setCopyStatus('success');
-    } catch (err) {
+    } catch (error: unknown) {
       setCopyStatus('error');
-      console.error('Falha ao copiar texto: ', err);
+      console.error('Falha ao copiar texto: ', error);
     }
   };
 
@@ -98,7 +100,7 @@ export default function CafeBea() {
                     readOnly
                     className={styles.pixTextarea}
                     value={PIX_CODE}
-                    rows="3"
+                    rows={3}
                     aria-label="Código Pix"
                   />
                   <button

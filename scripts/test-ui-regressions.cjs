@@ -12,7 +12,7 @@ const layoutFixesCss = read('src/css/layout-fixes.css');
 const footer = read('src/theme/Footer/index.jsx');
 const footerCss = read('src/theme/Footer/styles.module.css');
 const homeCss = read('src/pages/index.module.css');
-const cafePage = read('src/pages/cafe-bea.jsx');
+const cafePage = read('src/pages/cafe-bea.tsx');
 const expandButton = read(
   'src/theme/DocRoot/Layout/Sidebar/ExpandButton/index.jsx',
 );

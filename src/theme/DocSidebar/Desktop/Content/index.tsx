@@ -7,6 +7,7 @@ import {
 } from '@docusaurus/theme-common/internal';
 import {translate} from '@docusaurus/Translate';
 import DocSidebarItems from '@theme/DocSidebarItems';
+import type {Props} from '@theme/DocSidebar/Desktop/Content';
 
 import styles from './styles.module.css';
 
@@ -26,16 +27,16 @@ function useShowAnnouncementBar() {
   return isActive && showAnnouncementBar;
 }
 
-export default function DocSidebarDesktopContent({path, sidebar, className}) {
+export default function DocSidebarDesktopContent({path, sidebar, className}: Props) {
   const showAnnouncementBar = useShowAnnouncementBar();
-  const menuRef = useRef(null);
-  const indicatorRef = useRef(null);
+  const menuRef = useRef<HTMLElement>(null);
+  const indicatorRef = useRef<HTMLSpanElement>(null);
 
   useLayoutEffect(() => {
     const updateIndicator = () => {
       const menu = menuRef.current;
       const indicator = indicatorRef.current;
-      const activeLink = menu?.querySelector(
+      const activeLink = menu?.querySelector<HTMLElement>(
         '.theme-doc-sidebar-item-link > .menu__link--active:not(.menu__link--sublist)',
       );
 
@@ -64,7 +65,7 @@ export default function DocSidebarDesktopContent({path, sidebar, className}) {
     };
 
     updateIndicator();
-    const activeLink = menuRef.current?.querySelector(
+    const activeLink = menuRef.current?.querySelector<HTMLElement>(
       '.theme-doc-sidebar-item-link > .menu__link--active:not(.menu__link--sublist)',
     );
     const resizeObserver =

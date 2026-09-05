@@ -33,6 +33,9 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
+      - name: Verificar tipos
+        run: npm run typecheck
+
       - name: Gerar site
         run: npm run build
         env:

@@ -1,7 +1,25 @@
-import React from 'react';
+import React, {type CSSProperties, type ComponentPropsWithoutRef} from 'react';
 import clsx from 'clsx';
 
-function toCssSize(value) {
+type CssSize = number | string;
+
+type MaterialSymbolProps = Omit<
+  ComponentPropsWithoutRef<'span'>,
+  'children' | 'color'
+> & {
+  name: string;
+  size?: CssSize;
+  width?: CssSize;
+  height?: CssSize;
+  fill?: number;
+  weight?: number;
+  grade?: number;
+  opticalSize?: number;
+  color?: CSSProperties['color'];
+  label?: string;
+};
+
+function toCssSize(value: CssSize): string {
   return typeof value === 'number' ? `${value}px` : value;
 }
 
@@ -21,7 +39,7 @@ export default function MaterialSymbol({
   'aria-label': ariaLabel,
   'aria-hidden': ariaHidden,
   ...restProps
-}) {
+}: MaterialSymbolProps) {
   const accessibleLabel = label ?? ariaLabel;
   const resolvedSize = toCssSize(size ?? width ?? height ?? 24);
 

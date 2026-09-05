@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, type ReactNode} from 'react';
 
 import '@fontsource-variable/inter';
 import '@fontsource-variable/manrope';
@@ -10,25 +10,38 @@ import '@fontsource/opendyslexic/700.css';
 import {
   applyStoredFontPreference,
   storeFontPreference,
+  type FontPreference,
 } from '@site/src/utils/fontPreference';
 
-export default function Root({children}) {
+type Props = {
+  children: ReactNode;
+};
+
+export default function Root({children}: Props) {
   useEffect(() => {
-    const syncSelectors = (value) => {
-      document.querySelectorAll('[data-font-selector]').forEach((selector) => {
-        selector.value = value;
-      });
+    const syncSelectors = (value: FontPreference) => {
+      document
+        .querySelectorAll<HTMLSelectElement>('[data-font-selector]')
+        .forEach((selector) => {
+          selector.value = value;
+        });
     };
 
     const initialPreference = applyStoredFontPreference();
     syncSelectors(initialPreference);
 
-    const handleFontChange = (event) => {
-      if (!event.target.matches('[data-font-selector]')) {
+    const handleFontChange = (event: Event) => {
+      const target = event.target;
+
+      if (!(target instanceof HTMLSelectElement)) {
         return;
       }
 
-      const preference = storeFontPreference(event.target.value);
+      if (!target.matches('[data-font-selector]')) {
+        return;
+      }
+
+      const preference = storeFontPreference(target.value);
       syncSelectors(preference);
     };
 

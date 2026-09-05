@@ -6,15 +6,21 @@ export const FONT_OPTIONS = [
   {value: 'inter', label: 'Inter'},
   {value: 'opendyslexic', label: 'OpenDyslexic'},
   {value: 'georgia', label: 'Georgia'},
-];
+] as const;
 
-const validPreferences = new Set(FONT_OPTIONS.map(({value}) => value));
+export type FontPreference = (typeof FONT_OPTIONS)[number]['value'];
 
-export function normalizeFontPreference(value) {
-  return validPreferences.has(value) ? value : DEFAULT_FONT_PREFERENCE;
+const validPreferences = new Set<FontPreference>(
+  FONT_OPTIONS.map(({value}) => value),
+);
+
+export function normalizeFontPreference(value: unknown): FontPreference {
+  return typeof value === 'string' && validPreferences.has(value as FontPreference)
+    ? (value as FontPreference)
+    : DEFAULT_FONT_PREFERENCE;
 }
 
-export function applyFontPreference(value) {
+export function applyFontPreference(value: unknown): FontPreference {
   const normalizedValue = normalizeFontPreference(value);
 
   if (typeof document !== 'undefined') {
@@ -24,12 +30,12 @@ export function applyFontPreference(value) {
   return normalizedValue;
 }
 
-export function applyStoredFontPreference() {
+export function applyStoredFontPreference(): FontPreference {
   if (typeof window === 'undefined') {
     return DEFAULT_FONT_PREFERENCE;
   }
 
-  let storedValue;
+  let storedValue: string | null = null;
 
   try {
     storedValue = window.localStorage.getItem(FONT_PREFERENCE_STORAGE_KEY);
@@ -40,7 +46,7 @@ export function applyStoredFontPreference() {
   return applyFontPreference(storedValue);
 }
 
-export function storeFontPreference(value) {
+export function storeFontPreference(value: unknown): FontPreference {
   const normalizedValue = applyFontPreference(value);
 
   if (typeof window !== 'undefined') {
