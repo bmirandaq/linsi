@@ -27,7 +27,10 @@ const recordFailure = (scope, error) => {
 };
 
 for (const viewport of viewports) {
-  const context = await browser.newContext({ viewport });
+  const context = await browser.newContext({
+    viewport,
+    ignoreHTTPSErrors: true,
+  });
 
   for (const route of routes) {
     const page = await context.newPage();
