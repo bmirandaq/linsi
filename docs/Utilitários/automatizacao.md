@@ -1,11 +1,8 @@
 ---
-title: Automação
+title: Assistente LINSI
 sidebar_position: 8
-slug: /automacao
+slug: /assistente
 ---
-
-# Automação
-
 :::secondary[Em breve]
-Skill, plugin e agente em construção
+Skill e integrações para interpretar contextos, propor fluxogramas em LINSI e apoiar sua revisão.
 :::
