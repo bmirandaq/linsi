@@ -45,6 +45,12 @@ jobs:
           npm install --no-save --package-lock=false playwright@1.55.0
           npx playwright install chromium
 
+      - name: Medir baseline responsivo em produção
+        run: node scripts/test-responsive-smoke.mjs
+        env:
+          SMOKE_BASE_URL: https://linsi.beamiranda.com.br
+          SMOKE_REPORT_ONLY: '1'
+
       - name: Servir build localmente
         run: |
           npm run serve -- --host 127.0.0.1 --port 3000 > /tmp/linsi-serve.log 2>&1 &
