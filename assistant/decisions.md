@@ -60,11 +60,27 @@ O background tecnico pode ajudar a interpretar um problema, mas a Assistente nao
 
 Quando parte do problema exceder o que a LINSI documenta ou pretende representar, a Assistente deve delimitar o recorte que consegue tratar responsavelmente, preservar limites/premissas quando necessario e nao deformar a notacao para acomodar o restante.
 
+### Navegacao e lacunas
+
+**Data:** 2026-09-05
+
+**Status:** consolidado
+
+A interacao com a Assistente nao substitui nem oculta a documentacao oficial. Toda resposta deve manter acessivel a fonte correspondente ao que esta sendo tratado, quando ela existir.
+
+Quando a Assistente identificar uma lacuna da LINSI, deve:
+
+- deixa-la explicita;
+- ajudar a pessoa a desdobrar o caso e trabalhar possiveis solucoes sem apresenta-las como regra consolidada;
+- indicar a pagina `https://linsi.beamiranda.com.br/contribuir`.
+
+A pagina Contribuir pode ser usada para propor melhorias, tirar duvidas ou pedir ajuda. A Assistente tambem pode apoiar a pessoa a preparar o conteudo do formulario.
+
 ### Output textual
 
 **Data:** 2026-09-05
 
-**Status:** consolidado como requisito; formato em validacao
+**Status:** consolidado
 
 A Fase 1 tera um padrao textual proprio da Assistente para comunicar fluxogramas. Esse padrao nao deve ser apresentado como uma nova notacao LINSI.
 
@@ -75,13 +91,27 @@ Decisoes consolidadas para o formato:
 - Setas permanecem associadas aos Elementos que conectam e seus rotulos permanecem junto das proprias Setas;
 - Caminhos e Colunas devem ser apresentados juntos quando ambos existirem;
 - nesse caso, o texto percorre Colunas da esquerda para a direita e apresenta dentro de cada Coluna os Caminhos de cima para baixo;
-- Convergencias devem aparecer no ponto em que acontecem;
+- Convergencias devem aparecer no ponto em que acontecem e permanecem subordinadas a Caminhos;
 - `Comentario` nao e gerado pela Assistente no output textual; seu uso pertence a pessoa usuaria;
-- duvidas ou informacoes ausentes da Assistente usam `Pontos em aberto da proposta`;
+- `Pontos em aberto da proposta` sao usados somente para informacao critica que nao possa ser inferida com seguranca;
+- hipoteses responsaveis adotadas pela Assistente sao registradas em `Premissas`;
 - o formato deve ser proporcional e nao antecipar propriedades especificas de ferramentas ou do JSON da Fase 2.
 
 ### Distribuicao
 
-**Status:** consolidado como premissa
+**Data:** 2026-09-05
 
-O usuario final nao deve precisar clonar o repositorio inteiro. A Skill deve ser distribuida como pacote portatil e por instalacao simplificada nas CLIs mais relevantes.
+**Status:** consolidado para a primeira beta
+
+O usuario final nao deve precisar clonar o repositorio inteiro.
+
+A primeira release sera identificada como `v0.1-beta`.
+
+Suporte oficial da beta:
+
+- ChatGPT;
+- Codex CLI.
+
+Outros hosts nao entram no suporte oficial enquanto nao puderem ser testados.
+
+Na pagina publica, `Beta` deve aparecer como tag ao lado do titulo. A numeracao da versao deve aparecer apenas como texto de apoio, sem destaque. A evolucao visual e de conteudo dessa pagina sera tratada separadamente do fechamento tecnico da Skill.
