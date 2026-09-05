@@ -5,7 +5,7 @@
   font-weight: 400;
   justify-content: space-between;
   min-height: 48px;
-  padding: 0.625rem 0.8rem;
+  padding: var(--linsi-space-8) var(--linsi-space-16);
   width: 100%;
 }
 
