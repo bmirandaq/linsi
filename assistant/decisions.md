@@ -30,6 +30,25 @@ Para cada decisao, registrar:
 
 A documentacao em `docs/` define a LINSI. A camada `assistant/` operacionaliza esse modelo e nao cria regras independentes.
 
+### Background tecnico complementar
+
+**Data:** 2026-09-05
+
+**Status:** consolidado como arquitetura da Fase 1
+
+O Assistente pode consumir repertorio externo sobre diagramas, process mapping, UX mapping, notacoes tradicionais, cognicao visual, acessibilidade e disciplinas adjacentes.
+
+Esse repertorio existe para melhorar interpretacao, comparacao, criacao e revisao, mas nao possui autoridade normativa sobre a LINSI.
+
+Regras de governanca:
+
+- `technical-background.md` guarda sintese offline e nao normativa;
+- `public-references.md` guarda procedencia e manutencao das fontes externas;
+- termos e simbolos externos nao possuem mapeamento automatico 1:1 para conceitos LINSI;
+- quando houver conflito, prevalece a documentacao LINSI;
+- antes de recomendar outro artefato, verificar se os recursos atuais da LINSI resolvem a necessidade sem distorcao ou sobrecarga;
+- mudancas no background tecnico devem ser cobertas por testes de contaminacao semantica.
+
 ### Output textual
 
 **Status:** consolidado como requisito; formato ainda pendente
