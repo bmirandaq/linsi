@@ -20,17 +20,24 @@ for (const value of expected) {
 assert.doesNotMatch(
   spacing,
   /--linsi-space-0\s*:/,
-  'Zero must remain literal; --linsi-space-0 must not exist.',
+  'Zero represents absence of spacing and must remain a literal 0, not a token.',
 );
 
 const spacingCssIndex = config.indexOf("'./src/css/spacing.css'");
-const layoutCssIndex = config.indexOf("'./src/css/layout-fixes.css'");
+const customCssIndex = config.indexOf("'./src/css/custom.css'");
 assert.ok(
-  spacingCssIndex > layoutCssIndex,
-  'Spacing system must load after legacy/global layout CSS so tokens are authoritative.',
+  spacingCssIndex !== -1 && spacingCssIndex < customCssIndex,
+  'Spacing tokens must load as a foundation before authored component/global CSS.',
 );
 
-const cssModuleFiles = [];
+const componentSelector = /}\s*[^@\s][^{]*\{/m;
+assert.doesNotMatch(
+  spacing,
+  componentSelector,
+  'spacing.css must contain only the :root token foundation, not component overrides.',
+);
+
+const cssFiles = [];
 const walk = (directory) => {
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
     const absolutePath = path.join(directory, entry.name);
@@ -38,9 +45,7 @@ const walk = (directory) => {
       walk(absolutePath);
       continue;
     }
-    if (entry.name.endsWith('.module.css')) {
-      cssModuleFiles.push(absolutePath);
-    }
+    if (entry.name.endsWith('.css')) cssFiles.push(absolutePath);
   }
 };
 walk(path.join(root, 'src'));
@@ -49,7 +54,7 @@ const spacingDeclaration = /^\s*(gap|row-gap|column-gap|margin(?:-(?:top|right|b
 const rawUnit = /(?:^|[\s(])-?\d*\.?\d+(?:px|rem|em)(?=$|[\s)])/;
 const violations = [];
 
-for (const absolutePath of cssModuleFiles) {
+for (const absolutePath of cssFiles) {
   const relativePath = path.relative(root, absolutePath).replaceAll('\\', '/');
   const source = fs.readFileSync(absolutePath, 'utf8');
   let match;
@@ -64,7 +69,21 @@ for (const absolutePath of cssModuleFiles) {
 assert.deepEqual(
   violations,
   [],
-  `CSS Modules must use LINSI spacing tokens instead of raw px/rem/em values:\n${violations.join('\n')}`,
+  `Authored CSS must use LINSI spacing tokens instead of raw px/rem/em values:\n${violations.join('\n')}`,
 );
 
-console.log('Spacing token contracts passed: 4/8/16/24/32/48/64/80/96; zero remains literal.');
+const aliases = ['--ifm-spacing-horizontal', '--linsi-page-inline', '--linsi-doc-column-gap'];
+for (const alias of aliases) {
+  for (const absolutePath of cssFiles) {
+    if (absolutePath.endsWith(`${path.sep}spacing.css`)) continue;
+    const relativePath = path.relative(root, absolutePath).replaceAll('\\', '/');
+    const source = fs.readFileSync(absolutePath, 'utf8');
+    assert.doesNotMatch(
+      source,
+      new RegExp(`${alias.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}\\s*:`),
+      `${alias} must be defined only in src/css/spacing.css, not ${relativePath}.`,
+    );
+  }
+}
+
+console.log('Spacing token contracts passed: 4/8/16/24/32/48/64/80/96, literal 0, one alias source and no raw authored spacing.');
