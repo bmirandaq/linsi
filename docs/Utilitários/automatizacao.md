@@ -1,6 +1,7 @@
 ---
 title: Assistente LINSI
 sidebar_position: 8
+sidebar_class_name: linsi-sidebar-assistant-beta
 slug: /assistente
 hide_title: true
 ---
@@ -11,8 +12,6 @@ import styles from './automatizacao.module.css';
   <h1>Assistente LINSI</h1>
   <span className={styles.beta}>Beta</span>
 </div>
-
-<p className={styles.version}>Versão 0.1-beta</p>
 
 ## O que você pode fazer
 
@@ -54,10 +53,10 @@ Envie um fluxograma existente. A Assistente revisa a estrutura, aplicação LINS
 
 ## Detalhes da versão
 
-Suporte oficial nesta Beta:
+Suporte oficial nesta versão 0.1-beta:
 
 - ChatGPT – Importar conforme descrito em <a href="https://help.openai.com/pt-br/articles/20001066-skills-in-chatgpt" target="_blank" rel="noopener noreferrer">Skills no ChatGPT</a>
-- Codex CLI – <code className={styles.installCommand}>codex "Instale a Skill: https://linsi.beamiranda.com.br/assistant"</code>
+- Codex CLI – Comando: `codex "Instale a Skill: https://linsi.beamiranda.com.br/assistant"`
 
 Itens contemplados:
 
@@ -66,6 +65,12 @@ Itens contemplados:
 - Output textual estruturado;
 - Revisão de fluxogramas;
 - Análise visual quando suportada pelo ambiente.
+
+:::secondary[Próximas fases]
+- Output em JSON para plugins e integrações;
+- Plugin para Figma;
+- Integração com Miro.
+:::
 
 ---
 
@@ -76,9 +81,3 @@ Acesse a página [Contribuir ou pedir ajuda](/contribuir) e envie uma mensagem c
 - Algum comportamento inesperado, erro ou dificuldade no uso da Assistente;
 - Algum caso ou lacuna não coberta pela documentação da LINSI. A Assistente pode te ajudar a preencher o formulário;
 - Qualquer outra dúvida pertinente.
-
-:::secondary[Próximas fases]
-- Output em JSON para plugins e integrações;
-- Plugin para Figma;
-- Integração com Miro.
-:::
