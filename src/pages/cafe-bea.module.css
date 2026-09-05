@@ -1,5 +1,5 @@
 .main {
-  padding: 3rem 0 4rem;
+  padding: var(--linsi-space-48) 0 var(--linsi-space-64);
   text-align: left;
 }
 
@@ -29,13 +29,13 @@
   font-size: clamp(1.75rem, 4vw, 2rem);
   font-weight: 800;
   letter-spacing: -0.02em;
-  margin-bottom: 0.75rem;
+  margin-bottom: var(--linsi-space-16);
   text-align: left;
 }
 
 .titleIcon {
   flex-shrink: 0;
-  margin-left: 0.35em;
+  margin-left: var(--linsi-space-8);
 }
 
 .paragraph1 {
@@ -51,7 +51,7 @@
   color: var(--linsi-neutral-dark);
   font-size: 1rem;
   line-height: 1.6;
-  margin: 0 0 2rem;
+  margin: 0 0 var(--linsi-space-32);
 }
 
 .leocassieImg {
@@ -73,7 +73,7 @@
 .contentStack {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: var(--linsi-space-32);
   text-align: left;
   width: 100%;
 }
@@ -81,7 +81,7 @@
 .leftCol {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: var(--linsi-space-32);
   text-align: left;
   width: 100%;
 }
@@ -89,7 +89,7 @@
 .rightCol {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: var(--linsi-space-32);
   text-align: left;
   width: 100%;
 }
@@ -98,7 +98,7 @@
   align-items: flex-start;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--linsi-space-16);
   text-align: left;
   width: 100%;
 }
@@ -108,7 +108,7 @@
   border: 1px solid var(--linsi-border-color);
   border-radius: var(--linsi-radius-md);
   display: flex;
-  padding: 0.75rem;
+  padding: var(--linsi-space-16);
   width: fit-content;
 }
 
@@ -130,7 +130,7 @@
   align-items: flex-start;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: var(--linsi-space-8);
   text-align: left;
   width: 100%;
 }
@@ -151,7 +151,7 @@
   font-family: monospace;
   font-size: 0.75rem;
   line-height: 1.4;
-  padding: 0.5rem;
+  padding: var(--linsi-space-8);
   resize: none;
   width: 100%;
 }
@@ -164,13 +164,13 @@
   color: var(--linsi-button-text);
   cursor: pointer;
   display: inline-flex;
-  gap: 0.5rem;
+  gap: var(--linsi-space-8);
   font-family: var(--ifm-heading-font-family);
   font-size: 0.9375rem;
   font-weight: 700;
   justify-content: center;
-  margin-top: 0.5rem;
-  padding: 0.75rem 1.25rem;
+  margin-top: var(--linsi-space-8);
+  padding: var(--linsi-space-8) var(--linsi-space-24);
   transition: background-color var(--linsi-motion-fast) var(--linsi-ease-standard),
     color var(--linsi-motion-fast) var(--linsi-ease-standard),
     transform var(--linsi-motion-fast) var(--linsi-ease-standard);
@@ -195,11 +195,11 @@
 /* Desktop: 2 columns */
 @media (min-width: 577px) {
   .contentStack {
+    align-items: start;
     display: grid;
+    gap: var(--linsi-space-32);
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
-    gap: 2rem;
-    align-items: start;
   }
 
   .header {
@@ -221,7 +221,7 @@
 /* Mobile: stack in order header -> rightCol -> leftCol */
 @media (max-width: 576px) {
   .main {
-    padding: 2rem 0 3rem;
+    padding: var(--linsi-space-32) 0 var(--linsi-space-48);
   }
 
   .header {
@@ -233,8 +233,8 @@
   }
 
   .leftCol {
-    order: 3;
     gap: 0;
+    order: 3;
   }
 
   .qrWrapper {
