@@ -49,3 +49,44 @@
     color: var(--linsi-accent-secondary) !important;
   }
 }
+
+/* Shared inline-string treatment */
+.theme-doc-markdown :not(pre) > code {
+  -webkit-box-decoration-break: clone;
+  background: var(--linsi-bg-surface-muted);
+  border: 1px solid var(--linsi-border-strong);
+  border-radius: var(--linsi-radius-sm);
+  box-decoration-break: clone;
+  overflow-wrap: anywhere;
+  padding: 0.125rem var(--linsi-space-8);
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* Sidebar section labels */
+.linsi-sidebar-section > .menu__list-item-collapsible > .menu__link {
+  font-size: 0.875rem;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+/* Assistente LINSI beta marker */
+.linsi-sidebar-assistant-beta.theme-doc-sidebar-item-link > .menu__link {
+  align-items: center;
+  display: flex;
+  gap: var(--linsi-space-8);
+}
+
+.linsi-sidebar-assistant-beta.theme-doc-sidebar-item-link > .menu__link::after {
+  background: var(--linsi-accent-primary-soft);
+  border: 1px solid var(--linsi-accent-primary);
+  border-radius: 999px;
+  color: var(--linsi-accent-primary);
+  content: 'Beta';
+  flex: 0 0 auto;
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-left: auto;
+  padding: 3px 6px;
+}
