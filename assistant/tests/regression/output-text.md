@@ -1,143 +1,151 @@
-# Testes de regressao — output textual
+# Testes de regressão — output textual
 
-Estes casos protegem o formato textual contra distorcoes da estrutura LINSI.
+Estes casos protegem o formato textual contra distorções da estrutura LINSI.
 
 Avaliar em conjunto com `../evaluation.md` e `../../skill/references/output-text.md`.
 
-## OT01 — Seta nao e item autonomo
+## OT01 — Seta mantém relação entre Elementos
 
-**Entrada:** continuidade `Interface -> Acao`.
+**Entrada:** continuidade `Interface -> Ação`.
 
 **Esperado:**
 - representar origem, Seta e destino de forma associada;
-- nao listar `[Seta Comum]` como bloco sem relacao identificavel.
+- não listar `[Seta Comum]` como bloco sem relação identificável.
 
-## OT02 — Rotulo permanece na Seta
+## OT02 — Rótulo permanece na Seta
 
-**Entrada:** Condicao `Pagamento autorizado?` com saidas `Autorizado` e `Recusado`.
-
-**Esperado:**
-- associar `Autorizado` e `Recusado` as respectivas Setas;
-- nao criar lista de resultados independente das Setas.
-
-## OT03 — Saida de Condicao que abre Caminho
-
-**Entrada:** `Recusado` abre Caminho negativo.
+**Entrada:** Condição `Pagamento autorizado?` com saídas `Autorizado` e `Recusado`.
 
 **Esperado:**
-- o Caminho secundario informa `Origem` e `Entrada` quando necessario;
-- a Seta de saida nao aparece duplicada no Caminho de origem e no Caminho novo.
+- escrever os rótulos junto das respectivas Setas;
+- não criar lista de resultados independente das Setas.
 
-## OT04 — Interface x Acao
+## OT03 — Interface x Ação
 
-**Entrada:** Interface oferece `Finalizar pedido` e a pessoa realiza essa acao.
-
-**Esperado:**
-- `Acoes:` dentro da Interface registra possibilidade;
-- `[Acao] Finalizar pedido` aparece separadamente na continuidade;
-- nao fundir os dois conceitos.
-
-## OT05 — Processo x reflexo percebido
-
-**Entrada:** sistema autoriza pagamento e depois a pessoa ve confirmacao.
+**Entrada:** Interface oferece `Finalizar pedido` e a pessoa realiza essa ação.
 
 **Esperado:**
-- `[Processo]` representa execucao do sistema;
-- `[Interface]` representa o reflexo percebido;
-- nao usar `Resultado:` dentro do Processo como substituto da Interface quando ela for relevante.
+- `Ações:` dentro da Interface registra possibilidade;
+- `[Ação] Finalizar pedido` aparece separadamente na continuidade.
 
-## OT06 — Nota nao entra na sequencia
+## OT04 — Processo x resultado perceptível
+
+**Entrada:** sistema autoriza pagamento e depois a pessoa vê confirmação.
+
+**Esperado:**
+- `[Processo]` representa a execução do sistema;
+- `[Interface]` representa o resultado percebido quando ele fizer parte da experiência.
+
+## OT05 — Nota não entra na sequência
 
 **Entrada:** Nota contextualiza um Processo.
 
 **Esperado:**
-- Nota aparece associada ao contexto sem Setas de entrada/saida;
-- leitura textual nao implica `Processo -> Nota -> Interface`.
+- Nota aparece associada ao contexto por recuo/proximidade;
+- não recebe Setas de entrada ou saída.
 
-## OT07 — Comentario x ponto em aberto da proposta
+## OT06 — Assistente não gera Comentário
 
-**Entrada A:** duvida que precisa aparecer no fluxograma.
-
-**Esperado A:** usar `[Comentario]` associado ao trecho relevante.
-
-**Entrada B:** informacao que a Assistente nao recebeu e que afeta apenas a proposta atual.
-
-**Esperado B:** usar `Pontos em aberto da proposta`, sem transformar a duvida em Elemento LINSI automaticamente.
-
-## OT08 — Caminho e eixo de continuidade
-
-**Entrada:** fluxo com Caminho principal e negativo.
+**Entrada:** falta uma informação que afeta a proposta atual.
 
 **Esperado:**
-- estruturar continuidades por Caminho;
-- nao organizar a sequencia primariamente por Colunas.
+- usar `Pontos em aberto da proposta` quando necessário;
+- não inserir Elemento `Comentário` no output gerado pela Assistente.
 
-## OT09 — Convergencia pertence a Caminhos
+## OT07 — Fluxo sem Colunas
 
-**Entrada:** dois Caminhos passam a compartilhar a mesma continuidade.
-
-**Esperado:**
-- descrever Convergencia dentro da logica de Caminhos;
-- nao apresenta-la como Elemento ou como conceito paralelo a Colunas;
-- nao duplicar toda a continuidade comum apos convergir.
-
-## OT10 — Coluna e camada ortogonal
-
-**Entrada:** uma Coluna Etapa abrange trechos de dois Caminhos.
+**Entrada:** fluxo com Caminho principal e negativo, sem Colunas.
 
 **Esperado:**
-- a secao de Colunas referencia os trechos dos Caminhos;
-- nao reescreve o fluxo como sequencia da Coluna;
-- preserva a dimensao vertical de agrupamento.
+- transcrever diretamente os Caminhos;
+- seguir a hierarquia documentada quando houver mais de um Caminho;
+- indicar origem e entrada de Caminho secundário quando necessário.
 
-## OT11 — Equivalencia sem rotulo visual obrigatorio
+## OT08 — Caminhos e Colunas aparecem juntos
 
-**Entrada:** Coluna Equivalencia entre dois trechos.
-
-**Esperado:**
-- o output pode usar `[Coluna Equivalencia]` para identificar a estrutura textual;
-- deixa claro que isso nao obriga rotulo no fluxograma visual.
-
-## OT12 — Ordem conceitual da referencia
+**Entrada:** fluxo com duas Colunas e dois Caminhos.
 
 **Esperado:**
-- as convencoes de Elementos aparecem na ordem oficial: Seta, Interface, Processo, Acao, Condicao, Inicio, Fim, Retomada, Nota, Comentario;
-- Caminhos vem depois de Elementos;
-- Colunas vem depois de Caminhos.
+- percorrer Colunas da esquerda para a direita;
+- dentro de cada Coluna, apresentar os Caminhos de cima para baixo;
+- não criar uma descrição completa de Caminhos e só depois outra descrição separada de Colunas.
 
-## OT13 — Ordem real do fluxo nao e ordem da documentacao
+## OT09 — Continuidade de um Caminho entre Colunas
 
-**Entrada:** fluxo cuja primeira ocorrencia e uma Interface, seguida de Acao, Processo e Condicao.
+**Entrada:** Caminho principal atravessa três Colunas.
 
 **Esperado:**
-- a transcricao concreta segue a continuidade real;
-- nao reorganiza ocorrencias para imitar a ordem da documentacao.
+- manter o mesmo nome do Caminho nos trechos correspondentes;
+- mostrar em cada Coluna apenas os Elementos daquele trecho;
+- permitir reconhecer a continuidade horizontal entre Colunas.
 
-## OT14 — Metadados nao viram LINSI
+## OT10 — Novo Caminho nasce dentro da Coluna correta
+
+**Entrada:** uma Condição na Coluna `Pagamento` abre Caminho negativo.
+
+**Esperado:**
+- apresentar o novo Caminho dentro da mesma Coluna em que ocorre o desdobramento;
+- registrar `Origem` e `Entrada` quando necessário;
+- não duplicar a Seta de saída em duas partes diferentes do output.
+
+## OT11 — Coluna Seção preserva Etapas existentes
+
+**Entrada:** Seção `Checkout` reúne Etapas `Endereço`, `Entrega` e `Pagamento`.
+
+**Esperado:**
+- manter as Etapas dentro da Seção na ordem visual correspondente;
+- não inventar Etapas para trechos que não estejam organizados assim.
+
+## OT12 — Equivalência mostra os Caminhos no mesmo bloco
+
+**Entrada:** Coluna Equivalência entre trechos de dois Caminhos.
+
+**Esperado:**
+- colocar os trechos equivalentes dentro do mesmo bloco de Coluna;
+- preservar a identidade de cada Caminho;
+- não tornar obrigatório rótulo visual da Coluna Equivalência.
+
+## OT13 — Convergência aparece onde acontece
+
+**Entrada:** dois Caminhos convergem na Coluna `Entrega`.
+
+**Esperado:**
+- registrar a Convergência dentro desse ponto da estrutura;
+- identificar Caminhos envolvidos e destino compartilhado;
+- escrever a continuidade comum uma única vez depois da Convergência.
+
+## OT14 — Ordem conceitual das convenções
+
+**Esperado:**
+- as convenções de Elementos aparecem na ordem: Seta, Interface, Processo, Ação, Condição, Início, Fim, Retomada e Nota;
+- a explicação de Caminhos e Colunas vem depois dos Elementos;
+- a ordem da referência não reorganiza a sequência real de um fluxo concreto.
+
+## OT15 — Metadados não viram estrutura do fluxograma
 
 **Entrada:** proposta com Escopo, Premissa e ponto em aberto.
 
 **Esperado:**
-- esses itens ficam fora de `Estrutura LINSI`;
-- nao sao representados como Nota, Comentario ou outro Elemento sem motivo semantico.
+- esses itens permanecem como metadados da proposta;
+- não são transformados em Elementos ou relações da modelagem sem motivo.
 
-## OT15 — Proporcionalidade
+## OT16 — Proporcionalidade
 
-**Entrada:** fluxo linear simples, sem hipoteses, Colunas ou pontos em aberto.
-
-**Esperado:**
-- omitir secoes desnecessarias;
-- nao preencher template vazio apenas por consistencia formal.
-
-## OT16 — Reconstrucao
-
-**Entrada:** output com bifurcacao, dois Caminhos, convergencia e uma Coluna.
+**Entrada:** fluxo linear simples, sem hipóteses, Colunas ou pontos em aberto.
 
 **Esperado:**
-Uma pessoa familiarizada com LINSI deve conseguir reconstruir:
-- sequencia;
-- origem dos Caminhos;
-- Setas e rotulos;
-- convergencia;
-- trechos abrangidos pela Coluna;
-sem inferir relacoes estruturais ausentes do texto.
+- omitir seções desnecessárias;
+- não preencher template vazio apenas por consistência formal.
+
+## OT17 — Reconstrução com Caminhos e Colunas
+
+**Entrada:** output com duas Colunas, dois Caminhos e uma Convergência.
+
+**Esperado:**
+Uma pessoa familiarizada com LINSI consegue identificar sem tomar novas decisões de modelagem:
+- sequência dos Elementos;
+- tipos e rótulos das Setas;
+- origem do Caminho secundário;
+- em qual Coluna cada trecho está;
+- continuidade de cada Caminho entre Colunas;
+- ponto de Convergência.
