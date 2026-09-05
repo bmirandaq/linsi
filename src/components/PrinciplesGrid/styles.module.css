@@ -154,6 +154,7 @@
 @media (max-width: 760px) {
   .grid {
     grid-template-columns: minmax(0, 1fr);
+    overflow-x: clip;
     row-gap: var(--linsi-space-48);
   }
 
