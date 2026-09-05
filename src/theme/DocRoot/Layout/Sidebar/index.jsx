@@ -23,13 +23,13 @@ export default function DocRootLayoutSidebar({
   setHiddenSidebarContainer,
 }) {
   const {pathname} = useLocation();
-  const viewportRef = useRef(null);
+  const containerRef = useRef(null);
   const [expandedHeight, setExpandedHeight] = useState(null);
 
   const toggleSidebar = useCallback(() => {
-    if (!hiddenSidebarContainer && viewportRef.current) {
+    if (!hiddenSidebarContainer && containerRef.current) {
       const measuredHeight = Math.ceil(
-        viewportRef.current.getBoundingClientRect().height,
+        containerRef.current.getBoundingClientRect().height,
       );
 
       if (measuredHeight > 0) {
@@ -46,6 +46,7 @@ export default function DocRootLayoutSidebar({
 
   return (
     <aside
+      ref={containerRef}
       style={sidebarStyle}
       className={clsx(
         ThemeClassNames.docs.docSidebarContainer,
@@ -54,7 +55,6 @@ export default function DocRootLayoutSidebar({
       )}>
       <ResetOnSidebarChange>
         <div
-          ref={viewportRef}
           className={clsx(
             styles.sidebarViewport,
             hiddenSidebarContainer && styles.sidebarViewportHidden,
