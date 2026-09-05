@@ -1,0 +1,79 @@
+name: Validar migração de spacing
+
+on:
+  push:
+    branches: [chore/spacing-scale]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: spacing-migration
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar branch
+        uses: actions/checkout@v6
+        with:
+          ref: chore/spacing-scale
+          fetch-depth: 0
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Aplicar migração de spacing
+        run: node scripts/migrate-spacing.cjs
+
+      - name: Rodar contratos, build e auditorias existentes
+        run: npm run build
+        env:
+          SITE_URL: http://127.0.0.1:3000
+          BASE_URL: /
+
+      - name: Instalar navegador para smoke regressivo
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install chromium
+
+      - name: Servir build localmente
+        run: |
+          npm run serve -- --host 127.0.0.1 --port 3000 > /tmp/linsi-serve.log 2>&1 &
+          echo $! > /tmp/linsi-serve.pid
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/linsi-serve.log
+          exit 1
+
+      - name: Rodar smoke regressivo responsivo
+        run: node scripts/test-responsive-smoke.mjs
+        env:
+          SMOKE_BASE_URL: http://127.0.0.1:3000
+
+      - name: Validar whitespace do diff
+        run: git diff --check
+
+      - name: Persistir migração validada
+        run: |
+          if git diff --quiet -- src docusaurus.config.js; then
+            echo 'Migração já está aplicada; nada para commitar.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src docusaurus.config.js
+          git commit -m 'refactor: normalize authored spacing tokens'
+          git push origin HEAD:chore/spacing-scale
