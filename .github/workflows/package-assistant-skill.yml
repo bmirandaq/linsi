@@ -1,0 +1,39 @@
+name: Empacotar Assistente LINSI
+
+on:
+  push:
+    branches: [assistant-phase-1]
+    paths:
+      - 'assistant/skill/**'
+      - '.github/workflows/package-assistant-skill.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositorio
+        uses: actions/checkout@v6
+
+      - name: Verificar estrutura minima da Skill
+        run: |
+          test -f assistant/skill/SKILL.md
+          test -f assistant/skill/agents/openai.yaml
+          test -d assistant/skill/references
+
+      - name: Empacotar Skill
+        run: |
+          mkdir -p dist
+          cd assistant
+          zip -r ../dist/skill.zip skill
+
+      - name: Publicar artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: assistente-linsi-0.1-beta
+          path: dist/skill.zip
+          if-no-files-found: error
+          retention-days: 30
