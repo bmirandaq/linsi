@@ -7,7 +7,7 @@ const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'u
 
 const spacing = read('src/css/spacing.css');
 const config = read('docusaurus.config.js');
-const expected = [8, 16, 24, 32, 48, 64, 80, 96];
+const expected = [4, 8, 16, 24, 32, 48, 64, 80, 96];
 
 for (const value of expected) {
   assert.match(
@@ -16,6 +16,12 @@ for (const value of expected) {
     `Spacing scale must define --linsi-space-${value}: ${value}px.`,
   );
 }
+
+assert.doesNotMatch(
+  spacing,
+  /--linsi-space-0\s*:/,
+  'Zero must remain literal; --linsi-space-0 must not exist.',
+);
 
 const spacingCssIndex = config.indexOf("'./src/css/spacing.css'");
 const layoutCssIndex = config.indexOf("'./src/css/layout-fixes.css'");
@@ -61,4 +67,4 @@ assert.deepEqual(
   `CSS Modules must use LINSI spacing tokens instead of raw px/rem/em values:\n${violations.join('\n')}`,
 );
 
-console.log('Spacing token contracts passed: 8/16/24/32/48/64/80/96 and CSS Modules tokenized.');
+console.log('Spacing token contracts passed: 4/8/16/24/32/48/64/80/96; zero remains literal.');
