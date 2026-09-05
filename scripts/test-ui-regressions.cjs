@@ -7,6 +7,7 @@ const read = (relativePath) =>
   fs.readFileSync(path.join(root, relativePath), 'utf8');
 
 const customCss = read('src/css/custom.css');
+const layoutFixesCss = read('src/css/layout-fixes.css');
 const footer = read('src/theme/Footer/index.jsx');
 const footerCss = read('src/theme/Footer/styles.module.css');
 const homeCss = read('src/pages/index.module.css');
@@ -23,6 +24,7 @@ const mobileSidebarHeader = read(
 );
 const navbarSearchCss = read('src/theme/Navbar/Search/styles.module.css');
 const sidebarLayout = read('src/theme/DocRoot/Layout/Sidebar/index.jsx');
+const sidebarLayoutCss = read('src/theme/DocRoot/Layout/Sidebar/styles.module.css');
 const sidebarExpandCss = read(
   'src/theme/DocRoot/Layout/Sidebar/ExpandButton/styles.module.css',
 );
@@ -54,8 +56,23 @@ assert.match(
 );
 assert.match(
   sidebarExpandCss,
-  /@media \(min-width: 997px\)[\s\S]*?height:\s*100%;[\s\S]*?min-height:\s*240px;/,
-  'O botão da sidebar colapsada precisa preservar uma área vertical confortável.',
+  /@media \(min-width: 997px\)[\s\S]*?height:\s*32px;[\s\S]*?position:\s*static;/,
+  'O botão da sidebar colapsada deve permanecer compacto no desktop.',
+);
+assert.match(
+  sidebarLayoutCss,
+  /\.sidebarViewportHidden\s*\{[\s\S]*?height:\s*32px;[\s\S]*?max-height:\s*32px;/,
+  'O viewport da sidebar colapsada não pode ocupar a altura da página.',
+);
+assert.match(
+  layoutFixesCss,
+  /docSidebarContainerHidden[\s\S]*?height:\s*32px !important;[\s\S]*?min-height:\s*32px !important;/,
+  'O override final da sidebar colapsada precisa neutralizar a altura legada.',
+);
+assert.match(
+  layoutFixesCss,
+  /html\.docs-doc-page \.main-wrapper\s*\{[\s\S]*?padding-bottom:\s*64px;/,
+  'As páginas da documentação precisam manter 64px antes do footer.',
 );
 
 assert.match(
@@ -136,4 +153,4 @@ assert.doesNotMatch(
   'O feedback do Pix deve permanecer no próprio botão.',
 );
 
-console.log('UI regression contracts passed: sidebar, footer link and mobile viewport.');
+console.log('UI regression contracts passed: sidebar, footer spacing and mobile viewport.');
