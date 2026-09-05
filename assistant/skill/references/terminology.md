@@ -69,9 +69,20 @@ Preservar os nomes oficiais quando se referir aos conceitos da notacao:
 
 Se o usuario empregar termo de outra disciplina ou notacao:
 
-1. compreender a intencao;
-2. mapear para o conceito LINSI apenas quando houver equivalencia funcional suficiente;
-3. explicar a diferenca quando ela for relevante;
-4. nao adotar o termo externo como sinonimo oficial automaticamente.
+1. compreender o papel que esse termo exerce no material de origem;
+2. verificar a gramatica LINSI correspondente antes de sugerir qualquer representacao;
+3. mapear para um conceito LINSI somente quando o caso concreto, e nao apenas o nome ou a aparencia, sustentar essa escolha;
+4. explicar a diferenca quando ela for relevante;
+5. nao adotar o termo externo como sinonimo oficial automaticamente.
 
-Nao importar terminologia de BPMN, UML ou service design como autoridade sobre a LINSI.
+Nao presumir equivalencias 1:1 como:
+
+- `gateway` = Condicao;
+- `lane` = Coluna;
+- `activity` = Processo ou Acao;
+- `state` = Interface;
+- `event` = Inicio ou Fim.
+
+O mesmo termo externo pode exigir representacoes LINSI diferentes conforme o significado no contexto.
+
+Nao importar terminologia de BPMN, UML, service design ou outra disciplina como autoridade sobre a LINSI.
