@@ -84,7 +84,7 @@ for (const absolutePath of cssFiles) {
   // Spacing aliases have one source of truth: spacing.css.
   if (absolutePath.endsWith(`${path.sep}custom.css`)) {
     source = source.replace(
-      /\n\s*\/\* Gutters laterais padronizados \(home, pages, footer, navbar\) \*\/\n\s*--ifm-spacing-horizontal:\s*1\.5rem;\n\s*--linsi-page-inline:\s*var\(--ifm-spacing-horizontal\);\n/,
+      /\r?\n\s*\/\* Gutters laterais padronizados \(home, pages, footer, navbar\) \*\/\r?\n\s*--ifm-spacing-horizontal:\s*1\.5rem;\r?\n\s*--linsi-page-inline:\s*var\(--ifm-spacing-horizontal\);\r?\n/,
       '\n',
     );
   }
