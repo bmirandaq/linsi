@@ -14,20 +14,22 @@ Links devem ser verificados antes de cada release. Nao registrar rota planejada 
 | Caminhos | `docs/estrutura-linsi/caminhos.md` | `/docs/estrutura-linsi/caminhos` | bifurcacoes, ordem, convergencia |
 | Colunas | `docs/estrutura-linsi/colunas.md` | `/docs/estrutura-linsi/colunas` | Etapa, Secao, Equivalencia e agrupamentos |
 | Boas praticas | `docs/boas-praticas.md` | `/docs/boas-praticas` | escopo, legibilidade, espacamento, revisao |
-| Assistente LINSI | `docs/Utilitarios/automatizacao.md` | `/docs/assistente` | uso, instalacao e capacidades do Assistente |
+| Assistente LINSI | `docs/Utilitários/automatizacao.md` | `/assistente` | uso, instalacao e capacidades do Assistente |
+| Contribuir | `src/pages/contribuir.jsx` | `/contribuir` | lacunas da LINSI, propostas de melhoria, duvidas ou pedidos de ajuda |
 
 Base publica: `https://linsi.beamiranda.com.br`
 
 ## Regra de uso
 
-Indicar link quando ele oferecer:
+Sempre indicar os links oficiais correspondentes aos conceitos tratados quando essas fontes existirem. A interacao com a Assistente nao deve substituir nem ocultar a documentacao.
 
-- explicacao completa;
-- exemplo visual relevante;
-- aprofundamento natural;
-- referencia oficial util para consulta posterior.
+Preferir a pagina mais especifica para o tema em vez de apontar apenas para a home.
 
-Nao adicionar links mecanicamente a toda resposta.
+Quando houver mais de uma pagina relevante, indicar somente as que ajudam a localizar as fontes efetivamente usadas na resposta.
+
+Nao adicionar links sem relacao com o conteudo tratado apenas para cumprir a regra de navegacao.
+
+Quando identificar uma lacuna da LINSI, indicar tambem `/contribuir`.
 
 ## Gate de release
 
