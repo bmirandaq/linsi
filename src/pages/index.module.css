@@ -5,7 +5,7 @@
 .intro {
   background: var(--linsi-logo-surface);
   min-height: calc(100vh - var(--ifm-navbar-height));
-  padding: 5rem 0 0;
+  padding: var(--linsi-space-80) 0 0;
   width: 100%;
   transition: background-color var(--linsi-motion-base) var(--linsi-ease-standard);
 }
@@ -14,7 +14,7 @@
 .layout {
   align-items: center;
   display: grid;
-  gap: 3rem;
+  gap: var(--linsi-space-48);
   grid-template-columns: minmax(0, 1fr) minmax(240px, 0.9fr);
   width: 100%;
 }
@@ -35,11 +35,10 @@
 }
 
 .logo {
-  animation: homeElementEnter var(--linsi-motion-base) var(--linsi-ease-enter)
-    both;
+  animation: homeElementEnter var(--linsi-motion-base) var(--linsi-ease-enter) both;
   display: block;
   height: auto;
-  margin-bottom: 3rem;
+  margin-bottom: var(--linsi-space-48);
   width: 163px;
   transition: filter var(--linsi-motion-base) var(--linsi-ease-standard);
 }
@@ -59,21 +58,19 @@
 }
 
 .subtitle {
-  animation: homeElementEnter var(--linsi-motion-base) var(--linsi-ease-enter)
-    40ms both;
+  animation: homeElementEnter var(--linsi-motion-base) var(--linsi-ease-enter) 40ms both;
   color: var(--linsi-home-subtitle);
   font-size: clamp(1.125rem, 2.5vw, 1.5rem);
   line-height: 1.5;
-  margin: 0 0 2rem;
+  margin: 0 0 var(--linsi-space-32);
   max-width: 600px;
   transition: color var(--linsi-motion-base) var(--linsi-ease-standard);
 }
 
 .positioningCopy {
-  animation: homeElementEnter var(--linsi-motion-base) var(--linsi-ease-enter)
-    80ms both;
+  animation: homeElementEnter var(--linsi-motion-base) var(--linsi-ease-enter) 80ms both;
   color: var(--linsi-home-copy);
-  margin-bottom: 2.5rem;
+  margin-bottom: var(--linsi-space-48);
   max-width: 680px;
   transition: color var(--linsi-motion-base) var(--linsi-ease-standard);
 }
@@ -81,7 +78,7 @@
 .positioningCopy p {
   font-size: 1.0625rem;
   line-height: 1.75;
-  margin-bottom: 1.125rem;
+  margin-bottom: var(--linsi-space-16);
 }
 
 .positioningCopy p:last-child {
@@ -89,14 +86,13 @@
 }
 
 .primaryAction {
-  animation: homeElementEnter var(--linsi-motion-base) var(--linsi-ease-enter)
-    120ms both;
+  animation: homeElementEnter var(--linsi-motion-base) var(--linsi-ease-enter) 120ms both;
   background: var(--linsi-button-background);
   border: 2px solid var(--linsi-button-background);
   border-radius: var(--linsi-radius-md);
   color: var(--linsi-button-text);
   font-size: 1rem;
-  padding: 0.75rem 1.25rem;
+  padding: var(--linsi-space-8) var(--linsi-space-24);
   transition: background-color var(--linsi-motion-fast) var(--linsi-ease-standard),
     border-color var(--linsi-motion-fast) var(--linsi-ease-standard),
     color var(--linsi-motion-fast) var(--linsi-ease-standard),
@@ -116,8 +112,7 @@
 }
 
 .primaryAction:focus-visible {
-  box-shadow: 0 0 0 2px var(--linsi-button-focus-inner),
-    0 0 0 5px var(--linsi-focus-color);
+  box-shadow: 0 0 0 2px var(--linsi-button-focus-inner), 0 0 0 5px var(--linsi-focus-color);
   outline: none;
 }
 
@@ -154,7 +149,7 @@
 
   .mediaColumn {
     aspect-ratio: 16 / 10;
-    margin-bottom: 2.5rem;
+    margin-bottom: var(--linsi-space-48);
     max-width: 520px;
     min-height: 200px;
     order: 3;
@@ -172,11 +167,11 @@
 
 @media (max-width: 576px) {
   .intro {
-    padding: 4rem 0;
+    padding: var(--linsi-space-64) 0;
   }
 
   .logo {
-    margin-bottom: 2.5rem;
+    margin-bottom: var(--linsi-space-32);
     width: 136px;
   }
 
@@ -206,15 +201,15 @@
 
 .origin {
   background: var(--linsi-bg-canvas);
-  margin-bottom: 64px;
-  margin-top: 64px;
-  padding: 3rem 0 3.5rem;
+  margin-bottom: var(--linsi-space-64);
+  margin-top: var(--linsi-space-64);
+  padding: var(--linsi-space-48) 0 var(--linsi-space-64);
 }
 
 .originLayout {
   align-items: start;
   display: grid;
-  gap: 80px;
+  gap: var(--linsi-space-80);
   grid-template-columns: minmax(360px, 0.98fr) minmax(0, 1.02fr);
 }
 
@@ -224,7 +219,7 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.25;
-  margin: 0 0 1.25rem;
+  margin: 0 0 var(--linsi-space-24);
 }
 
 .coverWrap {
@@ -251,9 +246,9 @@
 
 .stats {
   display: grid;
-  gap: 0.75rem;
+  gap: var(--linsi-space-16);
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin: 0 0 0.625rem;
+  margin: 0 0 var(--linsi-space-8);
 }
 
 .statCard {
@@ -262,10 +257,10 @@
   border: 1px solid var(--linsi-border-base);
   border-radius: var(--linsi-radius-md);
   display: grid;
-  gap: 1.25rem;
+  gap: var(--linsi-space-24);
   grid-template-columns: auto minmax(0, 1fr);
   min-width: 0;
-  padding: 1rem 1.125rem;
+  padding: var(--linsi-space-16);
 }
 
 [data-theme='dark'] .statCard {
@@ -280,7 +275,7 @@
 .statContent {
   align-items: baseline;
   display: flex;
-  gap: 0.55rem;
+  gap: var(--linsi-space-8);
   min-width: 0;
 }
 
@@ -306,7 +301,7 @@
   color: var(--linsi-fg-muted);
   font-size: 0.75rem;
   line-height: 1.5;
-  margin: 0 0 1.75rem;
+  margin: 0 0 var(--linsi-space-32);
 }
 
 .originText {
@@ -314,7 +309,7 @@
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.75;
-  margin: 0 0 1.75rem;
+  margin: 0 0 var(--linsi-space-32);
   max-width: 580px;
 }
 
@@ -324,7 +319,7 @@
   display: inline-flex;
   font-size: 1rem;
   font-weight: 600;
-  gap: 0.35rem;
+  gap: var(--linsi-space-8);
   line-height: 1.5;
   text-decoration: none;
 }
@@ -347,7 +342,7 @@
   .originLayout {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: var(--linsi-space-32);
   }
 
   .coverWrap {
@@ -371,18 +366,9 @@
     order: 3;
   }
 
-  .originCopy > .stats {
-    order: 3;
-  }
-
-  .originCopy > .statsDate {
-    order: 3;
-  }
-
-  .originCopy > .originText {
-    order: 3;
-  }
-
+  .originCopy > .stats,
+  .originCopy > .statsDate,
+  .originCopy > .originText,
   .originCopy > .originLink {
     order: 3;
   }
@@ -390,9 +376,9 @@
 
 @media (max-width: 780px) {
   .origin {
-    margin-bottom: 3rem;
-    margin-top: 3rem;
-    padding: 2.5rem 0 3rem;
+    margin-bottom: var(--linsi-space-48);
+    margin-top: var(--linsi-space-48);
+    padding: var(--linsi-space-32) 0 var(--linsi-space-48);
   }
 
   .originTitle {
@@ -400,7 +386,7 @@
   }
 
   .stats {
-    gap: 0.625rem;
+    gap: var(--linsi-space-8);
   }
 
   .statValue {
@@ -410,7 +396,7 @@
 
 @media (max-width: 576px) {
   .stats {
-    gap: 0.75rem;
+    gap: var(--linsi-space-16);
     grid-template-columns: 1fr;
   }
 }
