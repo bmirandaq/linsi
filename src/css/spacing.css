@@ -1,0 +1,280 @@
+/* =========================================================
+   LINSI — Spacing system
+   Primitive scale + authoritative global spacing overrides
+
+   Layout/composition spacing must use this scale. Mechanical
+   dimensions (borders, icon sizes, control geometry, transforms)
+   are not spacing tokens.
+   ========================================================= */
+
+:root {
+  --linsi-space-8: 8px;
+  --linsi-space-16: 16px;
+  --linsi-space-24: 24px;
+  --linsi-space-32: 32px;
+  --linsi-space-48: 48px;
+  --linsi-space-64: 64px;
+  --linsi-space-80: 80px;
+  --linsi-space-96: 96px;
+
+  /* Semantic layout aliases */
+  --ifm-spacing-horizontal: var(--linsi-space-24);
+  --linsi-page-inline: var(--linsi-space-24);
+  --linsi-doc-column-gap: var(--linsi-space-48);
+}
+
+/* Navbar + shared shell */
+.linsi-icon-external-link,
+.linsi-coffee-link::after {
+  margin-left: var(--linsi-space-8);
+}
+
+.main-wrapper {
+  padding-top: var(--linsi-space-16);
+}
+
+.navbar__brand {
+  gap: var(--linsi-space-8);
+}
+
+.linsi-font-selector-item {
+  padding: 0 var(--linsi-space-8);
+}
+
+.linsi-font-selector {
+  gap: var(--linsi-space-8);
+}
+
+.linsi-font-selector__select {
+  padding: 0 var(--linsi-space-32) 0 var(--linsi-space-8);
+}
+
+/* Search */
+@media (min-width: 680px) {
+  .aa-DetachedContainer,
+  .aa-DetachedContainer--modal {
+    width: calc(100% - var(--linsi-space-32)) !important;
+  }
+}
+
+.aa-DetachedFormContainer {
+  padding: var(--linsi-space-16) !important;
+}
+
+.aa-Form,
+.aa-Item,
+.aa-ItemLink,
+.aa-ItemContent,
+.aa-ItemContentSubtitle {
+  gap: var(--linsi-space-8) !important;
+}
+
+.aa-Input {
+  padding: 0 var(--linsi-space-8) !important;
+}
+
+.aa-PanelLayout {
+  padding: var(--linsi-space-8) 0 !important;
+}
+
+.aa-SourceHeader {
+  padding: var(--linsi-space-8) var(--linsi-space-16) !important;
+}
+
+.aa-Item {
+  margin: 0 var(--linsi-space-8) !important;
+  padding: var(--linsi-space-8) var(--linsi-space-16) !important;
+}
+
+.aa-SourceNoResults {
+  padding: var(--linsi-space-24) var(--linsi-space-16) !important;
+}
+
+/* Docs shell + sidebar */
+@media (min-width: 997px) {
+  .theme-doc-sidebar-container {
+    margin-bottom: var(--linsi-space-16) !important;
+    max-height: calc(100vh - var(--ifm-navbar-height) - var(--linsi-space-24)) !important;
+    top: calc(var(--ifm-navbar-height) + var(--linsi-space-8));
+  }
+
+  .theme-doc-sidebar-container > div,
+  .theme-doc-sidebar-container [class*='sidebar']:not([class*='sidebarLogo']):not([class*='sidebarViewport']) {
+    max-height: calc(100vh - var(--ifm-navbar-height) - var(--linsi-space-24)) !important;
+  }
+
+  .theme-doc-sidebar-container [class*='sidebar']:not([class*='sidebarLogo']):not([class*='sidebarViewport']) {
+    padding-top: var(--linsi-space-8) !important;
+  }
+
+  .theme-doc-sidebar-container .menu {
+    max-height: calc(100vh - var(--ifm-navbar-height) - var(--linsi-space-48));
+  }
+
+  .theme-doc-sidebar-container[class*='docSidebarContainerHidden'] {
+    height: calc(100vh - var(--ifm-navbar-height) - var(--linsi-space-24)) !important;
+    max-height: calc(100vh - var(--ifm-navbar-height) - var(--linsi-space-24)) !important;
+  }
+
+  html.docs-doc-page [class*='docRoot'] {
+    column-gap: var(--linsi-doc-column-gap);
+    padding-left: var(--linsi-page-inline);
+    padding-right: var(--linsi-page-inline);
+  }
+
+  html.docs-doc-page .main-wrapper {
+    padding-bottom: var(--linsi-space-64);
+  }
+}
+
+.linsi-sidebar-section {
+  margin-bottom: var(--linsi-space-16);
+}
+
+.menu__list > :not(.linsi-sidebar-section) + .linsi-sidebar-section {
+  margin-top: var(--linsi-space-16);
+}
+
+.linsi-sidebar-section > .menu__list-item-collapsible {
+  gap: var(--linsi-space-8);
+}
+
+.theme-doc-wrapper {
+  padding-top: var(--linsi-space-8);
+}
+
+.theme-doc-markdown h2 {
+  margin-top: var(--linsi-space-48);
+}
+
+.theme-doc-markdown hr {
+  margin: var(--linsi-space-32) 0;
+}
+
+/* Docs navigation */
+.pagination-nav {
+  margin-top: var(--linsi-space-48);
+  padding: 0 0 var(--linsi-space-24);
+}
+
+.pagination-nav__link {
+  padding: var(--linsi-space-16);
+}
+
+.pagination-nav__link--prev .pagination-nav__label::before {
+  margin-right: var(--linsi-space-8);
+}
+
+.pagination-nav__link--next .pagination-nav__label::after {
+  margin-left: var(--linsi-space-8);
+}
+
+/* Por que fazer fluxogramas */
+.flow-benefits__lead {
+  margin: 0 0 var(--linsi-space-32);
+}
+
+.flow-benefit {
+  padding: var(--linsi-space-32) var(--linsi-space-48) var(--linsi-space-48) 0;
+}
+
+.flow-benefit:nth-child(even) {
+  padding-left: var(--linsi-space-32);
+  padding-right: var(--linsi-space-32);
+}
+
+.flow-benefit h3,
+.flow-benefit p {
+  margin-bottom: var(--linsi-space-16);
+}
+
+.flow-benefit p:last-of-type {
+  margin-bottom: 0;
+}
+
+.flow-statement {
+  margin-top: var(--linsi-space-80);
+  padding: var(--linsi-space-8) 0;
+}
+
+/* Glossary */
+.glossary-entry {
+  gap: var(--linsi-space-32);
+  padding-block: var(--linsi-space-24);
+}
+
+.glossary-support {
+  margin-top: var(--linsi-space-8);
+}
+
+@media (max-width: 700px) {
+  .flow-benefit,
+  .flow-benefit:nth-child(even) {
+    padding: var(--linsi-space-32) var(--linsi-space-48) var(--linsi-space-48) 0;
+  }
+
+  .flow-statement {
+    margin-top: var(--linsi-space-64);
+  }
+
+  .glossary-entry {
+    gap: var(--linsi-space-8);
+  }
+}
+
+@media (max-width: 996px) {
+  .main-wrapper {
+    padding-top: var(--linsi-space-8);
+  }
+
+  .linsi-font-selector-item {
+    padding: var(--linsi-space-16);
+  }
+
+  .navbar__items--right {
+    column-gap: var(--linsi-space-8);
+  }
+
+  .navbar__toggle + .navbar__brand {
+    margin-left: var(--linsi-space-16);
+  }
+
+  .pagination-nav {
+    margin-top: var(--linsi-space-32);
+  }
+
+  .navbar-sidebar .menu__list-item + .menu__list-item {
+    margin-top: var(--linsi-space-8);
+  }
+
+  [class*='tocCollapsibleContent'] .table-of-contents__link {
+    padding-bottom: var(--linsi-space-8);
+    padding-top: var(--linsi-space-8);
+  }
+}
+
+@media (min-width: 997px) and (max-width: 1200px) {
+  .linsi-font-selector {
+    gap: 0;
+  }
+
+  .navbar__item {
+    padding-left: var(--linsi-space-8);
+    padding-right: var(--linsi-space-8);
+  }
+}
+
+@media (max-width: 576px) {
+  .aa-DetachedFormContainer {
+    padding: var(--linsi-space-8) var(--linsi-space-16) !important;
+  }
+
+  .aa-Panel {
+    padding-bottom: max(var(--linsi-space-8), env(safe-area-inset-bottom)) !important;
+  }
+
+  .aa-Item {
+    margin: 0 var(--linsi-space-8) !important;
+    padding: var(--linsi-space-16) !important;
+  }
+}
