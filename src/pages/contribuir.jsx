@@ -25,7 +25,7 @@ const REASONS = [
 ];
 
 const CONTACT_API_URL = 'https://linsi-form-handler.bmirandaqux.workers.dev';
-const TURNSTILE_SITE_KEY = '';
+const TURNSTILE_SITE_KEY = '0x4AAAAAAEjIIV8ZHpYobikz';
 
 export default function Contato() {
   const [motivo, setMotivo] = useState('contribuir');
@@ -37,6 +37,7 @@ export default function Contato() {
   const [errorMsg, setErrorMsg] = useState('');
   const turnstileRef = useRef(null);
   const turnstileWidgetId = useRef(null);
+  const turnstileResolver = useRef(null);
 
   useEffect(() => {
     if (!TURNSTILE_SITE_KEY || typeof window === 'undefined') return;
@@ -53,11 +54,16 @@ export default function Contato() {
           sitekey: TURNSTILE_SITE_KEY,
           size: 'invisible',
           appearance: 'always',
+          execution: 'execute',
+          action: 'contact',
+          callback: (token) => {
+            turnstileResolver.current?.(token);
+          },
           'error-callback': () => {
-            turnstileWidgetId.current = null;
+            turnstileResolver.current?.(null);
           },
           'timeout-callback': () => {
-            turnstileWidgetId.current = null;
+            turnstileResolver.current?.(null);
           },
         });
       } catch {
@@ -71,7 +77,8 @@ export default function Contato() {
 
     return () => {
       cancelled = true;
-      if (turnstileWidgetId.current && window.turnstile) {
+      turnstileResolver.current?.(null);
+      if (turnstileWidgetId.current !== null && window.turnstile) {
         try {
           window.turnstile.remove(turnstileWidgetId.current);
         } catch {}
@@ -80,20 +87,25 @@ export default function Contato() {
   }, []);
 
   const getTurnstileToken = useCallback(() => {
-    if (!TURNSTILE_SITE_KEY || !window.turnstile || !turnstileWidgetId.current) {
+    if (!window.turnstile || turnstileWidgetId.current === null) {
       return Promise.resolve(null);
     }
     return new Promise((resolve) => {
-      const timeout = setTimeout(() => resolve(null), 5000);
+      let settled = false;
+      const finish = (token) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeout);
+        turnstileResolver.current = null;
+        resolve(token);
+      };
+      const timeout = setTimeout(() => finish(null), 10000);
+      turnstileResolver.current = finish;
       try {
         window.turnstile.reset(turnstileWidgetId.current);
-        window.turnstile.execute(turnstileWidgetId.current, (token) => {
-          clearTimeout(timeout);
-          resolve(token);
-        });
+        window.turnstile.execute(turnstileWidgetId.current);
       } catch {
-        clearTimeout(timeout);
-        resolve(null);
+        finish(null);
       }
     });
   }, []);
@@ -107,9 +119,11 @@ export default function Contato() {
       setErrorMsg('');
 
       try {
-        const turnstileToken = TURNSTILE_SITE_KEY
-          ? await getTurnstileToken()
-          : 'skip';
+        const turnstileToken = await getTurnstileToken();
+
+        if (!turnstileToken) {
+          throw new Error('Verificação de segurança indisponível');
+        }
 
         if (!CONTACT_API_URL) {
           await new Promise((r) => setTimeout(r, 650));
@@ -196,6 +210,7 @@ export default function Contato() {
                     name="nome"
                     type="text"
                     autoComplete="name"
+                    maxLength={120}
                     required
                     value={nome}
                     onChange={(e) => setNome(e.target.value)}
@@ -210,6 +225,7 @@ export default function Contato() {
                     type="email"
                     autoComplete="email"
                     placeholder="voce@exemplo.com"
+                    maxLength={254}
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -224,6 +240,7 @@ export default function Contato() {
                   name="assunto"
                   type="text"
                   placeholder="Resuma em poucas palavras"
+                  maxLength={200}
                   required
                   value={assunto}
                   onChange={(e) => setAssunto(e.target.value)}
@@ -236,6 +253,7 @@ export default function Contato() {
                   id="mensagem"
                   name="mensagem"
                   placeholder="Conte o contexto, o que você precisa e inclua links se forem úteis."
+                  maxLength={5000}
                   required
                   value={mensagem}
                   onChange={(e) => setMensagem(e.target.value)}

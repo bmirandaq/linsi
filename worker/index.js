@@ -1,15 +1,25 @@
 const ALLOWED_REASONS = ['contribuir', 'ajuda', 'outro'];
+const CONTACT_ACTION = 'contact';
+const MAX_LENGTHS = {
+  apelido: 120,
+  email: 254,
+  assunto: 200,
+  mensagem: 5000,
+  turnstileToken: 2048,
+};
 
-function corsHeaders(origin, env) {
-  const allowed = env.ALLOWED_ORIGIN || 'https://linsi.beamiranda.com.br';
-  const allowedHost = allowed.replace(/^https?:\/\//, '').replace(/\/$/, '');
-  const originHost = origin ? origin.replace(/^https?:\/\//, '').replace(/\/$/, '') : '';
-  const isDev = origin && origin.startsWith('http://localhost');
-  const isMatch = originHost && originHost === allowedHost;
-  const allowedOrigin = isMatch || isDev ? origin : allowed;
+function allowedOrigin(env) {
+  return (env.ALLOWED_ORIGIN || 'https://linsi.beamiranda.com.br').replace(/\/$/, '');
+}
+
+function isAllowedOrigin(origin, env) {
+  return Boolean(origin) && origin.replace(/\/$/, '') === allowedOrigin(env);
+}
+
+function corsHeaders(origin) {
 
   return {
-    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Vary': 'Origin',
@@ -19,22 +29,45 @@ function corsHeaders(origin, env) {
 function json(data, status, cors) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...cors, 'Content-Type': 'application/json' },
+    headers: {
+      ...cors,
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
+    },
   });
 }
 
 async function verifyTurnstile(token, ip, env) {
-  const resp = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      secret: env.TURNSTILE_SECRET_KEY,
-      response: token,
-      remoteip: ip || '',
-    }),
-  });
-  const result = await resp.json();
-  return result.success === true;
+  if (!env.TURNSTILE_SECRET_KEY) return false;
+
+  try {
+    const resp = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        secret: env.TURNSTILE_SECRET_KEY,
+        response: token,
+        remoteip: ip || '',
+      }),
+    });
+    if (!resp.ok) return false;
+
+    const result = await resp.json();
+    const expectedHostname = new URL(allowedOrigin(env)).hostname;
+    return result.success === true &&
+      result.hostname === expectedHostname &&
+      result.action === CONTACT_ACTION;
+  } catch {
+    return false;
+  }
+}
+
+function requiredString(value, maxLength) {
+  if (typeof value !== 'string') return null;
+  const normalized = value.trim();
+  if (!normalized || normalized.length > maxLength) return null;
+  return normalized;
 }
 
 async function registerNotion(payload, env) {
@@ -114,7 +147,10 @@ async function sendResend(payload, env) {
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || '';
-    const cors = corsHeaders(origin, env);
+    if (!isAllowedOrigin(origin, env)) {
+      return json({ error: 'Origin not allowed' }, 403, {});
+    }
+    const cors = corsHeaders(origin);
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: cors });
@@ -124,6 +160,11 @@ export default {
       return json({ error: 'Method not allowed' }, 405, cors);
     }
 
+    const contentType = request.headers.get('Content-Type') || '';
+    if (!contentType.toLowerCase().startsWith('application/json')) {
+      return json({ error: 'Content-Type inválido' }, 415, cors);
+    }
+
     let payload;
     try {
       payload = await request.json();
@@ -131,33 +172,39 @@ export default {
       return json({ error: 'Invalid JSON' }, 400, cors);
     }
 
-    const { motivo, apelido, email, assunto, mensagem, turnstileToken } = payload || {};
+    const motivo = payload?.motivo;
+    const apelido = requiredString(payload?.apelido, MAX_LENGTHS.apelido);
+    const email = requiredString(payload?.email, MAX_LENGTHS.email);
+    const assunto = requiredString(payload?.assunto, MAX_LENGTHS.assunto);
+    const mensagem = requiredString(payload?.mensagem, MAX_LENGTHS.mensagem);
+    const turnstileToken = requiredString(
+      payload?.turnstileToken,
+      MAX_LENGTHS.turnstileToken,
+    );
 
     if (!ALLOWED_REASONS.includes(motivo)) {
       return json({ error: 'Motivo inválido' }, 400, cors);
     }
-    if (!apelido || typeof apelido !== 'string' || !apelido.trim()) {
+    if (!apelido) {
       return json({ error: 'Apelido obrigatório' }, 400, cors);
     }
-    if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return json({ error: 'E-mail inválido' }, 400, cors);
     }
-    if (!assunto || typeof assunto !== 'string' || !assunto.trim()) {
+    if (!assunto) {
       return json({ error: 'Assunto obrigatório' }, 400, cors);
     }
-    if (!mensagem || typeof mensagem !== 'string' || !mensagem.trim()) {
+    if (!mensagem) {
       return json({ error: 'Mensagem obrigatória' }, 400, cors);
     }
-    if (!turnstileToken || typeof turnstileToken !== 'string') {
+    if (!turnstileToken) {
       return json({ error: 'Token Turnstile obrigatório' }, 400, cors);
     }
 
-    if (turnstileToken !== 'skip') {
-      const ip = request.headers.get('CF-Connecting-IP') || '';
-      const turnstileValid = await verifyTurnstile(turnstileToken, ip, env);
-      if (!turnstileValid) {
-        return json({ error: 'Verificação falhou' }, 403, cors);
-      }
+    const ip = request.headers.get('CF-Connecting-IP') || '';
+    const turnstileValid = await verifyTurnstile(turnstileToken, ip, env);
+    if (!turnstileValid) {
+      return json({ error: 'Verificação falhou' }, 403, cors);
     }
 
     try {
