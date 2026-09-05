@@ -2,10 +2,11 @@ import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 
 const baseUrl = process.env.SMOKE_BASE_URL ?? 'http://127.0.0.1:3000';
+const reportOnly = process.env.SMOKE_REPORT_ONLY === '1';
 const routes = [
   '/',
   '/docs/principios',
-  '/docs/por-que-fluxogramas',
+  '/docs/pq-fluxogramas',
   '/contribuir',
   '/cafe-bea',
 ];
@@ -127,9 +128,9 @@ for (const viewport of viewports) {
 await browser.close();
 
 if (failures.length) {
-  console.error(`Responsive smoke regressions failed (${failures.length}):`);
+  console.error(`Responsive smoke regressions failed (${failures.length}) against ${baseUrl}:`);
   for (const failure of failures) console.error(`- ${failure}`);
-  process.exit(1);
+  if (!reportOnly) process.exit(1);
+} else {
+  console.log(`Responsive browser smoke passed against ${baseUrl}: ${routes.length} routes × ${viewports.length} viewports, plus search and dark-mode checks.`);
 }
-
-console.log(`Responsive browser smoke passed: ${routes.length} routes × ${viewports.length} viewports, plus search and dark-mode checks.`);
