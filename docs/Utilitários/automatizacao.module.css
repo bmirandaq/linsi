@@ -26,6 +26,7 @@
   line-height: 1.2;
   min-height: 26px;
   padding: 4px 10px;
+  transform: translateY(-3px);
 }
 
 .capabilitiesGrid {
@@ -99,6 +100,14 @@
   }
 
   .downloadCta {
+    width: 100%;
+  }
+
+  .installCommand {
+    box-sizing: border-box;
+    display: block;
+    margin-top: var(--linsi-space-8);
+    max-width: 100%;
     width: 100%;
   }
 }
