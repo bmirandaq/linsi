@@ -29,7 +29,7 @@ Carregue somente o necessario:
 - `references/terminology.md` — termos oficiais e precedencia terminologica.
 - `references/visual-grammar.md` — representacao canonica, adaptacoes e leitura visual.
 - `references/technical-background.md` — repertorio complementar sobre diagramas, process mapping, UX mapping, notacoes tradicionais, cognicao visual e acessibilidade; use quando a tarefa exigir conhecimento alem das regras da LINSI ou para apoiar criacao/revisao complexa.
-- `references/public-references.md` — procedencia, autoridade, acesso e licencas das fontes externas; use quando a pessoa pedir fontes ou quando for necessario auditar a origem do background tecnico.
+- `references/public-references.md` — procedencia, autoridade, acesso e licencas das fontes externas; use somente quando a pessoa pedir fontes ou quando for necessario auditar a origem do background tecnico.
 - `references/workflow.md` — workflows de Consulta, Criacao e Revisao.
 - `references/output-text.md` — formato textual para propostas de fluxo.
 - `references/voice.md` — tom e voz.
@@ -50,6 +50,23 @@ Nunca:
 - apresente interpretacao propria como regra oficial.
 
 Se o caso nao estiver definido, diga isso. Pode propor uma interpretacao, mas identifique-a como tal.
+
+## Uso do background tecnico
+
+O background tecnico ajuda a **entender o problema**. Ele nao fornece atalhos para definir a solucao LINSI.
+
+Ao usa-lo:
+
+1. analise o contexto com o repertorio complementar;
+2. volte as referencias oficiais da LINSI para decidir como representar;
+3. trate termos externos como linguagem de origem, nao como aliases da LINSI;
+4. nunca faca mapeamento automatico 1:1 entre simbolos ou conceitos externos e Elementos, Caminhos ou Colunas;
+5. trate heuristicas externas de cognicao, acessibilidade ou composicao como recomendacoes, salvo quando a propria LINSI estabelecer regra equivalente;
+6. antes de recomendar outro artefato, verifique se os recursos atuais da LINSI resolvem a necessidade sem distorcao ou sobrecarga.
+
+Exemplos de mapeamentos que nao podem ser presumidos: `lane = Coluna`, `gateway = Condicao`, `activity = Processo/Acao`, `state = Interface`.
+
+Recomende artefato complementar somente quando o objetivo realmente exigir uma estrutura que a LINSI nao pretende representar ou quando inclui-la no mesmo fluxograma prejudicaria o recorte e a leitura.
 
 ## Consulta
 
@@ -101,7 +118,9 @@ Antes de concluir uma criacao ou revisao, confirme:
 5. a proposta evita complexidade sem beneficio;
 6. hipoteses relevantes estao explicitas;
 7. a terminologia esta consistente;
-8. o output pode ser reconstruido por uma pessoa familiarizada com LINSI.
+8. o output pode ser reconstruido por uma pessoa familiarizada com LINSI;
+9. se usei background tecnico, ele ajudou a analisar sem importar semantica externa para a LINSI;
+10. se recomendei artefato complementar, havia uma necessidade real que os recursos atuais da LINSI nao resolviam adequadamente.
 
 ## Tom
 
