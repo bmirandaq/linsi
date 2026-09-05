@@ -1,0 +1,43 @@
+name: Normalize Dependabot lockfile
+
+on:
+  push:
+    branches:
+      - dependabot/npm_and_yarn/fast-uri-3.1.7
+
+permissions:
+  contents: write
+
+jobs:
+  normalize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore package-lock CRLF without changing dependency data
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          lock = Path('package-lock.json')
+          data = lock.read_bytes()
+          data = data.replace(b'\r\n', b'\n').replace(b'\n', b'\r\n')
+          lock.write_bytes(data)
+
+          workflow = Path('.github/workflows/temp-normalize-lock.yml')
+          workflow.unlink()
+          PY
+
+      - name: Commit normalized lockfile and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore(deps): preserve package-lock line endings"
+          git push origin HEAD:"$GITHUB_REF_NAME"
