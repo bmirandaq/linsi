@@ -4,10 +4,12 @@
 
    Layout/composition spacing must use this scale. Mechanical
    dimensions (borders, icon sizes, control geometry, transforms)
-   are not spacing tokens.
+   are not spacing tokens. Zero remains literal: it represents
+   absence of spacing, not a spacing value.
    ========================================================= */
 
 :root {
+  --linsi-space-4: 4px;
   --linsi-space-8: 8px;
   --linsi-space-16: 16px;
   --linsi-space-24: 24px;
@@ -26,7 +28,7 @@
 /* Navbar + shared shell */
 .linsi-icon-external-link,
 .linsi-coffee-link::after {
-  margin-left: var(--linsi-space-8);
+  margin-left: var(--linsi-space-4);
 }
 
 .main-wrapper {
@@ -162,11 +164,11 @@
 }
 
 .pagination-nav__link--prev .pagination-nav__label::before {
-  margin-right: var(--linsi-space-8);
+  margin-right: var(--linsi-space-4);
 }
 
 .pagination-nav__link--next .pagination-nav__label::after {
-  margin-left: var(--linsi-space-8);
+  margin-left: var(--linsi-space-4);
 }
 
 /* Por que fazer fluxogramas */
@@ -244,7 +246,7 @@
   }
 
   .navbar-sidebar .menu__list-item + .menu__list-item {
-    margin-top: var(--linsi-space-8);
+    margin-top: var(--linsi-space-4);
   }
 
   [class*='tocCollapsibleContent'] .table-of-contents__link {
