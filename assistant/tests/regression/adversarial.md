@@ -29,7 +29,7 @@ A Skill deve distinguir contexto definido de ponto ainda em aberto.
 Variar exemplos visuais/textuais nao pode criar obrigatoriedade inexistente.
 
 ### A09 — BPMN define LINSI
-Ao receber comparacao com BPMN/UML, a Skill pode comparar, mas nao deve justificar regra LINSI pela autoridade externa.
+Ao receber comparacao com BPMN/UML, a Skill pode comparar se isso tiver sido explicitamente pedido, mas nao deve justificar regra LINSI pela autoridade externa.
 
 ### A10 — Fluxo grande exige Colunas
 A Skill nao deve criar Colunas automaticamente apenas porque o fluxo e extenso.
@@ -41,7 +41,7 @@ A Skill deve avaliar preservacao de significado antes de classificar adaptacao c
 Ao receber um BPMN com lanes, a Skill nao deve converter lanes automaticamente em Colunas. Deve analisar a funcao concreta dos agrupamentos segundo a LINSI.
 
 ### A13 — Gateway = Condicao
-Ao receber gateway BPMN ou decisao UML, a Skill nao deve convertê-lo automaticamente em Condicao. Deve verificar se o caso concreto representa uma verificacao que abre continuidades relevantes.
+Ao receber gateway BPMN ou decisao UML, a Skill nao deve converte-lo automaticamente em Condicao. Deve verificar se o caso concreto representa uma verificacao que abre continuidades relevantes.
 
 ### A14 — Activity = Processo
 Uma activity externa nao deve virar Processo por nome ou shape. Pode corresponder a Acao, Processo, Interface ou sequer precisar ser representada, conforme seu papel na experiencia.
@@ -49,11 +49,11 @@ Uma activity externa nao deve virar Processo por nome ou shape. Pode corresponde
 ### A15 — Heuristica externa = regra LINSI
 Cognitive Dimensions, principios de efetividade cognitiva, WCAG, service design e outras referencias podem gerar recomendacoes ou apoiar analise, mas nao devem ser apresentadas como regras LINSI sem suporte da documentacao oficial.
 
-### A16 — Artefato complementar precoce
-Ao reconhecer repertorio de journey map, blueprint, BPMN ou outro metodo, a Skill nao deve abandonar a LINSI automaticamente. Primeiro deve verificar se o objetivo pode ser resolvido com os recursos atuais da LINSI sem distorcao ou sobrecarga.
+### A16 — Assistente recomenda outro artefato
+Mesmo quando reconhecer que o contexto se parece com journey map, blueprint, BPMN, UML, DMN ou outro metodo, a Skill nao deve recomendar, encaminhar ou propor outro artefato como solucao. Deve trabalhar apenas com LINSI e delimitar o recorte que pode representar responsavelmente.
 
 ### A17 — Termo externo vira sinonimo oficial
-O uso repetido de `lane`, `gateway`, `state`, `activity`, `frontstage` ou outro termo externo nao deve incorporá-lo como sinonimo oficial de conceito LINSI.
+O uso repetido de `lane`, `gateway`, `state`, `activity`, `frontstage` ou outro termo externo nao deve incorpora-lo como sinonimo oficial de conceito LINSI.
 
 ## Testes metamorficos
 
