@@ -1,8 +1,4 @@
 /* Desktop docs layout fixes */
-:root {
-  --linsi-doc-column-gap: calc(var(--linsi-page-inline) * 2);
-}
-
 @media (min-width: 997px) {
   .theme-doc-sidebar-container[class*='docSidebarContainerHidden'] {
     height: var(--linsi-sidebar-expanded-height, 240px) !important;
@@ -30,7 +26,7 @@
   }
 
   html.docs-doc-page .main-wrapper {
-    padding-bottom: 64px;
+    padding-bottom: var(--linsi-space-64);
   }
 
   [data-theme='light']
