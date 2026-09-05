@@ -55,19 +55,44 @@ assert.match(
   'O botão de reabertura precisa acompanhar diretamente o estado colapsado.',
 );
 assert.match(
+  sidebarLayout,
+  /getBoundingClientRect\(\)\.height/,
+  'A sidebar deve medir sua altura expandida antes de ser recolhida.',
+);
+assert.match(
+  sidebarLayout,
+  /--linsi-sidebar-expanded-height/,
+  'A altura medida da sidebar precisa ser compartilhada com o estado colapsado.',
+);
+assert.match(
   sidebarExpandCss,
-  /@media \(min-width: 997px\)[\s\S]*?height:\s*32px;[\s\S]*?position:\s*static;/,
-  'O botão da sidebar colapsada deve permanecer compacto no desktop.',
+  /@media \(min-width: 997px\)[\s\S]*?height:\s*100%;[\s\S]*?position:\s*absolute;/,
+  'O botão da sidebar colapsada deve ocupar a mesma altura preservada do painel.',
 );
 assert.match(
   sidebarLayoutCss,
-  /\.sidebarViewportHidden\s*\{[\s\S]*?height:\s*32px;[\s\S]*?max-height:\s*32px;/,
-  'O viewport da sidebar colapsada não pode ocupar a altura da página.',
+  /\.sidebarViewportHidden\s*\{[\s\S]*?height:\s*var\(--linsi-sidebar-expanded-height, 240px\);[\s\S]*?max-height:\s*var\(--linsi-sidebar-expanded-height, 240px\);/,
+  'O viewport colapsado deve reutilizar a altura medida da sidebar expandida.',
 );
 assert.match(
   layoutFixesCss,
-  /docSidebarContainerHidden[\s\S]*?height:\s*32px !important;[\s\S]*?min-height:\s*32px !important;/,
-  'O override final da sidebar colapsada precisa neutralizar a altura legada.',
+  /docSidebarContainerHidden[\s\S]*?height:\s*var\(--linsi-sidebar-expanded-height, 240px\) !important;[\s\S]*?min-height:\s*var\(--linsi-sidebar-expanded-height, 240px\) !important;/,
+  'O override final da sidebar colapsada precisa preservar a altura expandida.',
+);
+assert.match(
+  layoutFixesCss,
+  /--linsi-doc-column-gap:\s*calc\(var\(--linsi-page-inline\) \* 2\);/,
+  'O gap estrutural da documentação deve equivaler ao espaço entre conteúdo e índice.',
+);
+assert.match(
+  layoutFixesCss,
+  /html\.docs-doc-page \[class\*='docRoot'\]\s*\{[\s\S]*?column-gap:\s*var\(--linsi-doc-column-gap\);/,
+  'Sidebar e conteúdo devem usar o mesmo gap estrutural da documentação.',
+);
+assert.match(
+  layoutFixesCss,
+  /button\[class\*='collapseSidebarButton'\]:hover[\s\S]*?color:\s*var\(--linsi-accent-secondary\) !important;/,
+  'O chevron de recolher precisa manter contraste legível no hover.',
 );
 assert.match(
   layoutFixesCss,
@@ -153,4 +178,4 @@ assert.doesNotMatch(
   'O feedback do Pix deve permanecer no próprio botão.',
 );
 
-console.log('UI regression contracts passed: sidebar, footer spacing and mobile viewport.');
+console.log('UI regression contracts passed: sidebar, docs spacing, footer spacing and mobile viewport.');
