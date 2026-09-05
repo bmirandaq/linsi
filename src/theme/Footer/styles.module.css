@@ -117,7 +117,7 @@
 .linkWithIcon {
   align-items: center;
   display: inline-flex;
-  gap: var(--linsi-space-8);
+  gap: var(--linsi-space-4);
   max-width: 100%;
 }
 
@@ -155,7 +155,7 @@
 .creatorLink {
   align-items: baseline;
   display: inline-flex;
-  gap: var(--linsi-space-8);
+  gap: var(--linsi-space-4);
   vertical-align: baseline;
 }
 
@@ -233,7 +233,7 @@
   }
 
   .navList {
-    gap: var(--linsi-space-8);
+    gap: var(--linsi-space-4);
   }
 
   .navList .link {
