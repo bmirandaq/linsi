@@ -62,9 +62,23 @@ Quando parte do problema exceder o que a LINSI documenta ou pretende representar
 
 ### Output textual
 
-**Status:** consolidado como requisito; formato ainda pendente
+**Data:** 2026-09-05
 
-A Fase 1 tera um padrao textual proprio do Assistente para comunicar fluxogramas. Esse padrao nao deve ser apresentado como uma nova notacao LINSI.
+**Status:** consolidado como requisito; formato em validacao
+
+A Fase 1 tera um padrao textual proprio da Assistente para comunicar fluxogramas. Esse padrao nao deve ser apresentado como uma nova notacao LINSI.
+
+Decisoes consolidadas para o formato:
+
+- as convencoes de Elementos seguem a ordem conceitual da documentacao oficial;
+- a transcricao de um fluxo concreto segue a continuidade real da experiencia, nao a ordem da documentacao;
+- Setas permanecem associadas aos Elementos que conectam e seus rotulos permanecem junto das proprias Setas;
+- Caminhos e Colunas devem ser apresentados juntos quando ambos existirem;
+- nesse caso, o texto percorre Colunas da esquerda para a direita e apresenta dentro de cada Coluna os Caminhos de cima para baixo;
+- Convergencias devem aparecer no ponto em que acontecem;
+- `Comentario` nao e gerado pela Assistente no output textual; seu uso pertence a pessoa usuaria;
+- duvidas ou informacoes ausentes da Assistente usam `Pontos em aberto da proposta`;
+- o formato deve ser proporcional e nao antecipar propriedades especificas de ferramentas ou do JSON da Fase 2.
 
 ### Distribuicao
 
