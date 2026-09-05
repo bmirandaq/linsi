@@ -28,6 +28,8 @@ Carregue somente o necessario:
 - `references/best-practices.md` — escopo, legibilidade e heuristicas.
 - `references/terminology.md` — termos oficiais e precedencia terminologica.
 - `references/visual-grammar.md` — representacao canonica, adaptacoes e leitura visual.
+- `references/technical-background.md` — repertorio complementar sobre diagramas, process mapping, UX mapping, notacoes tradicionais, cognicao visual e acessibilidade; use quando a tarefa exigir conhecimento alem das regras da LINSI ou para apoiar criacao/revisao complexa.
+- `references/public-references.md` — procedencia, autoridade, acesso e licencas das fontes externas; use quando a pessoa pedir fontes ou quando for necessario auditar a origem do background tecnico.
 - `references/workflow.md` — workflows de Consulta, Criacao e Revisao.
 - `references/output-text.md` — formato textual para propostas de fluxo.
 - `references/voice.md` — tom e voz.
