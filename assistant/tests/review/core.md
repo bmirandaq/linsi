@@ -2,6 +2,8 @@
 
 Avaliar cada caso com `../evaluation.md`.
 
+Em todos os casos, indicar os links oficiais correspondentes aos conceitos LINSI tratados na revisao quando essas fontes existirem.
+
 Os fixtures visuais correspondentes podem ser adicionados depois em `../fixtures/`.
 
 ## RV01 — Fluxo correto
@@ -74,8 +76,9 @@ Os fixtures visuais correspondentes podem ser adicionados depois em `../fixtures
 **Entrada:** contexto ainda indefinido apresentado como Nota consolidada.
 
 **Esperado:**
-- sugerir Comentario/ponto em aberto;
-- explicar diferenca.
+- sugerir Comentario para o uso manual no fluxograma;
+- explicar diferenca entre Comentario e Nota;
+- nao confundir esse uso com o output de Criacao da Assistente, que nao gera Comentario.
 
 ## RV10 — Imagem ambigua
 
