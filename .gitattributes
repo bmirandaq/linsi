@@ -1,0 +1,5 @@
+# Keep Git from treating generated dependency lockfile line endings as a full-file change.
+package-lock.json text eol=crlf
+
+# Shell scripts must remain Unix-compatible.
+*.sh text eol=lf
