@@ -18,7 +18,7 @@ A Fase 1 nao inclui JSON, plugin Figma, integracao Miro ou automacao de board.
 
 `assistant/` operacionaliza a LINSI para consumo por agentes e governa a implementacao do Assistente.
 
-`assistant/skill/` contera apenas o pacote distribuivel da Agent Skill.
+`assistant/skill/` contem apenas o pacote distribuivel da Agent Skill.
 
 A camada de maquina nao pode criar, completar ou reinterpretar silenciosamente a notacao para facilitar a implementacao.
 
@@ -48,7 +48,7 @@ Lacunas conceituais devem ser registradas em `open-questions.md` e nao resolvida
 
 Decisoes consolidadas devem ser registradas em `decisions.md`.
 
-## Estrutura planejada
+## Estrutura
 
 ```text
 assistant/
@@ -63,19 +63,19 @@ assistant/
 └── tests/
 ```
 
-A estrutura sera criada progressivamente conforme os arquivos adquirirem funcao real.
+## Distribuicao da primeira beta
 
-## Distribuicao
+Versao alvo: `v0.1-beta`.
+
+Suporte oficial inicial:
+
+- ChatGPT;
+- Codex CLI.
+
+A Skill deve ser distribuida como `skill.zip` para ChatGPT e com instalacao simplificada para Codex CLI. Outros hosts ficam fora do suporte oficial enquanto nao puderem ser testados.
 
 O uso do Assistente nao deve exigir clone completo do repositorio.
 
-A Fase 1 deve prever:
-
-- pacote `skill.zip` para hosts que aceitem upload de Agent Skills;
-- instalacao simplificada para Codex CLI;
-- instalacao simplificada para Claude Code;
-- documentacao de compatibilidade verificada por host.
-
 ## Estado
 
-Fase 1 em desenvolvimento na branch `assistant-phase-1`.
+Fase 1 em fechamento tecnico para beta na branch `assistant-phase-1`.
