@@ -2,8 +2,6 @@
 sidebar_position: 4
 title: Elementos
 ---
-# Elementos
-
 Elementos são as unidades visuais da LINSI. Cada Elemento possui uma função. A forma, cor e conteúdo trabalham em conjunto para tornar a função reconhecível.
 
 Use apenas os Elementos necessários para que a experiência seja compreendida no fluxograma.
@@ -23,11 +21,26 @@ Conecta os elementos e indica a direção de leitura do fluxo.
 - **Negativa:** falha, erro, impedimento ou resultado desfavorável. Usa a cor vermelha.
 - **Alternativa:** possibilidade secundária, alternativa ao Caminho principal. Usa a cor laranja.
 
-Escolha o tipo de seta pelo significado da continuidade, não apenas pelo destaque visual. Uma resposta 'Sim', por exemplo, não torna uma seta automaticamente Positiva. Depende do significado daquele resultado no fluxo.
+Escolha o tipo de seta pelo significado da continuidade, não apenas pelo destaque visual. 
 
-Quando não houver um resultado claramente positivo, negativo ou alternativo, use a seta Comum.
+### Setas e Rótulos
 
-Os rótulos nas linhas das setas são opcionais, exceto nas setas que saem de uma Condição.
+Rótulos nas linhas das Setas são opcionais, exceto em Setas que saem de uma Condição.
+
+Mantenha os rótulos próximos aos Elementos de origem para melhor encontrabilidade.
+
+Posicione os rótulos, sempre que possível, quando a linha estiver na horizontal para fins de legibilidade.
+
+Evite posicionar rótulos-lo em cima de curvas ou cruzamentos de Setas.
+
+
+### Outras considerações sobre Setas
+
+- *Evite cruzar setas*: priorize representações simples e use o Elemento Retomada quando for o caos.
+- *Seta Comum é o padrão*: Quando não houver um resultado claramente positivo, negativo ou alternativo, use a seta Comum.
+- *'Sim' pode ser neutro*: Uma resposta 'Sim' não torna uma seta automaticamente Positiva. Depende do significado daquele resultado no fluxo.
+
+
 
 ## Interface
 
@@ -38,6 +51,7 @@ Representa aquilo que está disponível para a pessoa usuária em um ponto de co
 ![Estrutura do conteúdo de uma Interface do tipo Tela](/img/uploads/Elementos/interface-tela.png)
 
 ### Estrutura do conteúdo
+
 ---
 
 O elemento Interface pode reunir até 3 partes:
@@ -49,6 +63,7 @@ O elemento Interface pode reunir até 3 partes:
 As Ações descritas dentro de uma Interface representam possibilidades disponíveis. Para demonstrar qual delas foi efetivamente realizada em um Caminho, use o elemento Ação.
 
 ### Interface do tipo Tela
+
 ---
 
 Contexto principal naquele momento, é uma página ou tela. Exemplo exibido mais acima. 
@@ -56,6 +71,7 @@ Contexto principal naquele momento, é uma página ou tela. Exemplo exibido mais
 É representada por um retângulo com borda cinza.
 
 ### Interface do tipo Janela
+
 ---
 
 Apresenta um conteúdo transitório sobre uma Tela sem substituí-la, como modal, drawer ou popover. 
@@ -65,6 +81,10 @@ Apresenta um conteúdo transitório sobre uma Tela sem substituí-la, como modal
 ![Estrutura do conteúdo de uma Janela modal](/img/uploads/Elementos/interface-janela-1.png)
 
 ![Estrutura do conteúdo de uma Janela de filtros](/img/uploads/Elementos/interface-janela-2.png)
+
+Em screenflows, o protótipo passa a cumprir a função do Elemento **Interface**.
+
+[img-example]
 
 
 
@@ -176,8 +196,6 @@ Acrescenta um contexto necessário para compreender o fluxograma, mas não repre
 
 Pode registrar regras de negócio, restrições técnicas, racionais de decisão, limitações de integração ou outras informações relevantes para a leitura.
 
-Alinhe o texto de notas mais extensas à esquerda para facilitar a leitura. Notas curtas podem ter o texto centralizado.
-
 ![Exemplo de Nota curta](/img/uploads/Elementos/nota-curta.png)
 
 A Nota deve contextualizar o fluxo, **não substituir algo que poderia ser representado por outro elemento.**
@@ -204,8 +222,20 @@ Pode ser dispensado quando a ferramenta utilizada oferecer função nativa de co
 
 
 
-## Relação entre Elementos e Caminhos
+## Forma e conteúdo dos Elementos
+---
 
+1) Diferenciação visual dos Elementos
+
+Preserve a diferenciação das formas propostas pela LINSI. Caso faça adaptações, indique nas legendas do artefato.
+
+2) Alinhamento de texto
+
+Textos curtos podem ser centralizados no container enquanto conteúdos mais extensos devem ficar alinhados à esquerda para fins de legibilidade.
+
+
+
+## Relação entre Elementos e Caminhos
 ---
 
 Até aqui, você entendeu como os Elementos pontuam e explicam acontecimentos ao longo do fluxograma. Os Caminhos mostram como esses Elementos se conectam em sequência, formando as diferentes continuidades possíveis.
