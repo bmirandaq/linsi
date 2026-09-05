@@ -25,7 +25,7 @@
 }
 
 .cardDisabled {
-  background: var(--linsi-neutral-lightest);
+  background: var(--linsi-bg-surface-muted);
   border-style: dashed;
   opacity: 0.8;
 }
@@ -101,7 +101,7 @@
 }
 
 [data-theme='dark'] .cardDisabled {
-  background: #04081f;
+  background: var(--linsi-bg-canvas);
   border-color: var(--linsi-neutral-dark);
 }
 

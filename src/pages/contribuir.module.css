@@ -187,35 +187,24 @@
 /* ── Feedback ── */
 
 .feedback {
-  background: #eef8f1;
-  border: 1px solid #b7ddc0;
+  background: var(--linsi-feedback-success-bg);
+  border: 1px solid var(--linsi-feedback-success-border);
   border-radius: var(--linsi-radius-md);
-  color: #285c32;
+  color: var(--linsi-feedback-success-fg);
   line-height: 1.5;
   margin-top: 8px;
   padding: 14px 16px;
 }
 
-[data-theme='dark'] .feedback {
-  background: #183525;
-  border-color: #316747;
-  color: #d6f1dd;
-}
-
 .error {
-  border: 1px solid #e23929;
+  background: var(--linsi-feedback-error-bg);
+  border: 1px solid var(--linsi-feedback-error-border);
   border-radius: var(--linsi-radius-md);
-  color: #c5221f;
+  color: var(--linsi-feedback-error-fg);
   font-size: 0.9rem;
   line-height: 1.5;
   margin-top: 8px;
   padding: 14px 16px;
-}
-
-[data-theme='dark'] .error {
-  background: #3b1419;
-  border-color: #e23929;
-  color: #f8b4b1;
 }
 
 [data-theme='dark'] .title {

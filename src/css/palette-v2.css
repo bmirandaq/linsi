@@ -1,0 +1,225 @@
+/* =========================================================
+   LINSI — Palette v2
+   Primitive additions + semantic color roles
+   ========================================================= */
+
+:root {
+  /* Brand 02 — dark range completed for dark-mode surfaces. */
+  --linsi-brand-02-ultradark: #04081f;
+  --linsi-brand-02-darker: #15204a;
+  --linsi-brand-02-dark: #1d295a;
+
+  /* Light semantic roles */
+  --linsi-bg-canvas: var(--linsi-neutral-lightest);
+  --linsi-bg-shell: var(--linsi-pure-white);
+  --linsi-bg-surface: var(--linsi-pure-white);
+  --linsi-bg-surface-raised: var(--linsi-pure-white);
+  --linsi-bg-surface-muted: var(--linsi-neutral-lightest);
+
+  --linsi-fg-primary: var(--linsi-neutral-darker);
+  --linsi-fg-secondary: var(--linsi-neutral-dark);
+  --linsi-fg-muted: var(--linsi-neutral-base);
+  --linsi-fg-heading: var(--linsi-neutral-darkest);
+
+  --linsi-border-base: var(--linsi-neutral-lighter);
+  --linsi-border-strong: var(--linsi-neutral-light);
+
+  --linsi-accent-primary: var(--linsi-brand-01-dark);
+  --linsi-accent-primary-hover: var(--linsi-brand-01-darker);
+  --linsi-accent-primary-soft: var(--linsi-brand-01-lightest);
+
+  --linsi-accent-secondary: var(--linsi-brand-02-base);
+  --linsi-accent-secondary-hover: var(--linsi-brand-02-light);
+  --linsi-accent-secondary-soft: var(--linsi-brand-02-ultralighter);
+
+  --linsi-focus: var(--linsi-brand-02-base);
+
+  /* Feedback roles */
+  --linsi-feedback-success-bg: #eef8f1;
+  --linsi-feedback-success-border: #b7ddc0;
+  --linsi-feedback-success-fg: #285c32;
+  --linsi-feedback-error-bg: transparent;
+  --linsi-feedback-error-border: #e23929;
+  --linsi-feedback-error-fg: #c5221f;
+
+  /* Existing LINSI aliases now consume semantic roles. */
+  --linsi-logo-surface: var(--linsi-bg-canvas);
+  --linsi-border-color: var(--linsi-border-base);
+  --linsi-navbar-border-color: var(--linsi-border-base);
+  --linsi-focus-color: var(--linsi-focus);
+  --linsi-home-copy: var(--linsi-fg-primary);
+  --linsi-home-subtitle: var(--linsi-fg-secondary);
+  --linsi-button-background: var(--linsi-accent-primary);
+  --linsi-button-hover-background: var(--linsi-accent-primary-hover);
+  --linsi-button-text: var(--linsi-pure-white);
+  --linsi-button-focus-inner: var(--linsi-bg-canvas);
+
+  /* Docusaurus aliases */
+  --ifm-color-primary: var(--linsi-accent-primary);
+  --ifm-background-color: var(--linsi-bg-canvas);
+  --ifm-background-surface-color: var(--linsi-bg-surface);
+  --ifm-font-color-base: var(--linsi-fg-primary);
+  --ifm-color-content-secondary: var(--linsi-fg-secondary);
+  --ifm-heading-color: var(--linsi-fg-heading);
+  --ifm-link-color: var(--linsi-accent-primary);
+  --ifm-link-hover-color: var(--linsi-accent-primary-hover);
+  --ifm-menu-color-active: var(--linsi-accent-primary);
+  --ifm-navbar-background-color: var(--linsi-bg-shell);
+  --ifm-navbar-link-color: var(--linsi-fg-primary);
+  --ifm-toc-border-color: var(--linsi-border-base);
+  --ifm-hr-background-color: var(--linsi-border-base);
+  --ifm-hr-border-color: var(--linsi-border-base);
+
+  /* Search */
+  --linsi-search-surface: var(--linsi-bg-surface);
+  --linsi-search-result-hover: var(--linsi-accent-secondary-soft);
+  --linsi-search-secondary-text: var(--linsi-fg-secondary);
+  --linsi-search-border: var(--linsi-border-base);
+}
+
+[data-theme='dark'] {
+  /* Dark semantic roles */
+  --linsi-bg-canvas: var(--linsi-brand-02-ultradark);
+  --linsi-bg-shell: var(--linsi-brand-02-darkest);
+  --linsi-bg-surface: var(--linsi-brand-02-darker);
+  --linsi-bg-surface-raised: var(--linsi-brand-02-dark);
+  --linsi-bg-surface-muted: var(--linsi-brand-02-darker);
+
+  --linsi-fg-primary: var(--linsi-neutral-lightest);
+  --linsi-fg-secondary: var(--linsi-neutral-lighter);
+  --linsi-fg-muted: var(--linsi-neutral-light);
+  --linsi-fg-heading: var(--linsi-pure-white);
+
+  --linsi-border-base: var(--linsi-neutral-dark);
+  --linsi-border-strong: var(--linsi-neutral-base);
+
+  --linsi-accent-primary: var(--linsi-brand-01-lighter);
+  --linsi-accent-primary-hover: var(--linsi-brand-01-light);
+  --linsi-accent-primary-soft: var(--linsi-brand-01-darkest);
+
+  --linsi-accent-secondary: var(--linsi-brand-02-lightest);
+  --linsi-accent-secondary-hover: var(--linsi-brand-02-ultralight);
+  --linsi-accent-secondary-soft: var(--linsi-brand-02-darker);
+
+  --linsi-focus: var(--linsi-brand-02-lightest);
+
+  --linsi-feedback-success-bg: #183525;
+  --linsi-feedback-success-border: #316747;
+  --linsi-feedback-success-fg: #d6f1dd;
+  --linsi-feedback-error-bg: #3b1419;
+  --linsi-feedback-error-border: #e23929;
+  --linsi-feedback-error-fg: #f8b4b1;
+
+  --linsi-logo-surface: var(--linsi-bg-canvas);
+  --linsi-border-color: var(--linsi-border-base);
+  --linsi-navbar-border-color: var(--linsi-border-base);
+  --linsi-focus-color: var(--linsi-focus);
+  --linsi-home-copy: var(--linsi-fg-primary);
+  --linsi-home-subtitle: var(--linsi-fg-secondary);
+  --linsi-button-background: var(--linsi-accent-primary);
+  --linsi-button-hover-background: var(--linsi-brand-01-lightest);
+  --linsi-button-text: var(--linsi-brand-01-darkest);
+  --linsi-button-focus-inner: var(--linsi-bg-shell);
+
+  --ifm-color-primary: var(--linsi-accent-primary);
+  --ifm-background-color: var(--linsi-bg-canvas);
+  --ifm-background-surface-color: var(--linsi-bg-surface);
+  --ifm-font-color-base: var(--linsi-fg-primary);
+  --ifm-color-content-secondary: var(--linsi-fg-secondary);
+  --ifm-heading-color: var(--linsi-fg-heading);
+  --ifm-link-color: var(--linsi-accent-primary);
+  --ifm-link-hover-color: var(--linsi-brand-01-lightest);
+  --ifm-menu-color: var(--linsi-fg-primary);
+  --ifm-menu-color-active: var(--linsi-accent-primary);
+  --ifm-navbar-background-color: var(--linsi-bg-shell);
+  --ifm-navbar-link-color: var(--linsi-fg-primary);
+  --ifm-toc-border-color: var(--linsi-border-base);
+  --ifm-hr-background-color: var(--linsi-border-base);
+  --ifm-hr-border-color: var(--linsi-border-base);
+
+  --linsi-search-surface: var(--linsi-bg-surface);
+  --linsi-search-result-hover: var(--linsi-bg-surface-raised);
+  --linsi-search-secondary-text: var(--linsi-fg-secondary);
+  --linsi-search-border: var(--linsi-border-base);
+}
+
+/* =========================================================
+   Brand 02 — utility / secondary / informational
+   ========================================================= */
+
+[data-theme='light'] .navbar .aa-DetachedSearchButton:hover {
+  background: var(--linsi-accent-secondary-soft) !important;
+  border-color: var(--linsi-brand-02-ultralight) !important;
+}
+
+[data-theme='dark'] .navbar .aa-DetachedSearchButton:hover {
+  background: var(--linsi-bg-surface) !important;
+  border-color: var(--linsi-accent-secondary) !important;
+}
+
+[data-theme='light'] .aa-DetachedCancelButton:hover {
+  color: var(--linsi-accent-secondary) !important;
+}
+
+[data-theme='light'] .linsi-font-selector__select:hover {
+  border-color: var(--linsi-accent-secondary) !important;
+}
+
+[data-theme='dark'] .aa-DetachedCancelButton:hover {
+  color: var(--linsi-accent-secondary) !important;
+}
+
+[data-theme='dark'] .linsi-font-selector__select:hover {
+  border-color: var(--linsi-accent-secondary) !important;
+}
+
+[data-theme='light'] .theme-back-to-top-button:hover {
+  border-color: var(--linsi-accent-secondary) !important;
+  color: var(--linsi-accent-secondary) !important;
+}
+
+[data-theme='dark'] .theme-back-to-top-button:hover {
+  border-color: var(--linsi-accent-secondary) !important;
+  color: var(--linsi-accent-secondary) !important;
+}
+
+.alert--secondary {
+  --ifm-alert-background-color: var(--linsi-accent-secondary-soft);
+  --ifm-alert-border-color: var(--linsi-accent-secondary);
+  --ifm-alert-foreground-color: var(--linsi-brand-02-darkest);
+}
+
+.alert--secondary a {
+  color: var(--linsi-brand-02-darkest);
+}
+
+[data-theme='dark'] .alert--secondary {
+  --ifm-alert-background-color: var(--linsi-bg-surface);
+  --ifm-alert-border-color: var(--linsi-accent-secondary);
+  --ifm-alert-foreground-color: var(--linsi-brand-02-ultralighter);
+}
+
+[data-theme='dark'] .alert--secondary a {
+  color: var(--linsi-accent-secondary-hover);
+}
+
+[data-theme='dark'] .flow-benefit__icon {
+  color: var(--linsi-accent-secondary);
+}
+
+/* =========================================================
+   Dark structure
+   ========================================================= */
+
+[data-theme='dark'] .theme-doc-sidebar-container {
+  background: var(--linsi-bg-shell);
+}
+
+[data-theme='dark'] .menu__link:hover {
+  background: var(--linsi-bg-surface);
+  color: var(--linsi-accent-primary);
+}
+
+[data-theme='dark'] .pagination-nav__link:hover {
+  background: var(--linsi-accent-primary-soft) !important;
+}
