@@ -3,55 +3,72 @@ sidebar_position: 6
 title: Boas práticas
 slug: boas-praticas
 ---
-# Boas práticas
+O manual da LINSI explica como a notação funciona e as boas práticas ajudam a ir além. Use-as como referência e adapte quando fizer sentido para o que você estiver construindo.
 
-A LINSI não busca padronizar cada decisão de um fluxograma, mas as recomendações a seguir existem para manter a leitura clara, previsível e fácil de revisar.
+## Defina o escopo da visão
+---
 
-## Evite cruzar setas
+Antes de começar um fluxograma, defina o que a representação *precisa mostrar, onde ela começa e até onde vai*.
 
-Evite cruzamentos de setas ao máximo. Quando conexões se cruzam, fica mais difícil perceber rapidamente de onde vieram e para onde seguem.
+Uma mesma jornada pode envolver diferentes camadas:
 
-Antes de aceitar um cruzamento, tente reorganizar a posição dos elementos, Colunas ou Caminhos. Quando a conexão direta comprometer a leitura, use Retomada.
+- **Experiência da pessoa:** aquilo que ela percebe, acessa, faz ou vivencia — principal foco da aplicação da LINSI;
+- **Processos operacionais e logísticos:** atividades que sustentam essa experiência nos bastidores;
+- **Processos técnicos:** comportamentos de sistemas, integrações, automações ou outras execuções programáticas;
+- **Outros papéis:** ações realizadas por atendimento, operação, parceiros ou qualquer outra pessoa envolvida na jornada.
 
-## Preserve a ordem dos Caminhos
+Evite partir da premissa de que todo fluxograma precisa mostrar uma jornada end-to-end ou omnichannel. Esse nível de abrangência faz sentido quando ajuda a responder ao problema que está sendo analisado, não como padrão. Você não precisa representar todas essas camadas sempre.
 
-Mantenha cenários comuns ou positivos acima, alternativos abaixo e negativos nas posições inferiores.
+A LINSI pode representar desde um trecho específico até uma experiência ampla. O importante é saber **qual visão você está construindo e por quê**.
 
-Se a estrutura começar a subir e descer entre diferentes tipos de cenário, revise a composição como um todo.
+Também considere seu papel e o contexto do trabalho. Você pode mostrar processos de outras áreas quando eles forem necessários para compreender a experiência, mas evite detalhar, definir ou presumir comportamentos que não conhece. Nesses casos, represente apenas o necessário e valide o conteúdo com quem possui contexto sobre aquela parte da jornada.
 
-## Evite repetir partes do fluxo
 
-Quando uma etapa já representada acontecer novamente, prefira conectar de volta ao ponto existente. Se a continuidade estiver em outro fluxo ou jornada, use Retomada.
 
-Duplicar etapas aumenta desnecessariamente o fluxograma e cria mais pontos para revisar e manter posteriormente.
+## Mesmas coisas, mesmos termos
+---
 
-## Nomeie pelo que acontece
+Se algo aparece mais de uma vez no fluxograma, use sempre o mesmo nome, termo ou expressão. 
 
-Evite repetir no texto aquilo que o próprio elemento já comunica. Exemplos:
+Exemplo: Usar `plano`, `oferta` e `produto` para representar o mesmo conceito pode fazer parecer que existem diferenças onde não existem.
 
-- Ação: `Selecionar plano` em vez de `Pessoa usuária seleciona o plano`
-- Interface: `Dados pessoais` em vez de `Tela de dados pessoais`
+O mesmo vale para situações equivalentes: manter uma forma parecida de descrevê-las facilita bastante a comparação.
 
-## Priorize a leitura
 
-A organização visual faz parte da LINSI.
 
-Sempre que possível:
+## Deixe os Elementos respirarem
+---
 
-- Alinhe variações relacionadas;
-- Preserve a ordem vertical dos Caminhos;
-- Distribua o conteúdo antes que o fluxograma fique apertado.
+Não tente encaixar tudo no menor espaço possível ou, pior, manter tudo colado.
 
-## Preserve a diferenciação das formas
+Quando Elementos ficam muito próximos, Setas, rótulos e desdobramentos começam a se misturar, e fica mais difícil perceber onde uma coisa termina e a próxima começa.
 
-As formas propostas pela LINSI foram pensadas para que os elementos sejam facilmente diferenciados entre si.
+> Dica: use como gap uma distância próxima ao tamanho do Elemento que está ao lado. A partir daí, ajuste conforme o contexto.
 
-Se precisar adaptá-las, evite usar a mesma forma para elementos com funções diferentes e sinalize a mudança na legenda do fluxograma.
 
-## Atente-se ao contraste
 
-Se adaptar as cores propostas, mantenha contraste suficiente entre texto e fundo.
+## Cuide do contraste e da legibilidade
+---
 
-> Afinal, se você considera contraste ao criar uma interface, por que seria diferente em um fluxograma?
+Texto, fundo, bordas e conexões precisam continuar fáceis de distinguir.
 
-A cor deve ajudar na diferenciação sem comprometer a leitura.
+Se adaptar as cores propostas pela LINSI, mantenha contraste suficiente, mas também evite depender apenas da cor para comunicar uma diferença importante.
+
+> Dica: visualize o fluxograma fora do zoom em que ele foi criado. Algo que parece muito claro de perto pode ficar difícil de perceber numa apresentação, compartilhamento de tela ou exportação. Priorize a legibilidade também nessas condições.
+
+
+
+## Revise como quem vai consultar o fluxograma
+---
+
+Faça uma leitura do início ao fim como se o fluxograma tivesse sido criado por outra pessoa. Valide se você consegue identificar:
+
+- Quando e por que ele se divide;
+- Quais são as continuidades possíveis;
+- Onde Caminhos se encontram ou terminam;
+- Quais partes estão agrupadas ou relacionadas;
+- O que já está definido e o que ainda está pendente.
+
+Também use as interações com sua equipe para refinar a representação. Fluxogramas podem mudar conforme decisões são tomadas, dúvidas são resolvidas e a própria experiência evolui.
+
+Quando for importante acompanhar essa evolução ou consultar estados anteriores, considere versionar o fluxograma também.
