@@ -25,13 +25,6 @@ const TEMPLATES = [
     href: '#',
     disabled: true,
   },
-  {
-    id: 'drawio',
-    title: 'Draw.io',
-    actionLabel: 'Em breve',
-    href: '#',
-    disabled: true,
-  },
 ];
 
 export default function TemplateCards() {
