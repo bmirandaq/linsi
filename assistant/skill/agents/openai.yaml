@@ -1,0 +1,3 @@
+interface:
+  display_name: "Assistente LINSI"
+  short_description: "Consulte, crie e revise fluxogramas com a LINSI."
