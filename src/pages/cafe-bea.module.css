@@ -104,7 +104,7 @@
 }
 
 .qrWrapper {
-  background: #ffffff;
+  background: var(--linsi-pure-white);
   border: 1px solid var(--linsi-border-color);
   border-radius: var(--linsi-radius-md);
   display: flex;
@@ -189,7 +189,7 @@
 .copiedButton {
   background: var(--linsi-brand-02-base) !important;
   border-color: var(--linsi-brand-02-base) !important;
-  color: #ffffff !important;
+  color: var(--linsi-pure-white) !important;
 }
 
 /* Desktop: 2 columns */

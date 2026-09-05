@@ -5,7 +5,7 @@
   "scripts": {
     "prestart": "npm run test:security",
     "start": "docusaurus start",
-    "prebuild": "npm run test:security && npm run test:ui",
+    "prebuild": "npm run test:security && npm run test:ui && npm run test:colors",
     "build": "docusaurus build",
     "postbuild": "npm run test:icons && npm run test:assets",
     "clear": "docusaurus clear",
@@ -13,6 +13,7 @@
     "postinstall": "node scripts/patch-image-size.cjs",
     "test:security": "node scripts/test-image-size-security.cjs",
     "test:ui": "node scripts/test-ui-regressions.cjs",
+    "test:colors": "node scripts/test-color-tokens.cjs",
     "test:icons": "node scripts/audit-material-symbols.cjs",
     "test:assets": "node scripts/test-built-assets.cjs"
   },
