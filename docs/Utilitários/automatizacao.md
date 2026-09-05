@@ -57,7 +57,7 @@ Envie um fluxograma existente. A Assistente revisa a estrutura, aplicação LINS
 Suporte oficial nesta Beta:
 
 - ChatGPT – Importar conforme descrito em <a href="https://help.openai.com/pt-br/articles/20001066-skills-in-chatgpt" target="_blank" rel="noopener noreferrer">Skills no ChatGPT</a>
-- Codex CLI – Instale com o comando: <code className={styles.installCommand}>python "$HOME/.codex/skills/.system/skill-installer/scripts/install-skill-from-github.py" --repo bmirandaq/linsi --ref assistant-phase-1 --path assistant/skill --name linsi-assistant</code>
+- Codex CLI – <code className={styles.installCommand}>codex "Instale a Skill: https://linsi.beamiranda.com.br/assistant"</code>
 
 Itens contemplados:
 
