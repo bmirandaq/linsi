@@ -1,27 +1,55 @@
 /* Desktop docs layout fixes */
+:root {
+  --linsi-doc-column-gap: calc(var(--linsi-page-inline) * 2);
+}
+
 @media (min-width: 997px) {
   .theme-doc-sidebar-container[class*='docSidebarContainerHidden'] {
-    height: 32px !important;
+    height: var(--linsi-sidebar-expanded-height, 240px) !important;
     margin-bottom: 0 !important;
-    max-height: 32px !important;
-    min-height: 32px !important;
+    max-height: var(--linsi-sidebar-expanded-height, 240px) !important;
+    min-height: var(--linsi-sidebar-expanded-height, 240px) !important;
   }
 
   .theme-doc-sidebar-container[class*='docSidebarContainerHidden']
     > [class*='sidebarViewport'] {
-    height: 32px !important;
-    max-height: 32px !important;
+    height: 100% !important;
+    max-height: 100% !important;
   }
 
   .theme-doc-sidebar-container[class*='docSidebarContainerHidden']
     [class*='expandButton'] {
-    height: 32px !important;
-    inset: auto !important;
-    min-height: 32px !important;
-    position: static !important;
+    height: 100% !important;
+    inset: 0 !important;
+    min-height: 0 !important;
+    position: absolute !important;
+  }
+
+  html.docs-doc-page [class*='docRoot'] {
+    column-gap: var(--linsi-doc-column-gap);
   }
 
   html.docs-doc-page .main-wrapper {
     padding-bottom: 64px;
+  }
+
+  [data-theme='light']
+    .theme-doc-sidebar-container
+    button[class*='collapseSidebarButton']:hover,
+  [data-theme='light']
+    .theme-doc-sidebar-container
+    button[class*='expandButton']:hover {
+    background: var(--linsi-accent-secondary-soft) !important;
+    color: var(--linsi-accent-secondary) !important;
+  }
+
+  [data-theme='dark']
+    .theme-doc-sidebar-container
+    button[class*='collapseSidebarButton']:hover,
+  [data-theme='dark']
+    .theme-doc-sidebar-container
+    button[class*='expandButton']:hover {
+    background: var(--linsi-bg-surface-raised) !important;
+    color: var(--linsi-accent-secondary) !important;
   }
 }
