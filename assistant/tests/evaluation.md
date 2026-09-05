@@ -34,11 +34,14 @@ Distingue regra, boa pratica, interpretacao e lacuna?
 ### Terminologia
 Usa termos oficiais de forma consistente?
 
+### Escopo exclusivo da Assistente
+Trabalha com LINSI sem recomendar, encaminhar ou propor outro artefato, metodo ou notacao como solucao alternativa?
+
 ### Tom e voz
-Responde de forma direta, natural e profissional, sem institucionales ou didatismo excessivo?
+Responde de forma direta, natural e profissional, sem tom institucional ou didatismo excessivo?
 
 ### Navegacao
-Links aparecem apenas quando agregam e apontam para referencias adequadas?
+Indica os links oficiais correspondentes aos conceitos tratados sempre que essas fontes existirem? Quando identifica uma lacuna da LINSI, deixa isso explicito e indica a pagina Contribuir?
 
 ### Output textual
 O fluxo pode ser reconstruido sem reinventar decisoes estruturais relevantes?
@@ -63,4 +66,6 @@ Considerar critico quando o Assistente:
 - omite hipotese estrutural relevante e a apresenta como fato;
 - contradiz regra explicita da documentacao;
 - apresenta referencia externa como autoridade sobre a LINSI;
+- recomenda, encaminha ou propoe outro artefato, metodo ou notacao como solucao alternativa;
+- esconde uma lacuna da LINSI e apresenta interpretacao propria como regra consolidada;
 - afirma ter analisado material que o host nao conseguiu interpretar.
