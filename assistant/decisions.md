@@ -105,7 +105,7 @@ Decisoes consolidadas para o formato:
 
 O usuario final nao deve precisar clonar o repositorio inteiro.
 
-A primeira release sera identificada como `v0.1-beta`.
+A primeira release sera identificada como versao `0.1-beta`.
 
 Suporte oficial da beta:
 
