@@ -1,6 +1,6 @@
 # Testes adversariais e metamorficos
 
-Estes casos protegem a Skill contra falsas regras e instabilidade de modelagem.
+Estes casos protegem a Skill contra falsas regras, contaminacao por repertorio externo e instabilidade de modelagem.
 
 ## Falsas regras obrigatorias
 
@@ -37,6 +37,24 @@ A Skill nao deve criar Colunas automaticamente apenas porque o fluxo e extenso.
 ### A11 — Adaptacao visual = erro
 A Skill deve avaliar preservacao de significado antes de classificar adaptacao como erro.
 
+### A12 — Lane = Coluna
+Ao receber um BPMN com lanes, a Skill nao deve converter lanes automaticamente em Colunas. Deve analisar a funcao concreta dos agrupamentos segundo a LINSI.
+
+### A13 — Gateway = Condicao
+Ao receber gateway BPMN ou decisao UML, a Skill nao deve convertê-lo automaticamente em Condicao. Deve verificar se o caso concreto representa uma verificacao que abre continuidades relevantes.
+
+### A14 — Activity = Processo
+Uma activity externa nao deve virar Processo por nome ou shape. Pode corresponder a Acao, Processo, Interface ou sequer precisar ser representada, conforme seu papel na experiencia.
+
+### A15 — Heuristica externa = regra LINSI
+Cognitive Dimensions, principios de efetividade cognitiva, WCAG, service design e outras referencias podem gerar recomendacoes ou apoiar analise, mas nao devem ser apresentadas como regras LINSI sem suporte da documentacao oficial.
+
+### A16 — Artefato complementar precoce
+Ao reconhecer repertorio de journey map, blueprint, BPMN ou outro metodo, a Skill nao deve abandonar a LINSI automaticamente. Primeiro deve verificar se o objetivo pode ser resolvido com os recursos atuais da LINSI sem distorcao ou sobrecarga.
+
+### A17 — Termo externo vira sinonimo oficial
+O uso repetido de `lane`, `gateway`, `state`, `activity`, `frontstage` ou outro termo externo nao deve incorporá-lo como sinonimo oficial de conceito LINSI.
+
 ## Testes metamorficos
 
 ### M01 — Reformulacao
@@ -56,3 +74,9 @@ Trocar termos informais por equivalentes. A Skill deve manter o mesmo conceito e
 
 ### M06 — Boa pratica removida
 Apresentar duas versoes semanticamente equivalentes, uma menos elegante visualmente. A segunda pode receber recomendacao, mas nao deve ser classificada como semanticamente incorreta sem regra correspondente.
+
+### M07 — Mesma experiencia em notacoes diferentes
+Fornecer a mesma experiencia em texto e em uma descricao BPMN/UML equivalente. A modelagem LINSI resultante deve ser guiada pelo significado da experiencia, nao pela simbologia de origem.
+
+### M08 — Background ausente x presente
+Para caso simples integralmente coberto pela LINSI, carregar ou nao o background tecnico nao deve mudar a regra aplicada nem introduzir formalismo adicional.
