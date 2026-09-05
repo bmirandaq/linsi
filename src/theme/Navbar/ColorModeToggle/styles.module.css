@@ -23,12 +23,14 @@
 }
 
 .track {
+  --linsi-toggle-track-inset: 3px;
+
   background: var(--linsi-neutral-lighter);
   border: 1px solid var(--linsi-neutral-base);
   border-radius: 999px;
   display: block;
   height: 26px;
-  padding: 3px;
+  padding: var(--linsi-toggle-track-inset);
   transition: background-color var(--linsi-motion-base) var(--linsi-ease-standard),
     border-color var(--linsi-motion-fast) var(--linsi-ease-standard);
   width: 48px;
