@@ -36,6 +36,9 @@ jobs:
       - name: Verificar tipos
         run: npm run typecheck
 
+      - name: Auditar dependências
+        run: npm run audit:dependencies
+
       - name: Gerar site
         run: npm run build
         env:

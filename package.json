@@ -5,7 +5,7 @@
   "scripts": {
     "prestart": "npm run test:security",
     "start": "docusaurus start",
-    "prebuild": "npm run test:security && npm run test:ui && npm run test:colors && npm run test:spacing",
+    "prebuild": "npm run test:security && npm run test:worker && npm run test:ui && npm run test:colors && npm run test:spacing",
     "build": "docusaurus build",
     "postbuild": "npm run test:icons && npm run test:assets",
     "clear": "docusaurus clear",
@@ -13,6 +13,8 @@
     "postinstall": "node scripts/patch-image-size.cjs",
     "typecheck": "tsc --noEmit",
     "test:security": "node scripts/test-image-size-security.cjs",
+    "audit:dependencies": "node scripts/audit-dependencies.cjs",
+    "test:worker": "node worker/index.test.mjs",
     "test:ui": "node scripts/test-ui-regressions.cjs",
     "test:colors": "node scripts/test-color-tokens.cjs",
     "test:spacing": "node scripts/test-spacing-tokens.cjs",
@@ -42,6 +44,8 @@
     "typescript": "~5.9.3"
   },
   "overrides": {
+    "fast-uri": "3.1.7",
+    "qs": "6.16.0",
     "serialize-javascript": "7.1.0",
     "sockjs": {
       "uuid": "11.1.1"

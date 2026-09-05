@@ -3,7 +3,17 @@ build/
 .docusaurus/
 .cache-loader/
 npm-debug.log*
+*.log
+coverage/
+test-results/
+playwright-report/
+*.tsbuildinfo
+.eslintcache
+*.tmp
+*.temp
 .DS_Store
+Thumbs.db
+Desktop.ini
 source/
 .env
 .env.*
