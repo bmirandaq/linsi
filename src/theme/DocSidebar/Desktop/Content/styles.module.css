@@ -38,12 +38,12 @@
 @media (min-width: 997px) {
   .menu {
     flex-grow: 1;
-    padding: 0.5rem;
+    padding: var(--linsi-space-8);
   }
 
   @supports (scrollbar-gutter: stable) {
     .menu {
-      padding: 0.5rem 0 0.5rem 0.5rem;
+      padding: var(--linsi-space-8) 0 var(--linsi-space-8) var(--linsi-space-8);
       scrollbar-gutter: stable;
     }
   }
