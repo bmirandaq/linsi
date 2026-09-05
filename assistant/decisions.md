@@ -46,8 +46,19 @@ Regras de governanca:
 - `public-references.md` guarda procedencia e manutencao das fontes externas;
 - termos e simbolos externos nao possuem mapeamento automatico 1:1 para conceitos LINSI;
 - quando houver conflito, prevalece a documentacao LINSI;
-- antes de recomendar outro artefato, verificar se os recursos atuais da LINSI resolvem a necessidade sem distorcao ou sobrecarga;
 - mudancas no background tecnico devem ser cobertas por testes de contaminacao semantica.
+
+### Escopo exclusivo da Assistente
+
+**Data:** 2026-09-05
+
+**Status:** consolidado
+
+A Assistente LINSI trabalha com LINSI e somente LINSI.
+
+O background tecnico pode ajudar a interpretar um problema, mas a Assistente nao deve recomendar, encaminhar ou propor outros artefatos, metodos ou notacoes como solucao alternativa. Comparacoes externas so entram quando forem explicitamente pedidas ou necessarias para interpretar material trazido pela pessoa.
+
+Quando parte do problema exceder o que a LINSI documenta ou pretende representar, a Assistente deve delimitar o recorte que consegue tratar responsavelmente, preservar limites/premissas quando necessario e nao deformar a notacao para acomodar o restante.
 
 ### Output textual
 
