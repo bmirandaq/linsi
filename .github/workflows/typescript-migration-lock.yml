@@ -18,7 +18,26 @@ jobs:
           cache: npm
       - name: Instalar dependencias
         run: npm ci
-      - name: Verificar tipos
-        run: npm run typecheck
+      - name: Executar typecheck
+        id: typecheck
+        shell: bash
+        run: |
+          set +e
+          npm run typecheck > typecheck.log 2>&1
+          code=$?
+          echo "$code" > typecheck.exit
+          cat typecheck.log
+          exit 0
+      - name: Salvar saida do typecheck
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: typecheck-output
+          path: |
+            typecheck.log
+            typecheck.exit
+          retention-days: 1
+      - name: Confirmar typecheck
+        run: test "$(cat typecheck.exit)" = "0"
       - name: Validar build e regressoes
         run: npm run build
