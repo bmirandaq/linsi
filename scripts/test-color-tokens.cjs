@@ -12,9 +12,11 @@ const templateCards = read('src/components/TemplateCards/styles.module.css');
 const cafe = read('src/pages/cafe-bea.module.css');
 const contribuir = read('src/pages/contribuir.module.css');
 
-assert.match(
-  config,
-  /customCss:\s*\[\s*['"]\.\/src\/css\/custom\.css['"],\s*['"]\.\/src\/css\/palette-v2\.css['"]\s*\]/,
+const customCssIndex = config.indexOf("'./src/css/custom.css'");
+const paletteCssIndex = config.indexOf("'./src/css/palette-v2.css'");
+
+assert.ok(
+  customCssIndex >= 0 && paletteCssIndex > customCssIndex,
   'A Palette v2 precisa ser carregada depois do CSS base.',
 );
 
