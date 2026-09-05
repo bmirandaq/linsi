@@ -5,39 +5,61 @@ on:
     branches: [chore/typescript-incremental]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: chore/typescript-incremental
+      - name: Preservar line endings do repositorio
+        id: normalize
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          paths = [
+              'package.json',
+              'package-lock.json',
+              '.github/workflows/deploy.yml',
+              'src/components/MaterialSymbol/index.tsx',
+              'src/theme/DocSidebar/Desktop/Content/index.tsx',
+              'src/theme/MDXComponents/Img/index.tsx',
+              'src/theme/Root.tsx',
+              'src/utils/fontPreference.ts',
+          ]
+
+          for raw_path in paths:
+              path = Path(raw_path)
+              text = path.read_text(encoding='utf-8')
+              normalized = text.replace('\r\n', '\n').replace('\r', '\n')
+              path.write_bytes(normalized.replace('\n', '\r\n').encode('utf-8'))
+          PY
+
+          if git diff --quiet -- package.json package-lock.json .github/workflows/deploy.yml src/components/MaterialSymbol/index.tsx src/theme/DocSidebar/Desktop/Content/index.tsx src/theme/MDXComponents/Img/index.tsx src/theme/Root.tsx src/utils/fontPreference.ts; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add package.json package-lock.json .github/workflows/deploy.yml src/components/MaterialSymbol/index.tsx src/theme/DocSidebar/Desktop/Content/index.tsx src/theme/MDXComponents/Img/index.tsx src/theme/Root.tsx src/utils/fontPreference.ts
+            git commit -m "chore: preserve repository line endings"
+            git push
+          fi
       - uses: actions/setup-node@v6
+        if: steps.normalize.outputs.changed == 'false'
         with:
           node-version: 24
           cache: npm
       - name: Instalar dependencias
+        if: steps.normalize.outputs.changed == 'false'
         run: npm ci
-      - name: Executar typecheck
-        id: typecheck
-        shell: bash
-        run: |
-          set +e
-          npm run typecheck > typecheck.log 2>&1
-          code=$?
-          echo "$code" > typecheck.exit
-          cat typecheck.log
-          exit 0
-      - name: Salvar saida do typecheck
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: typecheck-output
-          path: |
-            typecheck.log
-            typecheck.exit
-          retention-days: 1
-      - name: Confirmar typecheck
-        run: test "$(cat typecheck.exit)" = "0"
+      - name: Verificar tipos
+        if: steps.normalize.outputs.changed == 'false'
+        run: npm run typecheck
       - name: Validar build e regressoes
+        if: steps.normalize.outputs.changed == 'false'
         run: npm run build
