@@ -34,16 +34,19 @@ Informações que ajudam a compreender a proposta, mas não fazem parte da gram�
 - premissas;
 - pontos em aberto da proposta.
 
-Esses itens não devem ser confundidos com Elementos LINSI.
+Esses itens não devem ser confundidos com LINSI.
 
-### 2. Estrutura LINSI
+### 2. Estrutura da modelagem LINSI
 
-Transcrição da modelagem propriamente dita:
+Transcrição do que precisa ser transformado em fluxograma:
 
-- Elementos e Setas;
-- Caminhos e suas continuidades;
-- Convergências;
-- Colunas, quando existirem.
+- Elementos;
+- Setas;
+- Caminhos;
+- Colunas;
+- convergências e demais relações necessárias para reconstruir a estrutura visual.
+
+Princípios, boas práticas, Glossário e demais páginas da documentação podem orientar a proposta e sua explicação, mas não viram blocos estruturais do fluxograma apenas por fazerem parte da documentação LINSI.
 
 ## Escopo e premissas
 
@@ -53,7 +56,7 @@ Uma premissa deve registrar algo assumido pela Assistente para viabilizar a prop
 
 ## Pontos em aberto da proposta
 
-Usar esta seção apenas para dúvidas da própria proposta da Assistente que não precisam necessariamente aparecer no fluxograma.
+Usar esta seção para dúvidas ou informações ausentes que afetam a proposta da Assistente.
 
 Exemplo:
 
@@ -61,8 +64,6 @@ Exemplo:
 ## Pontos em aberto da proposta
 - O contexto não informa se a pessoa pode tentar outro cartão após uma recusa.
 ```
-
-Isso é diferente do Elemento `Comentário`, que representa no próprio fluxograma uma dúvida ou ponto em aberto relevante para o artefato.
 
 ## Limites
 
@@ -72,37 +73,22 @@ O output textual não deve incluir:
 - tamanhos exatos;
 - hexadecimais;
 - Auto Layout;
-- propriedades específicas de Figma, Miro ou outra ferramenta;
-- sintaxe criada apenas para antecipar o JSON da Fase 2.
-
-## Teste de reconstruibilidade
-
-O formato só deve ser considerado estável quando uma pessoa familiarizada com LINSI conseguir reconstruir o fluxo sem reinventar:
-
-- sequência;
-- bifurcações;
-- tipo e rótulo das Setas;
-- origem de novos Caminhos;
-- hierarquia dos Caminhos;
-- convergências;
-- Colunas relevantes e os trechos que abrangem;
-- função dos Elementos.
+- propriedades específicas de Figma, FigJam, Miro ou outra ferramenta;
+- sintaxe criada para antecipar JSON da Fase 2 da Assistente LINSI.
 
 # Convenções de transcrição da estrutura LINSI
 
-A ordem das seções abaixo acompanha a ordem conceitual da documentação oficial: primeiro Elementos, depois Caminhos e então Colunas.
+A explicação das convenções segue a sequência conceitual da documentação oficial. Na transcrição de um fluxo concreto, a ordem continua sendo determinada pela experiência representada.
 
 # Elementos
 
-Os Elementos devem ser descritos na mesma ordem conceitual usada pela documentação oficial quando esta referência explicar suas convenções: Seta, Interface, Processo, Ação, Condição, Início, Fim, Retomada, Nota e Comentário.
-
-Na transcrição de um fluxo concreto, porém, os Elementos aparecem na ordem real da continuidade da experiência.
+As convenções abaixo seguem a ordem da documentação: Seta, Interface, Processo, Ação, Condição, Início, Fim, Retomada e Nota.
 
 ## Seta
 
-A Seta é uma relação entre Elementos. Não deve aparecer no output como um item autônomo sem origem e destino identificáveis.
+A Seta conecta Elementos e indica a continuidade do fluxo.
 
-Forma preferencial para uma continuidade linear:
+Forma preferencial:
 
 ```text
 [Interface - Tela] Checkout
@@ -110,7 +96,7 @@ Forma preferencial para uma continuidade linear:
 [Ação] Finalizar pedido
 ```
 
-Quando houver rótulo, mantê-lo associado à Seta:
+Quando houver rótulo, escrevê-lo junto da Seta:
 
 ```text
 → [Seta Positiva | Autorizado] →
@@ -123,8 +109,6 @@ Tipos possíveis:
 - `[Seta Negativa]`
 - `[Seta Alternativa]`
 
-Não transformar rótulo em atributo separado da continuidade quando ele pertence à Seta.
-
 ## Interface
 
 Representar o subtipo quando relevante:
@@ -136,17 +120,15 @@ Representar o subtipo quando relevante:
   Ações: Finalizar pedido; Voltar
 ```
 
-ou:
-
 ```text
 [Interface - Janela] Filtros
   Conteúdo: Categorias e faixa de preço
   Ações: Aplicar filtros; Fechar
 ```
 
-As `Ações:` descritas dentro de Interface são possibilidades disponíveis naquele ponto.
+`Ações:` registra o que está disponível para a pessoa naquela Interface.
 
-Quando uma delas for efetivamente realizada no Caminho, representar separadamente o Elemento Ação:
+Quando uma dessas possibilidades for efetivamente realizada no fluxo, usar o Elemento Ação:
 
 ```text
 [Interface - Tela] Checkout
@@ -156,47 +138,39 @@ Quando uma delas for efetivamente realizada no Caminho, representar separadament
 [Ação] Finalizar pedido
 ```
 
-Não fundir possibilidade disponível e Ação realizada.
-
 ## Processo
 
-Representar o comportamento executado pelo sistema como Elemento próprio:
+Representar o comportamento executado pelo sistema:
 
 ```text
-[Processo] Autorizar pagamento
+[Processo] Coletar autorização do pagamento via SDK
 ```
 
-Quando houver um reflexo perceptível relevante para a experiência, representá-lo em Interface, mantendo a relação entre os dois conceitos:
+Se essa execução produzir algo visível ou perceptível para a pessoa, representar esse resultado em uma Interface:
 
 ```text
-[Processo] Autorizar pagamento
+[Processo] Coletar autorização do pagamento via SDK
 → [Seta Comum] →
 [Interface - Tela] Resultado do pagamento
 ```
 
-Não registrar o resultado percebido apenas como atributo interno do Processo quando ele precisa existir como Interface na experiência.
-
 ## Ação
 
-Representar uma ação efetivamente realizada pela pessoa:
+Representar a ação efetivamente realizada pela pessoa:
 
 ```text
 [Ação] Finalizar pedido
 ```
 
-Quando ela corresponder a uma possibilidade apresentada anteriormente em Interface, manter essa relação por meio da continuidade do Caminho, sem repetir o conteúdo da Interface como se fosse a própria Ação.
-
 ## Condição
 
-Representar a Condição como pergunta direta:
+Representar como pergunta direta:
 
 ```text
 [Condição] Pagamento autorizado?
 ```
 
-As respostas devem permanecer associadas às Setas que saem da Condição.
-
-Quando uma saída continua no mesmo Caminho, representá-la diretamente na sequência:
+As respostas ficam nos rótulos das Setas que saem da Condição:
 
 ```text
 [Condição] Pagamento autorizado?
@@ -204,17 +178,7 @@ Quando uma saída continua no mesmo Caminho, representá-la diretamente na sequ�
 [Interface - Tela] Compra confirmada
 ```
 
-Quando uma saída abre outro Caminho, registrar essa Seta na origem do Caminho correspondente:
-
-```text
-### Caminho negativo — Pagamento recusado
-Origem: [Condição] Pagamento autorizado?
-Entrada: [Seta Negativa | Recusado]
-```
-
-Cada Seta de saída de uma Condição deve aparecer uma única vez no output: na continuidade do Caminho atual ou como entrada do Caminho que ela abre.
-
-Não criar uma lista de resultados desacoplada das Setas.
+Quando uma saída abrir outro Caminho, registrar a origem e a Seta de entrada no ponto em que esse Caminho for apresentado.
 
 ## Início
 
@@ -224,7 +188,7 @@ Quando fizer parte da modelagem:
 [Início] Início da compra
 ```
 
-Não incluir automaticamente. O Elemento pode ser dispensado quando o ponto de partida estiver claro pelo contexto.
+Pode ser omitido quando o ponto de partida já estiver claro pelo contexto.
 
 ## Fim
 
@@ -234,7 +198,7 @@ Quando fizer parte da modelagem:
 [Fim] Compra encerrada
 ```
 
-Não incluir automaticamente. O Elemento pode ser dispensado quando o encerramento estiver claro pelo contexto.
+Pode ser omitido quando o encerramento já estiver claro pelo contexto.
 
 ## Retomada
 
@@ -244,15 +208,13 @@ Representar o destino de forma explícita:
 [Retomada] Continuar em: Fluxo de acompanhamento do pedido
 ```
 
-Quando houver link disponível e ele fizer parte do material fornecido ou da documentação relacionada, acrescentá-lo sem inventar destino.
-
-A Retomada representa continuidade em outro ponto; não é sinônimo de convergência entre Caminhos.
+Quando houver link para o destino, orientar a pessoa a acrescentá-lo no fluxograma. Não é necessário que esse link tenha sido encaminhado à Assistente para que a Retomada seja proposta.
 
 ## Nota
 
-A Nota contextualiza o fluxo e não participa da sequência como etapa.
+A Nota deve aparecer associada ao Elemento ou trecho que contextualiza.
 
-Quando estiver associada a um Elemento ou trecho específico, colocá-la logo após esse contexto e usar indentação para indicar associação, sem inserir Setas para a Nota:
+Usar recuo e não inserir Setas para conectá-la:
 
 ```text
 [Processo] Autorizar pagamento
@@ -262,32 +224,27 @@ Quando estiver associada a um Elemento ou trecho específico, colocá-la logo ap
 [Interface - Tela] Resultado do pagamento
 ```
 
-Essa organização textual não significa `Processo → Nota → Interface`.
+# Caminhos e Colunas
 
-Se a associação não ficar clara apenas pela proximidade, explicá-la textualmente.
+Caminhos e Colunas organizam dimensões diferentes do mesmo fluxograma:
 
-## Comentário
+- Caminhos mostram as continuidades na leitura horizontal;
+- Colunas organizam recortes verticais.
 
-O Comentário registra uma dúvida ou ponto ainda em aberto no próprio fluxograma e também não participa da sequência como etapa.
+Quando os dois existirem, o output deve apresentá-los juntos. Separar toda a descrição de Caminhos da descrição de Colunas dificulta a reconstrução visual.
 
-Exemplo:
+## Quando não houver Colunas
 
-```text
-[Interface - Tela] Pagamento recusado
-  [Comentário] Confirmar se a pessoa pode trocar o cartão antes de tentar novamente.
-```
+Transcrever diretamente os Caminhos.
 
-Não usar `Comentário` para dúvidas que pertencem apenas à elaboração da proposta da Assistente. Para essas, usar `Pontos em aberto da proposta`.
+Se houver apenas um Caminho, não é necessário criar um título para ele.
 
-# Caminhos
+Com dois ou mais Caminhos, seguir a hierarquia da documentação:
 
-Caminhos são o eixo principal para transcrever continuidade no output textual.
-
-O texto é linear, mas a LINSI organiza Caminhos horizontalmente. O output deve preservar essa lógica sem transformar Colunas em sequência.
-
-## Representação de um Caminho
-
-Usar uma seção para cada Caminho quando houver mais de uma continuidade relevante.
+1. Caminho principal;
+2. Caminho positivo, se houver;
+3. Caminho alternativo, se houver;
+4. Caminho negativo, se houver.
 
 Exemplo:
 
@@ -297,24 +254,7 @@ Exemplo:
 [Interface - Tela] Checkout
 → [Seta Comum] →
 [Ação] Finalizar pedido
-```
 
-Fluxos simples com um único Caminho não precisam receber o título `Caminho principal` se isso só adicionar ruído.
-
-## Origem de novos Caminhos
-
-Todo Caminho secundário deve indicar de onde surgiu quando essa origem não estiver imediatamente evidente.
-
-Usar:
-
-```text
-Origem: [Elemento de origem]
-Entrada: [Seta Tipo | Rótulo, quando houver]
-```
-
-Exemplo:
-
-```text
 ### Caminho negativo — Pagamento recusado
 Origem: [Condição] Pagamento autorizado?
 Entrada: [Seta Negativa | Recusado]
@@ -322,114 +262,37 @@ Entrada: [Seta Negativa | Recusado]
 [Interface - Tela] Pagamento recusado
 ```
 
-`Origem` identifica o Elemento onde ocorreu o desdobramento.
+### Origem de novos Caminhos
 
-`Entrada` identifica a Seta que conecta esse desdobramento ao novo Caminho.
-
-Esses campos pertencem ao formato textual da Assistente e não são novos conceitos LINSI.
-
-## Ordem dos Caminhos
-
-Quando houver dois ou mais Caminhos, seguir no output a mesma hierarquia da documentação:
-
-1. Caminho principal;
-2. Caminho positivo, se houver;
-3. Caminho alternativo, se houver;
-4. Caminho negativo, se houver.
-
-Não ordenar Caminhos apenas pela ordem em que foram mencionados no briefing.
-
-## Convergência
-
-Convergência pertence à estrutura de Caminhos.
-
-Quando dois ou mais Caminhos voltarem a compartilhar a mesma continuidade, indicar explicitamente:
+Quando um Caminho surgir de um desdobramento anterior, indicar:
 
 ```text
-### Convergência — Retorno ao resumo do pedido
-Caminhos envolvidos: Caminho principal; Caminho negativo — Nova tentativa
-Destino compartilhado: [Interface - Tela] Resumo do pedido
+Origem: [Elemento de origem]
+Entrada: [Seta Tipo | Rótulo, quando houver]
 ```
 
-Depois da convergência, não duplicar toda a continuidade comum em cada Caminho.
+`Origem` e `Entrada` pertencem ao formato textual da Assistente. Servem apenas para deixar a relação reconstruível.
 
-A forma textual acima descreve a relação para reconstrução. `Convergência` não é um novo Elemento LINSI.
+## Quando houver Colunas
 
-# Colunas
+Percorrer as Colunas da esquerda para a direita, como aparecem no fluxograma.
 
-Colunas são uma camada de organização vertical sobre a estrutura dos Caminhos.
+Dentro de cada Coluna, apresentar os Caminhos de cima para baixo, preservando a hierarquia da LINSI.
 
-No output textual, descrever Colunas depois dos Caminhos para não confundir agrupamento vertical com continuidade.
+Assim, cada bloco textual mostra ao mesmo tempo:
 
-Não usar Colunas como eixo principal da sequência.
-
-Só incluir a seção `Colunas` quando a proposta realmente utilizar Colunas.
-
-## Coluna Etapa
+- em qual Coluna o trecho está;
+- a qual Caminho ele pertence;
+- quais Elementos e Setas existem naquele trecho.
 
 Exemplo:
 
 ```text
 ### [Coluna Etapa] Pagamento
-Abrange:
-- Caminho principal: de [Interface - Tela] Checkout até [Interface - Tela] Compra confirmada
-- Caminho negativo — Pagamento recusado: de [Interface - Tela] Pagamento recusado até [Ação] Tentar novamente
-```
 
-A descrição deve indicar quais trechos do fluxo pertencem à Coluna sem reescrever toda a sequência.
-
-## Coluna Seção
-
-Exemplo:
-
-```text
-### [Coluna Seção] Checkout
-Abrange:
-- Coluna Etapa: Endereço
-- Coluna Etapa: Entrega
-- Coluna Etapa: Pagamento
-```
-
-Quando a Seção abranger trechos que não estejam organizados como Etapas, identificá-los diretamente.
-
-Não inventar uma estrutura de Etapas apenas para facilitar a descrição da Seção.
-
-## Coluna Equivalência
-
-Representar a relação entre trechos equivalentes dos Caminhos:
-
-```text
-### [Coluna Equivalência]
-Relaciona:
-- Caminho principal: [Interface - Tela] Compra confirmada
-- Caminho alternativo — PIX: [Interface - Tela] Compra confirmada via PIX
-```
-
-O marcador `[Coluna Equivalência]` existe somente para identificar a estrutura no output textual.
-
-Não significa que o fluxograma visual deva receber esse rótulo. Na LINSI, o rótulo da Coluna Equivalência é dispensado.
-
-# Estrutura default
-
-Usar apenas as seções necessárias ao caso.
-
-Exemplo completo de referência:
-
-```text
-# Compra de produto
-
-## Escopo
-Do checkout à confirmação do pedido.
-
-## Premissas
-- Considerei que a pessoa já adicionou um produto ao carrinho.
-
-## Estrutura LINSI
-
-### Caminho principal
+#### Caminho principal
 
 [Interface - Tela] Checkout
-  Conteúdo: Endereço, entrega e pagamento
   Ações: Finalizar pedido
 
 → [Seta Comum] →
@@ -437,41 +300,158 @@ Do checkout à confirmação do pedido.
 
 → [Seta Comum] →
 [Processo] Autorizar pagamento
-  [Nota] A autorização é realizada por um SDK externo.
 
 → [Seta Comum] →
 [Condição] Pagamento autorizado?
 
-→ [Seta Positiva | Autorizado] →
-[Interface - Tela] Compra confirmada
-
-### Caminho negativo — Pagamento recusado
+#### Caminho negativo — Pagamento recusado
 Origem: [Condição] Pagamento autorizado?
 Entrada: [Seta Negativa | Recusado]
 
 [Interface - Tela] Pagamento recusado
-  Conteúdo: O pagamento não foi autorizado.
-  Ações: Tentar novamente
-
-→ [Seta Comum] →
-[Ação] Tentar novamente
-
-### Convergência — Nova tentativa
-Caminhos envolvidos: Caminho negativo — Pagamento recusado; Caminho principal
-Destino compartilhado: [Interface - Tela] Checkout
-
-## Colunas
-
-### [Coluna Etapa] Pagamento
-Abrange:
-- Caminho principal: de [Ação] Finalizar pedido até [Interface - Tela] Compra confirmada
-- Caminho negativo — Pagamento recusado: de [Interface - Tela] Pagamento recusado até [Ação] Tentar novamente
-
-## Pontos em aberto da proposta
-- O contexto não informa se existe limite de tentativas.
 ```
 
-A estrutura acima é um template de output da Assistente, não sintaxe normativa da LINSI.
+Se o mesmo Caminho continuar na Coluna seguinte, usar o mesmo nome e continuar apenas com os Elementos daquele novo trecho.
+
+## Coluna Etapa
+
+Identificar pelo nome da Etapa:
+
+```text
+### [Coluna Etapa] Pagamento
+```
+
+Os Caminhos que atravessam essa Etapa aparecem dentro do mesmo bloco.
+
+## Coluna Seção
+
+Quando uma Seção reunir Etapas, manter essa relação no próprio bloco:
+
+```text
+### [Coluna Seção] Checkout
+
+#### [Coluna Etapa] Endereço
+
+##### Caminho principal
+...
+
+#### [Coluna Etapa] Entrega
+
+##### Caminho principal
+...
+
+#### [Coluna Etapa] Pagamento
+
+##### Caminho principal
+...
+```
+
+Se a Seção reunir trechos que não estejam organizados como Etapas, não criar Etapas apenas para preencher a estrutura textual.
+
+## Coluna Equivalência
+
+Usar a própria Coluna para colocar lado a lado, no texto, os trechos equivalentes dos Caminhos:
+
+```text
+### [Coluna Equivalência]
+
+#### Caminho principal
+[Interface - Tela] Compra confirmada
+
+#### Caminho alternativo — PIX
+[Interface - Tela] Compra confirmada via PIX
+```
+
+`[Coluna Equivalência]` identifica a estrutura no output textual. Isso não torna obrigatório um rótulo no fluxograma visual.
+
+## Convergência
+
+Indicar a Convergência no ponto da estrutura em que os Caminhos passam a compartilhar a mesma continuidade.
+
+Quando houver Colunas, registrar a Convergência dentro da Coluna em que ela acontece.
+
+Exemplo:
+
+```text
+### [Coluna Etapa] Entrega
+
+Convergência: Caminho principal; Caminho negativo — Cadastrar endereço
+Destino compartilhado: [Interface - Tela] Opções de entrega
+
+[Interface - Tela] Opções de entrega
+→ [Seta Comum] →
+...
+```
+
+Depois da Convergência, escrever a continuidade compartilhada uma única vez.
+
+# Estrutura default
+
+Usar apenas as seções necessárias ao caso.
+
+## Exemplo sem Colunas
+
+```text
+# Reset de senha
+
+## Estrutura LINSI
+
+[Interface - Tela] Recuperar senha
+  Ações: Enviar código
+
+→ [Seta Comum] →
+[Ação] Enviar código
+
+→ [Seta Comum] →
+[Processo] Enviar código de recuperação
+
+→ [Seta Comum] →
+[Interface - Tela] Inserir código
+```
+
+## Exemplo com Caminhos e Colunas
+
+```text
+# Checkout
+
+## Escopo
+Do preenchimento do endereço à escolha da entrega.
+
+## Estrutura LINSI
+
+### [Coluna Etapa] Endereço
+
+#### Caminho principal
+
+[Interface - Tela] Checkout
+→ [Seta Comum] →
+[Condição] Endereço de entrega cadastrado?
+
+→ [Seta Positiva | Sim] →
+
+#### Caminho negativo — Cadastrar endereço
+Origem: [Condição] Endereço de entrega cadastrado?
+Entrada: [Seta Negativa | Não]
+
+[Interface - Tela] Cadastrar endereço
+  Ações: Salvar endereço
+
+→ [Seta Comum] →
+[Ação] Salvar endereço
+
+→ [Seta Comum] →
+[Processo] Salvar endereço
+
+### [Coluna Etapa] Entrega
+
+Convergência: Caminho principal; Caminho negativo — Cadastrar endereço
+Destino compartilhado: [Interface - Tela] Opções de entrega
+
+[Interface - Tela] Opções de entrega
+  Ações: Selecionar entrega
+```
+
+A estrutura acima é um formato de saída da Assistente, não sintaxe normativa da LINSI.
 
 # Regras de proporcionalidade
 
@@ -481,29 +461,28 @@ Em fluxos simples:
 
 - omitir Escopo se estiver evidente;
 - omitir Premissas se nenhuma hipótese relevante tiver sido adotada;
-- omitir o título de Caminho quando houver apenas uma continuidade e ele não agregar leitura;
+- omitir título de Caminho quando houver apenas uma continuidade;
 - omitir Colunas quando não forem utilizadas;
 - omitir Pontos em aberto da proposta quando não existirem.
 
-Em fluxos complexos:
+Em fluxos maiores:
 
-- explicitar origens de Caminhos;
-- explicitar convergências;
-- manter hierarquia de Caminhos;
-- descrever Colunas sem duplicar a sequência;
+- preservar a origem de novos Caminhos;
+- apresentar Caminhos e Colunas juntos quando ambos existirem;
+- indicar Convergências no ponto em que acontecem;
 - preferir clareza estrutural a compactação excessiva.
 
 # Quality check do output
 
 Antes de entregar uma proposta textual, verificar:
 
-1. cada Seta possui origem e destino compreensíveis;
-2. rótulos de Condição permanecem associados às Setas;
-3. possibilidades em Interface não foram confundidas com Ações realizadas;
-4. Processos e reflexos perceptíveis não foram fundidos indevidamente;
-5. Nota e Comentário não foram inseridos como etapas da sequência;
-6. novos Caminhos registram sua origem e entrada quando necessário;
-7. Convergência permanece dentro da lógica de Caminhos;
-8. Colunas descrevem agrupamento vertical e não substituem Caminhos;
-9. metadados da proposta não foram apresentados como conceitos LINSI;
-10. uma pessoa familiarizada com LINSI consegue reconstruir a modelagem sem inventar relações ausentes.
+1. cada Seta conecta uma origem e um destino compreensíveis;
+2. rótulos de Setas de uma Condição permanecem junto das respectivas Setas;
+3. possibilidades disponíveis em Interface não foram confundidas com Elemento Ação;
+4. resultados perceptíveis de Processos aparecem como Interface quando fizerem parte da experiência representada;
+5. Notas estão associadas ao contexto correto e não entram na sequência;
+6. novos Caminhos registram origem e entrada quando necessário;
+7. quando houver Colunas, Caminhos e Colunas aparecem juntos na estrutura;
+8. Convergências aparecem no ponto em que os Caminhos passam a compartilhar a continuidade;
+9. seções desnecessárias foram omitidas;
+10. a estrutura fornece informação suficiente para ser transformada em fluxograma sem exigir novas decisões de modelagem.
