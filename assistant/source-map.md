@@ -9,6 +9,8 @@ Rastreia a relacao entre a documentacao publica da LINSI e a camada operacional 
 - Mudancas nas fontes devem disparar revisao das referencias operacionais afetadas antes de uma release.
 - Exemplos e imagens nao criam regras por si so.
 - Orientacoes derivadas devem ser identificadas como `derived-guidance` e nunca apresentadas como regra oficial sem suporte da documentacao.
+- Fontes externas ampliam repertorio, mas nao entram na cadeia normativa da LINSI.
+- `technical-background.md` e `public-references.md` sao camadas complementares e nao normativas.
 
 ## Registro atual
 
@@ -22,6 +24,12 @@ Rastreia a relacao entre a documentacao publica da LINSI e a camada operacional 
 | `docs/glossario.md` | `6a37c5f0366a81f28cb25dc2372b749f17474790` | terminologia geral | `skill/references/terminology.md` | primeira rodada concluida |
 | `docs/Utilitarios/automatizacao.md` | `3614714e6edf09c006f046b800b3d8762893eb2b` | pagina publica do Assistente | `skill/references/navigation.md` | placeholder publico; atualizar antes da release |
 
+## Background tecnico externo
+
+- `skill/references/technical-background.md`: sintese offline nao normativa.
+- `skill/references/public-references.md`: procedencia e manutencao das fontes externas.
+- Essa camada pode ajudar a interpretar e comparar, mas nao pode definir ou corrigir a LINSI.
+
 ## Gate de sincronizacao
 
 Antes de uma release:
@@ -30,5 +38,6 @@ Antes de uma release:
 2. identificar fontes alteradas;
 3. revisar referencias afetadas;
 4. revisar casos de teste correspondentes;
-5. atualizar `skill/references/version.md`;
-6. somente entao empacotar.
+5. revisar se mudancas no background tecnico introduzem equivalencias ou obrigacoes externas;
+6. atualizar `skill/references/version.md`;
+7. somente entao empacotar.
