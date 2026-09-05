@@ -34,8 +34,6 @@ Carregue somente o necessario:
 - `references/navigation.md` — links e navegacao da documentacao.
 - `references/version.md` — snapshot e versao da base.
 
-Quando a tarefa envolver interpretacao de experiencias complexas, consulte tambem `references/domain-modeling.md` quando esse arquivo estiver disponivel.
-
 ## Regra de integridade
 
 `docs/` define a LINSI. Esta Skill apenas operacionaliza o modelo documentado.
