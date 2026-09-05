@@ -2,6 +2,8 @@
 
 Avaliar cada caso com `../evaluation.md`.
 
+Em todos os casos, indicar os links oficiais correspondentes aos conceitos LINSI usados na proposta quando essas fontes existirem.
+
 ## CR01 — Fluxo simples
 
 **Prompt:** `Preciso representar um reset de senha: a pessoa informa o e-mail, recebe um codigo, valida e cria uma nova senha.`
@@ -63,7 +65,8 @@ Avaliar cada caso com `../evaluation.md`.
 **Prompt:** fornecer jornada longa com `Descoberta`, `Checkout` e `Pos-compra`, e dentro de Checkout cadastro, entrega e pagamento.
 
 **Esperado:**
-- considerar Secoes macro e Etapas internas somente se ajudarem a leitura;
+- considerar Secoes macro e Etapas internas somente se ajudarem a leitura e corresponderem a relacoes reais do fluxo;
+- nao transformar Interfaces ou estados internos em Etapas apenas para preencher uma hierarquia;
 - nao transformar tudo em grade;
 - explicar interpretacoes que nao sejam regra fechada.
 
@@ -90,5 +93,6 @@ Avaliar cada caso com `../evaluation.md`.
 **Prompt:** dois Caminhos diferentes levam ao mesmo resumo final e seguem juntos.
 
 **Esperado:**
-- reconhecer convergencia;
-- evitar duplicar toda a continuidade comum sem necessidade.
+- reconhecer convergencia como relacao entre Caminhos;
+- evitar duplicar toda a continuidade comum sem necessidade;
+- nao tratar Convergencia como Elemento ou conceito independente da estrutura de Caminhos.
