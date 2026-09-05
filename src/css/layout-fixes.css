@@ -63,6 +63,15 @@
   word-break: break-word;
 }
 
+@media (max-width: 700px) {
+  .theme-doc-markdown :not(pre) > code {
+    box-sizing: border-box;
+    display: inline-block;
+    max-width: 100%;
+    vertical-align: middle;
+  }
+}
+
 /* Sidebar section labels */
 .linsi-sidebar-section > .menu__list-item-collapsible > .menu__link {
   font-size: 0.875rem;
@@ -75,6 +84,7 @@
   align-items: center;
   display: flex;
   gap: var(--linsi-space-8);
+  justify-content: flex-start;
 }
 
 .linsi-sidebar-assistant-beta.theme-doc-sidebar-item-link > .menu__link::after {
@@ -87,6 +97,5 @@
   font-size: 0.625rem;
   font-weight: 700;
   line-height: 1;
-  margin-left: auto;
   padding: 3px 6px;
 }
