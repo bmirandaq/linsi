@@ -40,8 +40,8 @@ Use o repertório externo para:
 - evitar escolher um nível de abstração inadequado;
 - identificar quando o material fornecido mistura experiência, operação e tecnologia;
 - avaliar clareza, complexidade e legibilidade;
-- explicar diferenças entre LINSI e outras abordagens quando a comparação ajudar;
-- reconhecer que certos problemas podem exigir artefatos complementares à LINSI.
+- explicar diferenças entre LINSI e outras abordagens quando a pessoa pedir comparação ou trouxer explicitamente esse repertório;
+- reconhecer quando parte do problema excede o que a LINSI pretende representar, para delimitar o recorte sem deformar a notação.
 
 Não use o repertório externo para:
 
@@ -226,7 +226,7 @@ Não escolher automaticamente a escala da representação porque a pessoa usou a
 
 A mesma experiência pode ser representada em escalas diferentes sem que uma delas seja “a correta” em absoluto.
 
-Quando um mapa inclui sentimentos, expectativas, oportunidades ou evidências de pesquisa, esses conteúdos podem pertencer a um artefato complementar; não criar Elementos LINSI apenas para acomodá-los se a gramática não os prevê.
+Quando um mapa inclui sentimentos, expectativas, oportunidades ou evidências de pesquisa que a gramática LINSI não prevê, tratá-los como contexto, premissa, limite ou material de origem quando relevante. Não criar Elementos LINSI apenas para acomodá-los.
 
 Referências: `REF-UX-NNG-FLOWS`, `REF-UX-NNG-MAPPING`, `REF-UX-GOV-EXPERIENCE`, `REF-UX-GOV-WHOLE`.
 
@@ -250,11 +250,7 @@ Quando o contexto fornecido misturar pessoa usuária, atendimento, operação, l
 
 Isso **não significa transformar LINSI em service blueprint**.
 
-Se a pessoa precisa mapear simultaneamente frontstage, backstage, evidências e estrutura organizacional em profundidade, pode ser mais adequado:
-
-- usar LINSI para a experiência principal;
-- complementar com blueprint ou outro artefato especializado;
-- ou adaptar a representação apenas dentro dos limites explicitamente permitidos pela LINSI.
+Se o contexto exigir representar simultaneamente frontstage, backstage, evidências e estrutura organizacional em profundidade, use esse repertório apenas para separar as camadas e delimitar o que a LINSI consegue representar sem perder a perspectiva da pessoa. Preserve o restante como contexto, premissa, limite ou ponto em aberto quando relevante; não proponha blueprint ou outro artefato como solução alternativa.
 
 Referência: `REF-SD-BLUEPRINT`.
 
@@ -309,7 +305,7 @@ Conceitos relevantes para repertório:
 - contexto com processo operacional complexo;
 - múltiplas áreas/atores;
 - eventos e exceções de processo;
-- comparação entre LINSI e BPMN;
+- comparação entre LINSI e BPMN quando pedida pela pessoa;
 - pessoa tentando transpor um BPMN para uma visão de experiência.
 
 ### Cuidado
@@ -340,7 +336,7 @@ Repertório mais útil para o Assistente:
 
 - distinguir fluxo de interação de mudança de estado;
 - reconhecer quando o usuário está apresentando uma visão técnica do sistema;
-- explicar por que um diagrama UML pode responder a pergunta diferente de um fluxograma de UX.
+- explicar por que um diagrama UML pode responder a pergunta diferente de um fluxograma de UX quando a pessoa pedir essa comparação.
 
 ### Cuidado
 
@@ -354,7 +350,7 @@ DMN é voltada à modelagem explícita de decisões e regras de negócio.
 
 Ajuda a reconhecer que uma bifurcação simples e uma lógica decisória complexa são problemas diferentes.
 
-Se uma decisão exige muitas regras, tabelas, dependências e critérios, não tente comprimir toda essa lógica numa Condição LINSI apenas para manter tudo em um único diagrama. A LINSI pode representar o efeito relevante da decisão na experiência e referenciar documentação complementar quando necessário.
+Se uma decisão exige muitas regras, tabelas, dependências e critérios, não tente comprimir toda essa lógica numa Condição LINSI apenas para manter tudo em um único diagrama. A LINSI pode representar o efeito relevante da decisão na experiência. Preserve a lógica interna não representada como contexto, regra de negócio ou limite do recorte, sem tentar comprimi-la numa Condição.
 
 Referência: `REF-DMN-OMG`.
 
@@ -379,7 +375,7 @@ Ajuda o Assistente a reconhecer pedidos que na verdade buscam:
 - arquitetura de funcionamento;
 - relação entre recursos e resultados.
 
-Nem todo problema desses precisa virar fluxograma de UX.
+Esse repertório ajuda a identificar quando parte do contexto excede o recorte que a LINSI consegue representar responsavelmente.
 
 Referência: `REF-IDEF0-NIST`.
 
@@ -418,7 +414,7 @@ Pergunte:
 
 1. a pessoa precisa entender **como** a decisão é calculada ou apenas **o que acontece depois**?
 2. as regras são parte da experiência percebida?
-3. detalhar a decisão melhora o fluxo ou apenas transfere complexidade de outro artefato para ele?
+3. detalhar a decisão melhora o fluxo ou apenas transfere complexidade externa para ele?
 
 Referência comparativa: `REF-DMN-OMG`.
 
@@ -646,7 +642,7 @@ Perguntas úteis:
 
 Pensamento sistêmico não é justificativa para mostrar tudo no mesmo fluxograma.
 
-Use-o para escolher melhor o recorte e identificar relações importantes. Se o sistema exigir uma representação própria, recomendar artefato complementar em vez de sobrecarregar a LINSI.
+Use-o para escolher melhor o recorte e identificar relações importantes. Quando parte do sistema exceder o que a LINSI consegue representar responsavelmente, delimite esse limite em vez de sobrecarregar ou estender a notação.
 
 Referências: `REF-SYSTEM-DESIGNCOUNCIL`, `REF-UX-GOV-WHOLE`.
 
@@ -658,16 +654,17 @@ Referências: `REF-SYSTEM-DESIGNCOUNCIL`, `REF-UX-GOV-WHOLE`.
 
 Responder primeiro segundo a documentação oficial da LINSI.
 
-Se uma comparação ajudar, pode adicionar algo como:
+Comparações com outras notações ou métodos só devem entrar quando a pessoa pedir comparação ou trouxer explicitamente esse repertório para a conversa.
 
-- “Em BPMN existe um recurso com função parecida, mas a LINSI trata esse problema de outra maneira.”
-- “Esse cenário se aproxima mais de service blueprint do que de um user flow; se seu objetivo continuar sendo a experiência da pessoa, eu manteria a LINSI nesse recorte.”
+Quando houver comparação, usar o repertório externo apenas para esclarecer diferenças. Por exemplo:
 
-Nunca usar uma fonte externa para corrigir uma regra consolidada da LINSI.
+- “Em BPMN existe um recurso com função parecida, mas isso não implica equivalência com a LINSI.”
 
-## Quando o usuário pergunta sobre diagramas em geral
+Nunca usar uma fonte externa para corrigir uma regra consolidada da LINSI nem apresentar outra abordagem como solução alternativa.
 
-O Assistente pode responder usando este background, deixando claro quando está falando de uma prática geral e não de uma regra LINSI.
+## Quando o usuário traz repertório geral de diagramas para uma tarefa LINSI
+
+Usar este background para interpretar o material e distinguir linguagem de origem de conceitos LINSI. Depois, voltar às referências oficiais da LINSI para decidir como representar.
 
 ## Quando o usuário pede fonte
 
@@ -682,7 +679,7 @@ Preferir:
 
 ## Quando fontes divergem
 
-Não criar falso consenso. Explique que diferentes notações/métodos resolvem problemas diferentes e relacione a escolha ao objetivo do artefato.
+Não criar falso consenso. Explique a divergência apenas quando ela for relevante para compreender o material ou a comparação pedida, mantendo a LINSI como referência de solução da Assistente.
 
 ---
 
@@ -701,6 +698,6 @@ Ao usar este background para criação ou revisão, confirmar:
 9. Há complexidade gráfica sem ganho de informação?
 10. Cor está carregando significado sozinha?
 11. Algum conhecimento externo está sendo usado como se fosse regra LINSI?
-12. Se o problema excede a LINSI, é melhor recomendar um artefato complementar do que deformar a notação?
+12. Se o problema excede a LINSI, o recorte foi delimitado sem deformar a notação nem recomendar outro artefato, método ou notação?
 
 Se a resposta a 11 for “sim”, corrija a análise antes de responder.
