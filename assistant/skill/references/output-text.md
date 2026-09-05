@@ -93,7 +93,7 @@ Comentário não é incluído; é recurso de aplicação manual pela pessoa usu�
 
 A Seta conecta Elementos e indica a continuidade do fluxo.
 
-Forma preferencial:
+Exemplo:
 
 ```text
 [Interface - Tela] Checkout
@@ -148,8 +148,7 @@ Se essa execução produzir algo visível ou perceptível para a pessoa, represe
 
 ```text
 [Processo] Coletar autorização do pagamento via SDK
-→ [Seta Comum] →
-[Interface - Tela] Resultado do pagamento
+→ [Seta Comum] → [Interface - Tela] Resultado do pagamento
 ```
 
 ## Ação
@@ -172,8 +171,7 @@ As respostas ficam nos rótulos das Setas que saem da Condição:
 
 ```text
 [Condição] Pagamento autorizado?
-→ [Seta Positiva | Autorizado] →
-[Interface - Tela] Compra confirmada
+→ [Seta Positiva | Autorizado] → [Interface - Tela] Compra confirmada
 ```
 
 ## Início
@@ -216,8 +214,7 @@ Usar recuo e não inserir Setas para conectá-la:
 [Processo] Autorizar pagamento
   [Nota] O pagamento é processado por um SDK externo.
 
-→ [Seta Comum] →
-[Interface - Tela] Resultado do pagamento
+→ [Seta Comum] → [Interface - Tela] Resultado do pagamento
 ```
 
 # Caminhos e Colunas
@@ -242,13 +239,6 @@ Com dois ou mais Caminhos, seguir a hierarquia da documentação:
 3. Caminho alternativo, se houver;
 4. Caminho negativo, se houver.
 
-Quando um Caminho secundário surgir e a origem não estiver evidente no bloco, registrar:
-
-```text
-Origem: [Elemento de origem]
-Entrada: [Seta Tipo | Rótulo, quando houver]
-```
-
 ### Convergência
 
 Quando dois ou mais Caminhos voltarem a compartilhar a mesma continuidade, indicar a Convergência no ponto da estrutura em que isso acontece.
@@ -256,7 +246,7 @@ Quando dois ou mais Caminhos voltarem a compartilhar a mesma continuidade, indic
 Exemplo:
 
 ```text
-Convergência dos Caminhos:
+[Convergência]
 - Caminho principal
 - Caminho negativo — Cadastrar endereço
 
@@ -294,9 +284,7 @@ Exemplo:
 → [Seta Comum] → [Condição] Pagamento autorizado?
 
 #### Caminho negativo — Pagamento recusado
-Origem: [Condição] Pagamento autorizado?
-Entrada: [Seta Negativa | Recusado]
-
+→ [Seta Negativa | Recusado]
 [Interface - Tela] Pagamento recusado
 ```
 
@@ -308,7 +296,6 @@ Exemplo de Seção com Etapa:
 
 ```text
 ### [Coluna Seção] Checkout
-
 #### [Coluna Etapa] Pagamento
 ...
 ```
@@ -325,8 +312,7 @@ Na Coluna Equivalência, não inventar título. Indicar apenas quais Elementos, 
 Exemplo:
 
 ```text
-### [Coluna Equivalência]
-Elementos equivalentes:
+#### [Coluna Equivalência]
 - Caminho principal: [Interface - Tela] Compra confirmada
 - Caminho alternativo — PIX: [Interface - Tela] Compra confirmada via PIX
 ```
@@ -356,31 +342,21 @@ Do preenchimento do endereço à escolha da entrega.
 → [Seta Positiva | Sim] →
 
 #### Caminho negativo — Cadastrar endereço
-Origem: [Condição] Endereço de entrega cadastrado?
-Entrada: [Seta Negativa | Não]
-
+→ [Seta Negativa | Não]
 [Interface - Tela] Cadastrar endereço
   Ações: Salvar endereço
 
-→ [Seta Comum] →
-[Ação] Salvar endereço
-
-→ [Seta Comum] →
-[Processo] Salvar endereço
-
 ### [Coluna Etapa] Entrega
 
-Convergência dos Caminhos:
+[Convergência]
 - Caminho principal
 - Caminho negativo — Cadastrar endereço
 
 Destino: [Interface - Tela] Opções de entrega
-
-[Interface - Tela] Opções de entrega
   Ações: Selecionar entrega
 ```
 
-Usar apenas as seções necessárias ao caso.
+Usar apenas as seções necessárias ao caso. Evite repetir informações que já estão claras na leitura.
 
 A estrutura acima é um formato de saída da Assistente, não sintaxe normativa da LINSI.
 
@@ -397,7 +373,6 @@ Em fluxos simples:
 
 Em fluxos maiores:
 
-- preservar a origem de novos Caminhos;
 - apresentar Caminhos e Colunas juntos quando ambos existirem;
 - preferir clareza estrutural a compactação excessiva.
 
@@ -411,5 +386,5 @@ Antes de entregar uma proposta textual, verificar se:
 4. Notas estão associadas ao contexto correto e não entram na sequência;
 5. Convergência permanece tratada como relação entre Caminhos;
 6. Caminhos e Colunas são apresentados em conjunto quando ambos existirem;
-7. seções desnecessárias foram omitidas;
+7. seções e trechos desnecessários forem omitidas;
 8. a estrutura fornece informação suficiente para ser transformada em fluxograma sem exigir novas decisões de modelagem.
