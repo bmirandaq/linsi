@@ -1,0 +1,56 @@
+name: Validar regressões de UI
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ui-regressions-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v6
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Rodar contratos, build e auditorias
+        run: npm run build
+        env:
+          SITE_URL: http://127.0.0.1:3000
+          BASE_URL: /
+
+      - name: Instalar Chromium para regressão responsiva
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install chromium
+
+      - name: Servir build localmente
+        run: |
+          npm run serve -- --host 127.0.0.1 --port 3000 > /tmp/linsi-serve.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3000/ > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/linsi-serve.log
+          exit 1
+
+      - name: Rodar smoke regressivo responsivo
+        run: node scripts/test-responsive-smoke.mjs
+        env:
+          SMOKE_BASE_URL: http://127.0.0.1:3000
