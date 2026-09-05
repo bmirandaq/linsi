@@ -56,3 +56,5 @@ jobs:
           git add -A
           git commit -m "chore: remove temporary branch cleanup workflow"
           git push origin HEAD:"$GITHUB_REF_NAME"
+
+# Temporary workflow; self-removes after successful cleanup.
