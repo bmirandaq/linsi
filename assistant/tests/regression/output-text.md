@@ -70,7 +70,8 @@ Avaliar em conjunto com `../evaluation.md` e `../../skill/references/output-text
 **Esperado:**
 - transcrever diretamente os Caminhos;
 - seguir a hierarquia documentada quando houver mais de um Caminho;
-- indicar origem e entrada de Caminho secundário quando necessário.
+- manter compreensível a relação entre o Caminho secundário, sua Seta de entrada e o ponto de desdobramento;
+- não introduzir campos auxiliares `Origem:` ou `Entrada:` como parte do formato default.
 
 ## OT09 — Caminhos e Colunas aparecem juntos
 
@@ -96,7 +97,8 @@ Avaliar em conjunto com `../evaluation.md` e `../../skill/references/output-text
 
 **Esperado:**
 - apresentar o novo Caminho dentro da mesma Coluna em que ocorre o desdobramento;
-- registrar `Origem` e `Entrada` quando a origem não estiver evidente no bloco;
+- manter a Seta de entrada do novo Caminho associada ao desdobramento de forma compreensível;
+- não introduzir campos auxiliares `Origem:` ou `Entrada:` como parte do formato default;
 - não duplicar a Seta de saída em duas partes diferentes do output.
 
 ## OT12 — Coluna Seção preserva Etapas existentes
