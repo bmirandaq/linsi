@@ -32,10 +32,8 @@
 
 @media (min-width: 997px) {
   .expandButton {
-    height: 100%;
-    inset: 0;
-    min-height: 240px;
-    position: absolute;
+    height: 32px;
+    position: static;
     width: 100%;
   }
 }
