@@ -2,12 +2,14 @@
 
 ## Estado atual
 
-- Assistente: Fase 1 em desenvolvimento
+- Assistente: Fase 1 em fechamento tecnico para beta
+- Versao alvo: `v0.1-beta`
 - Branch de trabalho: `assistant-phase-1`
+- Suporte oficial inicial: ChatGPT e Codex CLI
 - Fonte conceitual: `docs/` do repositorio `bmirandaq/linsi`
 - Background tecnico: camada complementar nao normativa em `technical-background.md` + `public-references.md`
 
-## Snapshot inicial das fontes LINSI
+## Snapshot atual das fontes LINSI
 
 | Fonte | Blob SHA observado |
 | --- | --- |
@@ -22,10 +24,19 @@
 
 | Artefato | Blob SHA observado |
 | --- | --- |
-| `references/technical-background.md` | `633e401cdf88f642dc762c1d625b18b094a6fe36` |
+| `references/technical-background.md` | `14b24d2873487b202ab32bd245907dbafacfa05c` |
 | `references/public-references.md` | `def8067974ee19ab2a41db1bfd59d9bdbc0f10f9` |
 
 O background tecnico nao integra a fonte conceitual da LINSI. Seu versionamento serve para rastrear mudancas que possam afetar interpretacao, comparacoes ou testes de contaminacao semantica.
+
+## Compatibilidade da beta
+
+A versao `v0.1-beta` tera suporte oficial apenas nos hosts validados nesta rodada:
+
+- ChatGPT;
+- Codex CLI.
+
+Outros hosts ficam fora do suporte oficial enquanto nao puderem ser testados.
 
 ## Regra de release
 
@@ -35,9 +46,11 @@ Antes de gerar release:
 2. identificar arquivos alterados;
 3. revisar referencias operacionais afetadas;
 4. comparar o background tecnico com o snapshot registrado;
-5. verificar se mudancas externas introduzem mapeamentos 1:1, obrigacoes ou terminologia que possam contaminar a LINSI;
+5. verificar se mudancas externas introduzem mapeamentos 1:1, obrigacoes, terminologia ou recomendacoes que possam contaminar a LINSI;
 6. atualizar testes quando necessario;
-7. atualizar este arquivo;
-8. somente entao empacotar a Skill.
+7. concluir a auditoria visual pendente;
+8. validar links oficiais usados pela Skill;
+9. atualizar este arquivo se algum snapshot mudar;
+10. somente entao empacotar a Skill.
 
 Uma mudanca em `docs/` nao deve deixar a Skill silenciosamente desatualizada. Uma mudanca no background tecnico nao pode adquirir autoridade normativa por repeticao ou conveniencia.
