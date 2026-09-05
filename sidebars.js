@@ -14,7 +14,6 @@ const sidebars = {
         'estrutura-linsi/caminhos',
         'estrutura-linsi/colunas',
         'boas-praticas',
-        'linsiemscreenflows',
       ],
     },
     {
