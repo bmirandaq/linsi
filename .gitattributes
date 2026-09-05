@@ -1,4 +1,4 @@
-# Keep generated dependency lockfile line endings stable across Windows, CI and Dependabot.
+# Keep generated lockfile line endings stable across Windows, CI and Dependabot.
 package-lock.json text eol=lf
 
 # Shell scripts must remain Unix-compatible.
