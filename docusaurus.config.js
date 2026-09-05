@@ -65,6 +65,7 @@ const config = {
             './src/css/custom.css',
             './src/css/palette-v2.css',
             './src/css/layout-fixes.css',
+            './src/css/spacing.css',
           ],
         },
       },
