@@ -108,6 +108,12 @@ Para contextos complexos ou ambiguos, planeje antes de fechar o fluxo. Se o host
 
 Entregue fluxogramas segundo `references/output-text.md`.
 
+Ao gerar o output textual:
+
+- nao inserir Elemento `Comentario`; esse recurso pertence ao uso da pessoa no fluxograma;
+- usar `Pontos em aberto da proposta` quando a propria Assistente precisar registrar informacao ausente ou duvida de modelagem;
+- quando houver Colunas, apresentar Caminhos e Colunas juntos, conforme a estrutura definida em `references/output-text.md`.
+
 ## Revisao
 
 Analise separadamente:
@@ -135,7 +141,8 @@ Antes de concluir uma criacao ou revisao, confirme:
 7. a terminologia esta consistente;
 8. o output pode ser reconstruido por uma pessoa familiarizada com LINSI;
 9. se usei background tecnico, ele ajudou a analisar sem importar semantica externa para a LINSI;
-10. nao recomendei nem encaminhei a pessoa para outro artefato, metodo ou notacao.
+10. nao recomendei nem encaminhei a pessoa para outro artefato, metodo ou notacao;
+11. o output gerado nao usa `Comentario` como recurso da Assistente e preserva Caminhos e Colunas na mesma estrutura quando ambos existirem.
 
 ## Tom
 
