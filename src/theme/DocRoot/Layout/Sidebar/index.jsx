@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import clsx from 'clsx';
 import {ThemeClassNames} from '@docusaurus/theme-common';
 import {useDocsSidebar} from '@docusaurus/plugin-content-docs/client';
@@ -23,12 +23,30 @@ export default function DocRootLayoutSidebar({
   setHiddenSidebarContainer,
 }) {
   const {pathname} = useLocation();
+  const viewportRef = useRef(null);
+  const [expandedHeight, setExpandedHeight] = useState(null);
+
   const toggleSidebar = useCallback(() => {
+    if (!hiddenSidebarContainer && viewportRef.current) {
+      const measuredHeight = Math.ceil(
+        viewportRef.current.getBoundingClientRect().height,
+      );
+
+      if (measuredHeight > 0) {
+        setExpandedHeight(measuredHeight);
+      }
+    }
+
     setHiddenSidebarContainer((value) => !value);
-  }, [setHiddenSidebarContainer]);
+  }, [hiddenSidebarContainer, setHiddenSidebarContainer]);
+
+  const sidebarStyle = expandedHeight
+    ? {'--linsi-sidebar-expanded-height': `${expandedHeight}px`}
+    : undefined;
 
   return (
     <aside
+      style={sidebarStyle}
       className={clsx(
         ThemeClassNames.docs.docSidebarContainer,
         styles.docSidebarContainer,
@@ -36,6 +54,7 @@ export default function DocRootLayoutSidebar({
       )}>
       <ResetOnSidebarChange>
         <div
+          ref={viewportRef}
           className={clsx(
             styles.sidebarViewport,
             hiddenSidebarContainer && styles.sidebarViewportHidden,
