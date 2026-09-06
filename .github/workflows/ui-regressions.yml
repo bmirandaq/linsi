@@ -65,3 +65,8 @@ jobs:
         run: node scripts/test-mobile-docs-layout.mjs
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
+
+      - name: Validar docs mobile publicadas no iPhone 16 Pro Max
+        run: node scripts/test-mobile-docs-layout.mjs
+        env:
+          SMOKE_BASE_URL: https://linsi.beamiranda.com.br
