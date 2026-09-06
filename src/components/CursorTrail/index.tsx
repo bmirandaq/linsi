@@ -15,7 +15,7 @@ export default function CursorTrail() {
     const root = document.documentElement;
     const pointer = window.matchMedia('(hover: hover) and (pointer: fine)');
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const lifetime = 180;
+    const lifetime = 300;
     let points: Point[] = [];
     let frame = 0;
     let width = 0;
@@ -52,7 +52,7 @@ export default function CursorTrail() {
         const point = points[index];
         const freshness = Math.max(0, 1 - (now - previous.time) / lifetime);
         context.globalAlpha = freshness * 0.22;
-        context.lineWidth = 0.75 + freshness * 1.5;
+        context.lineWidth = 2 + freshness * 0.25;
         context.beginPath();
         context.moveTo((before.x + previous.x) / 2, (before.y + previous.y) / 2);
         context.quadraticCurveTo(
@@ -87,7 +87,7 @@ export default function CursorTrail() {
         color = window.getComputedStyle(root).getPropertyValue('--linsi-brand-01-base').trim();
       }
       points.push({x: event.clientX, y: event.clientY, time: performance.now()});
-      points = points.slice(-32);
+      points = points.slice(-64);
       if (!frame) frame = window.requestAnimationFrame(draw);
     };
 
