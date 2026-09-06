@@ -4,6 +4,7 @@
 
 - Assistente: Fase 1 — beta
 - Versao: `0.1-beta`
+- Status: fechada para uso beta apos smoke tests reais de Criacao e Revisao em ChatGPT
 - Fonte distribuida: `assistant/skill/` na `main`
 - Suporte oficial inicial: ChatGPT e Codex CLI
 - Fonte conceitual: `docs/` do repositorio `bmirandaq/linsi`
@@ -29,9 +30,28 @@
 
 O background tecnico nao integra a fonte conceitual da LINSI. Seu versionamento serve para rastrear mudancas que possam afetar interpretacao, comparacoes ou testes de contaminacao semantica.
 
+## Validacao da 0.1-beta
+
+A rodada de fechamento da beta incluiu testes reais em ChatGPT cobrindo:
+
+- Criacao a partir de contexto relativamente completo, com lacunas de regra de produto;
+- Criacao a partir de contexto inicial enxuto e recorte explicito de Escopo;
+- Revisao visual de um fluxograma existente com Elementos, Caminhos, Colunas, Notas e Convergencia.
+
+Os resultados confirmaram o nucleo funcional da Fase 1: interpretar contexto, propor modelagem LINSI e revisar representacoes existentes sem exigir modelagem previa da pessoa.
+
+Ajustes incorporados apos os testes:
+
+- reforco para nao reintroduzir `Origem:` ou `Entrada:` no output textual;
+- uso de `Retomada` restrito a sua funcao de continuidade distante/externa, com destino inequivoco;
+- preferencia por links oficiais aplicados diretamente aos nomes das paginas/conceitos em ambientes que suportem esse formato;
+- registro dos cenarios de smoke como baseline em `assistant/tests/beta-smoke-0.1.md`.
+
+A auditoria visual continua durante a beta como validacao de uso real, sem autorizar inferencia automatica de novas regras.
+
 ## Compatibilidade da beta
 
-A versao `0.1-beta` tem suporte oficial apenas nos hosts validados nesta rodada:
+A versao `0.1-beta` tem suporte oficial apenas nos hosts definidos nesta rodada:
 
 - ChatGPT;
 - Codex CLI.
