@@ -25,13 +25,106 @@
 
 .mediaColumn {
   aspect-ratio: 4 / 5;
-  background: var(--ifm-background-surface-color);
-  border: 1px dashed var(--linsi-border-color);
   border-radius: var(--linsi-radius-lg);
   min-height: 280px;
+  overflow: hidden;
   width: 100%;
-  transition: background-color var(--linsi-motion-base) var(--linsi-ease-standard),
-    border-color var(--linsi-motion-base) var(--linsi-ease-standard);
+}
+
+.heroFlow {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.heroFlowSurface {
+  fill: #f2f5fb;
+}
+
+.heroFlowMainPath,
+.heroFlowNegativePath,
+.heroFlowPositivePath {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+
+.heroFlowMainPath {
+  stroke: #253243;
+}
+
+.heroFlowNegativePath {
+  stroke: #e23929;
+}
+
+.heroFlowPositivePath {
+  stroke: #03a63d;
+}
+
+.heroFlowNegativeFill,
+.heroFlowNegativeNode {
+  fill: #e23929;
+}
+
+.heroFlowPositiveFill,
+.heroFlowPositiveNode {
+  fill: #03a63d;
+}
+
+.heroFlowLabel,
+.heroFlowCaption {
+  fill: #253243;
+  font-family: var(--ifm-font-family-base);
+}
+
+.heroFlowLabel {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.heroFlowCaption {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.heroFlowInterface rect {
+  fill: #ffffff;
+  stroke: #7c8491;
+  stroke-width: 2;
+}
+
+.heroFlowInterface path,
+.heroFlowInterface circle {
+  fill: none;
+  stroke: #7c8491;
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.heroFlowInterface circle {
+  fill: #f5f8fd;
+}
+
+[data-theme='dark'] .heroFlowSurface {
+  fill: #172637;
+}
+
+[data-theme='dark'] .heroFlowMainPath,
+[data-theme='dark'] .heroFlowLabel,
+[data-theme='dark'] .heroFlowCaption {
+  stroke: #dbdfe6;
+  fill: #f5f8fd;
+}
+
+[data-theme='dark'] .heroFlowInterface rect {
+  fill: #253243;
+  stroke: #afb5bf;
+}
+
+[data-theme='dark'] .heroFlowInterface path,
+[data-theme='dark'] .heroFlowInterface circle {
+  stroke: #afb5bf;
 }
 
 .logo {
