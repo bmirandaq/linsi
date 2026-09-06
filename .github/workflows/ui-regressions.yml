@@ -60,16 +60,3 @@ jobs:
         run: node scripts/test-responsive-smoke.mjs
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
-
-      - name: Capturar previews para revisão do PR
-        run: node scripts/capture-pr42-review.mjs
-        env:
-          SMOKE_BASE_URL: http://127.0.0.1:3000
-
-      - name: Publicar previews para revisão do PR
-        uses: actions/upload-artifact@v4
-        with:
-          name: pr42-review-screenshots
-          path: /tmp/linsi-review/*
-          if-no-files-found: error
-          retention-days: 1
