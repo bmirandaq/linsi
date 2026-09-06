@@ -11,10 +11,28 @@ await fs.mkdir('/tmp/linsi-review', {recursive: true});
   const page = await context.newPage();
   await page.goto(`${baseUrl}/`, {waitUntil: 'networkidle'});
   await page.evaluate(() => window.scrollTo({top: 900, behavior: 'auto'}));
-  await page.waitForTimeout(150);
+  await page.waitForTimeout(200);
+
   const button = page.locator('.theme-back-to-top-button').first();
   await button.waitFor({state: 'visible'});
-  await page.screenshot({path: '/tmp/linsi-review/back-to-top-mobile.jpg', type: 'jpeg', quality: 78});
+
+  const diagnostics = await button.evaluate((element) => {
+    const style = getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    return {
+      rect: {x: rect.x, y: rect.y, width: rect.width, height: rect.height},
+      opacity: style.opacity,
+      visibility: style.visibility,
+      display: style.display,
+      transform: style.transform,
+      backgroundColor: style.backgroundColor,
+      zIndex: style.zIndex,
+    };
+  });
+  console.log('LINSI_BACK_TO_TOP_DIAGNOSTICS', JSON.stringify(diagnostics));
+
+  await page.screenshot({path: '/tmp/linsi-review/back-to-top-mobile.jpg', type: 'jpeg', quality: 82});
+  await button.screenshot({path: '/tmp/linsi-review/back-to-top-button.png'});
   await context.close();
 }
 
@@ -66,10 +84,3 @@ await fs.mkdir('/tmp/linsi-review', {recursive: true});
 }
 
 await browser.close();
-
-for (const file of ['back-to-top-mobile.jpg', 'cursor-trail.jpg']) {
-  const data = await fs.readFile(`/tmp/linsi-review/${file}`);
-  console.log(`LINSI_SCREENSHOT_BEGIN:${file}`);
-  console.log(data.toString('base64'));
-  console.log(`LINSI_SCREENSHOT_END:${file}`);
-}
