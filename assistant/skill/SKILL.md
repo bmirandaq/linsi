@@ -124,7 +124,9 @@ Ao gerar o output textual:
 - nao inserir Elemento `Comentario`; esse recurso pertence ao uso da pessoa no fluxograma;
 - usar `Pontos em aberto da proposta` somente para informacao ausente critica que nao possa ser inferida com seguranca;
 - quando uma hipotese razoavel resolver a lacuna sem distorcer o contexto, registra-la em `Premissas`;
-- quando houver Colunas, apresentar Caminhos e Colunas juntos, conforme a estrutura definida em `references/output-text.md`.
+- quando houver Colunas, apresentar Caminhos e Colunas juntos, conforme a estrutura definida em `references/output-text.md`;
+- nao introduzir campos auxiliares `Origem:` ou `Entrada:` como parte do formato; preservar o ponto de desdobramento pela ordem da transcricao, pelos titulos dos Caminhos e pelas Setas;
+- usar `Retomada` somente quando o destino ja estiver representado em outro ponto e uma conexao direta longa prejudicaria a leitura, ou quando a continuidade estiver em outro fluxo/jornada; em continuidades locais, preferir a Seta direta. Sempre identificar o destino de forma inequívoca.
 
 ## Revisao
 
@@ -155,8 +157,9 @@ Antes de concluir uma criacao ou revisao, confirme:
 9. se usei background tecnico, ele ajudou a analisar sem importar semantica externa para a LINSI;
 10. nao recomendei nem encaminhei a pessoa para outro artefato, metodo ou notacao;
 11. o output gerado nao usa `Comentario` como recurso da Assistente e preserva Caminhos e Colunas na mesma estrutura quando ambos existirem;
-12. os links oficiais correspondentes aos conceitos tratados foram indicados quando existirem;
-13. se identifiquei uma lacuna da LINSI, deixei-a explicita e indiquei a pagina Contribuir.
+12. o output nao reintroduz campos auxiliares `Origem:` ou `Entrada:` e usa `Retomada` apenas quando sua funcao melhora a leitura da continuidade;
+13. os links oficiais correspondentes aos conceitos tratados foram indicados quando existirem;
+14. se identifiquei uma lacuna da LINSI, deixei-a explicita e indiquei a pagina Contribuir.
 
 ## Tom
 

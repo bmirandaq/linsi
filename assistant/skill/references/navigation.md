@@ -27,6 +27,8 @@ Preferir a pagina mais especifica para o tema em vez de apontar apenas para a ho
 
 Quando houver mais de uma pagina relevante, indicar somente as que ajudam a localizar as fontes efetivamente usadas na resposta.
 
+Preferir links aplicados diretamente aos nomes das paginas ou conceitos, como `Elementos`, `Caminhos` e `Colunas`, em vez de exibir URLs brutas no corpo da resposta. Exibir a URL por extenso apenas quando isso for util ao pedido da pessoa ou ao ambiente.
+
 Nao adicionar links sem relacao com o conteudo tratado apenas para cumprir a regra de navegacao.
 
 Quando identificar uma lacuna da LINSI, indicar tambem `/contribuir`.
