@@ -17,7 +17,7 @@ function SecondaryMenuBackButton(props: ComponentProps<'button'>) {
         size={20}
         className={styles.backIcon}
       />
-      <span>Voltar ao menu principal</span>
+      <span data-linsi-mobile-back-label="true">Voltar ao menu principal</span>
     </button>
   );
 }
