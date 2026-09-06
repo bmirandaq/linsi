@@ -42,23 +42,26 @@ export default function CursorTrail() {
     const draw = (now: number) => {
       context.clearRect(0, 0, width, height);
       points = points.filter((point) => now - point.time < lifetime);
-      context.strokeStyle = color;
-      context.lineCap = 'round';
-      context.lineJoin = 'round';
 
-      for (let index = 1; index < points.length; index += 1) {
-        const before = points[Math.max(0, index - 2)];
-        const previous = points[index - 1];
-        const point = points[index];
-        const freshness = Math.max(0, 1 - (now - previous.time) / lifetime);
-        context.globalAlpha = freshness * 0.22;
-        context.lineWidth = 2 + freshness * 0.25;
+      if (points.length > 1) {
+        context.strokeStyle = color;
+        context.globalAlpha = 0.22;
+        context.lineWidth = 2;
+        context.lineCap = 'round';
+        context.lineJoin = 'round';
         context.beginPath();
-        context.moveTo((before.x + previous.x) / 2, (before.y + previous.y) / 2);
-        context.quadraticCurveTo(
-          previous.x, previous.y,
-          (previous.x + point.x) / 2, (previous.y + point.y) / 2,
-        );
+        context.moveTo(points[0].x, points[0].y);
+
+        for (let index = 1; index < points.length - 1; index += 1) {
+          const point = points[index];
+          const next = points[index + 1];
+          const midpointX = (point.x + next.x) / 2;
+          const midpointY = (point.y + next.y) / 2;
+          context.quadraticCurveTo(point.x, point.y, midpointX, midpointY);
+        }
+
+        const last = points[points.length - 1];
+        context.lineTo(last.x, last.y);
         context.stroke();
       }
 
@@ -86,7 +89,12 @@ export default function CursorTrail() {
       if (!frame) {
         color = window.getComputedStyle(root).getPropertyValue('--linsi-brand-01-base').trim();
       }
-      points.push({x: event.clientX, y: event.clientY, time: performance.now()});
+
+      const samples = event.getCoalescedEvents?.() ?? [event];
+      const now = performance.now();
+      for (const sample of samples) {
+        points.push({x: sample.clientX, y: sample.clientY, time: now});
+      }
       points = points.slice(-64);
       if (!frame) frame = window.requestAnimationFrame(draw);
     };
