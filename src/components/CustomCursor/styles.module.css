@@ -1,7 +1,3 @@
-.marker {
-  display: none;
-}
-
 @media (hover: hover) and (pointer: fine) {
   :global(html.linsi-custom-cursor),
   :global(html.linsi-custom-cursor body),
