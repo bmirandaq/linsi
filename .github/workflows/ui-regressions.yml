@@ -60,3 +60,8 @@ jobs:
         run: node scripts/test-responsive-smoke.mjs
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
+
+      - name: Capturar previews para revisão do PR
+        run: node scripts/capture-pr42-review.mjs
+        env:
+          SMOKE_BASE_URL: http://127.0.0.1:3000
