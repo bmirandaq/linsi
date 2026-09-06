@@ -68,6 +68,8 @@ Quando parte do problema exceder o que a LINSI documenta ou pretende representar
 
 A interacao com a Assistente nao substitui nem oculta a documentacao oficial. Toda resposta deve manter acessivel a fonte correspondente ao que esta sendo tratado, quando ela existir.
 
+Quando o ambiente suportar links embutidos no texto, preferir nomes de paginas/conceitos clicaveis em vez de URLs brutas, mantendo a mesma obrigacao de tornar a documentacao acessivel.
+
 Quando a Assistente identificar uma lacuna da LINSI, deve:
 
 - deixa-la explicita;
@@ -95,6 +97,8 @@ Decisoes consolidadas para o formato:
 - `Comentario` nao e gerado pela Assistente no output textual; seu uso pertence a pessoa usuaria;
 - `Pontos em aberto da proposta` sao usados somente para informacao critica que nao possa ser inferida com seguranca;
 - hipoteses responsaveis adotadas pela Assistente sao registradas em `Premissas`;
+- o formato nao usa campos auxiliares `Origem:` ou `Entrada:` como convencao default;
+- `Retomada` deve preservar sua funcao de continuidade para outro ponto ja representado quando uma conexao direta longa prejudicaria a leitura ou quando a continuidade estiver em outro fluxo/jornada;
 - o formato deve ser proporcional e nao antecipar propriedades especificas de ferramentas ou do JSON da Fase 2.
 
 ### Distribuicao
@@ -115,3 +119,17 @@ Suporte oficial da beta:
 Outros hosts nao entram no suporte oficial enquanto nao puderem ser testados.
 
 Na pagina publica, `Beta` deve aparecer como tag ao lado do titulo. A numeracao da versao deve aparecer apenas como texto de apoio, sem destaque. A evolucao visual e de conteudo dessa pagina sera tratada separadamente do fechamento tecnico da Skill.
+
+### Fechamento da 0.1-beta
+
+**Data:** 2026-09-06
+
+**Status:** fechado para uso beta
+
+A Fase 1 foi validada em smoke tests reais no ChatGPT cobrindo Criacao com contexto relativamente completo, Criacao com contexto inicial enxuto e Revisao visual de fluxograma existente.
+
+A rodada confirmou o nucleo funcional esperado e gerou apenas ajustes de robustez no comportamento da Skill, sem mudanca conceitual da LINSI.
+
+Os casos foram registrados em `assistant/tests/beta-smoke-0.1.md` para regressao futura.
+
+A auditoria visual continua durante a beta como validacao de uso real. Qualquer semantica relevante observada apenas em imagem deve ser tratada como lacuna concreta e submetida a revisao humana antes de virar regra.
