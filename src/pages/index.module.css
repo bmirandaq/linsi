@@ -38,93 +38,109 @@
 }
 
 .heroFlowSurface {
-  fill: #f2f5fb;
+  fill: #f1f4fa;
 }
 
-.heroFlowMainPath,
-.heroFlowNegativePath,
-.heroFlowPositivePath {
+.heroFlowColumnTitle {
+  fill: #222222;
+  stroke: #222222;
+}
+
+.heroFlowColumnBand,
+.heroFlowSection rect {
+  fill: #dddddd;
+  stroke: #3a3a3a;
+  stroke-width: 1;
+}
+
+.heroFlowColumnTitleText,
+.heroFlowColumnBandText,
+.heroFlowSection text,
+.heroFlowSmallText,
+.heroFlowNodeOrange text,
+.heroFlowDecision text,
+.heroFlowCard text {
+  font-family: Arial, sans-serif;
+}
+
+.heroFlowColumnTitleText {
+  fill: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.heroFlowColumnBandText,
+.heroFlowSection text {
+  fill: #2c2c2c;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.heroFlowNodeOrange rect {
+  fill: #ffb16d;
+  stroke: #ff7a00;
+  stroke-width: 1.3;
+}
+
+.heroFlowNodeOrange text,
+.heroFlowSmallText,
+.heroFlowDecision text,
+.heroFlowCard text {
+  fill: #171717;
+  font-size: 7px;
+}
+
+.heroFlowDecision path {
+  fill: #77bdf3;
+  stroke: #168fe0;
+  stroke-width: 1.4;
+}
+
+.heroFlowDecision text {
+  font-size: 6.5px;
+  font-weight: 600;
+}
+
+.heroFlowCard rect {
+  fill: #ffffff;
+  stroke: #6e6e6e;
+  stroke-width: 1;
+}
+
+.heroFlowCardTitle {
+  font-weight: 700;
+}
+
+.heroFlowPath,
+.heroFlowPathPositive,
+.heroFlowPathNegative,
+.heroFlowPathAlternative,
+.heroFlowArrow,
+.heroFlowArrowNegative,
+.heroFlowArrowAlternative {
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 3;
+  stroke-width: 1;
 }
 
-.heroFlowMainPath {
-  stroke: #253243;
+.heroFlowPath,
+.heroFlowArrow {
+  stroke: #8a919c;
 }
 
-.heroFlowNegativePath {
-  stroke: #e23929;
+.heroFlowPathPositive {
+  stroke: #00a85a;
 }
 
-.heroFlowPositivePath {
-  stroke: #03a63d;
+.heroFlowPathNegative,
+.heroFlowArrowNegative {
+  stroke: #ff3b30;
 }
 
-.heroFlowNegativeFill,
-.heroFlowNegativeNode {
-  fill: #e23929;
-}
-
-.heroFlowPositiveFill,
-.heroFlowPositiveNode {
-  fill: #03a63d;
-}
-
-.heroFlowLabel,
-.heroFlowCaption {
-  fill: #253243;
-  font-family: var(--ifm-font-family-base);
-}
-
-.heroFlowLabel {
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.heroFlowCaption {
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.heroFlowInterface rect {
-  fill: #ffffff;
-  stroke: #7c8491;
-  stroke-width: 2;
-}
-
-.heroFlowInterface path,
-.heroFlowInterface circle {
-  fill: none;
-  stroke: #7c8491;
-  stroke-linecap: round;
-  stroke-width: 2;
-}
-
-.heroFlowInterface circle {
-  fill: #f5f8fd;
-}
-
-[data-theme='dark'] .heroFlowSurface {
-  fill: #172637;
-}
-
-[data-theme='dark'] .heroFlowMainPath,
-[data-theme='dark'] .heroFlowLabel,
-[data-theme='dark'] .heroFlowCaption {
-  stroke: #dbdfe6;
-  fill: #f5f8fd;
-}
-
-[data-theme='dark'] .heroFlowInterface rect {
-  fill: #253243;
-  stroke: #afb5bf;
-}
-
-[data-theme='dark'] .heroFlowInterface path,
-[data-theme='dark'] .heroFlowInterface circle {
-  stroke: #afb5bf;
+.heroFlowPathAlternative,
+.heroFlowArrowAlternative {
+  stroke: #ff7a00;
 }
 
 .logo {
@@ -246,6 +262,10 @@
     max-width: 520px;
     min-height: 200px;
     order: 3;
+  }
+
+  .heroFlow {
+    height: auto;
   }
 
   .positioningCopy {
