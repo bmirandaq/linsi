@@ -6,6 +6,8 @@ import '@fontsource-variable/material-symbols-outlined/wght.css';
 import '@fontsource-variable/plus-jakarta-sans';
 import '@fontsource/opendyslexic/400.css';
 import '@fontsource/opendyslexic/700.css';
+import CustomCursor from '@site/src/components/CustomCursor';
+import GlobalBackToTopButton from '@site/src/components/GlobalBackToTopButton';
 
 import {
   applyStoredFontPreference,
@@ -50,5 +52,11 @@ export default function Root({children}: Props) {
     return () => document.removeEventListener('change', handleFontChange);
   }, []);
 
-  return children;
+  return (
+    <>
+      {children}
+      <GlobalBackToTopButton />
+      <CustomCursor />
+    </>
+  );
 }

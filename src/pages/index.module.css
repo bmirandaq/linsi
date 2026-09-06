@@ -451,14 +451,27 @@
   transform: translateX(3px);
 }
 
+@media (min-width: 997px) {
+  .intro {
+    min-height: 0;
+    padding-top: var(--linsi-space-64);
+  }
+
+  .origin {
+    margin-top: var(--linsi-space-96);
+    padding-top: 0;
+  }
+}
+
 @media (max-width: 996px) {
   .originLayout {
     display: flex;
     flex-direction: column;
-    gap: var(--linsi-space-32);
+    gap: 0;
   }
 
   .coverWrap {
+    margin-bottom: var(--linsi-space-32);
     max-width: 820px;
     order: 2;
   }
@@ -468,7 +481,7 @@
   }
 
   .originTitle {
-    margin-bottom: 0;
+    margin-bottom: var(--linsi-space-32);
     order: 1;
   }
 
@@ -484,6 +497,17 @@
   .originCopy > .originText,
   .originCopy > .originLink {
     order: 3;
+  }
+
+  .stats {
+    align-self: stretch;
+    width: 100%;
+    margin-bottom: var(--linsi-space-8);
+  }
+
+  .statsDate,
+  .originText {
+    margin-bottom: var(--linsi-space-24);
   }
 }
 

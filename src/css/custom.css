@@ -1033,6 +1033,10 @@ a:focus-visible {
   transition: background-color var(--linsi-motion-base) var(--linsi-ease-standard);
 }
 
+.linsi-page-enter {
+  animation: linsi-page-enter var(--linsi-motion-base) var(--linsi-ease-enter) backwards;
+}
+
 .theme-doc-markdown {
   animation: linsi-page-enter var(--linsi-motion-base) var(--linsi-ease-enter)
     both;
@@ -1316,6 +1320,13 @@ a:focus-visible {
 .theme-back-to-top-button:focus-visible {
   outline: 3px solid var(--linsi-focus-color);
   outline-offset: 3px;
+}
+
+@media (max-width: 996px) {
+  .theme-back-to-top-button {
+    right: max(var(--linsi-space-16), env(safe-area-inset-right));
+    bottom: calc(var(--linsi-space-16) + env(safe-area-inset-bottom));
+  }
 }
 
 @keyframes linsi-page-enter {
