@@ -2,9 +2,9 @@
 
 ## Estado atual
 
-- Assistente: Fase 1 em fechamento tecnico para beta
-- Versao alvo: `0.1-beta`
-- Branch de trabalho: `assistant-phase-1`
+- Assistente: Fase 1 — beta
+- Versao: `0.1-beta`
+- Fonte distribuida: `assistant/skill/` na `main`
 - Suporte oficial inicial: ChatGPT e Codex CLI
 - Fonte conceitual: `docs/` do repositorio `bmirandaq/linsi`
 - Background tecnico: camada complementar nao normativa em `technical-background.md` + `public-references.md`
@@ -31,7 +31,7 @@ O background tecnico nao integra a fonte conceitual da LINSI. Seu versionamento 
 
 ## Compatibilidade da beta
 
-A versao `0.1-beta` tera suporte oficial apenas nos hosts validados nesta rodada:
+A versao `0.1-beta` tem suporte oficial apenas nos hosts validados nesta rodada:
 
 - ChatGPT;
 - Codex CLI.
@@ -40,7 +40,7 @@ Outros hosts ficam fora do suporte oficial enquanto nao puderem ser testados.
 
 ## Regra de release
 
-Antes de gerar release:
+Para cada release:
 
 1. comparar as fontes LINSI atuais com este snapshot;
 2. identificar arquivos alterados;
@@ -48,7 +48,7 @@ Antes de gerar release:
 4. comparar o background tecnico com o snapshot registrado;
 5. verificar se mudancas externas introduzem mapeamentos 1:1, obrigacoes, terminologia ou recomendacoes que possam contaminar a LINSI;
 6. atualizar testes quando necessario;
-7. concluir a auditoria visual pendente;
+7. confirmar que nenhuma regra nova depende apenas de informacao presente em imagem; a auditoria visual aprofundada pode continuar durante a beta, mas nao autoriza inferir regras;
 8. validar links oficiais usados pela Skill;
 9. atualizar este arquivo se algum snapshot mudar;
 10. somente entao empacotar a Skill.
