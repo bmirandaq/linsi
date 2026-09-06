@@ -25,8 +25,8 @@ const sidebars = {
       items: [
         'glossario',
         'Utilitários/templates',
-        'Utilitários/cases',
         'Utilitários/automatizacao',
+        'Utilitários/cases',
       ],
     },
     'changelog',
