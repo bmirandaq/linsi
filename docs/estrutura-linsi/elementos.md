@@ -15,31 +15,30 @@ Conecta os elementos e indica a direção de leitura do fluxo.
 ![Setas Comum, Alternativa, Positiva e Negativa](/img/uploads/Elementos/setas.png)
 
 ### Tipos de seta
+---
 
-- **Comum:** representa uma continuidade sem atribuir a ela um significado específico. Usa a cor cinza.
-- **Positiva:** representa o sucesso, resultado favorável ou uma continuidade bem-sucedida. Usa a cor verde.
+- **Comum:** indica continuidade sem atribuir um significado específico. Usa a cor cinza.
+- **Positiva:** sucesso, resultado favorável ou continuidade bem-sucedida. Usa a cor verde.
 - **Negativa:** falha, erro, impedimento ou resultado desfavorável. Usa a cor vermelha.
-- **Alternativa:** possibilidade secundária, alternativa ao Caminho principal. Usa a cor laranja.
+- **Alternativa:** uma possibilidade secundária em relação ao Caminho principal. Usa a cor laranja.
 
-Escolha o tipo de seta pelo significado da continuidade, não apenas pelo destaque visual. 
+Escolha o tipo de Seta pelo significado da continuidade. Quando não houver um resultado claramente positivo, negativo ou alternativo, use a Seta Comum.
 
-### Setas e Rótulos
+Uma resposta “Sim” não torna a Seta automaticamente Positiva. O tipo depende do que essa resposta significa naquele ponto do fluxo.
 
-Rótulos nas linhas das Setas são opcionais, exceto em Setas que saem de uma Condição.
+### Rótulos nas Setas
+---
 
-Mantenha os rótulos próximos aos Elementos de origem para melhor encontrabilidade.
+Os rótulos são opcionais, exceto nas Setas que saem de uma Condição. Nesse caso, devem responder diretamente à pergunta da Condição.
 
-Posicione os rótulos, sempre que possível, quando a linha estiver na horizontal para fins de legibilidade.
+Mantenha os rótulos próximos aos Elementos de origem para facilitar a identificação de cada saída. Sempre que possível, posicione-os em trechos horizontais da linha e evite curvas ou cruzamentos.
 
-Evite posicionar rótulos-lo em cima de curvas ou cruzamentos de Setas.
+### Organização das Setas
+---
 
+Evite cruzamentos entre Setas e priorize conexões simples, fáceis de acompanhar.
 
-### Outras considerações sobre Setas
-
-- *Evite cruzar setas*: priorize representações simples e use o Elemento Retomada quando for o caos.
-- *Seta Comum é o padrão*: Quando não houver um resultado claramente positivo, negativo ou alternativo, use a seta Comum.
-- *'Sim' pode ser neutro*: Uma resposta 'Sim' não torna uma seta automaticamente Positiva. Depende do significado daquele resultado no fluxo.
-
+Quando uma conexão distante comprometer a leitura, use o Elemento Retomada para indicar a continuidade sem estender a Seta pelo fluxograma.
 
 
 ## Interface
@@ -225,17 +224,20 @@ Pode ser dispensado quando a ferramenta utilizada oferecer função nativa de co
 ## Forma e conteúdo dos Elementos
 ---
 
-1) Diferenciação visual dos Elementos
+### Diferenciação visual
 
-Preserve a diferenciação das formas propostas pela LINSI. Caso faça adaptações, indique nas legendas do artefato.
+Preserve a diferenciação entre as formas dos Elementos propostas pela LINSI. Essas diferenças ajudam a reconhecer a função de cada Elemento no fluxograma.
 
-2) Alinhamento de texto
+Se fizer adaptações, indique-as na legenda do fluxograma.
 
-Textos curtos podem ser centralizados no container enquanto conteúdos mais extensos devem ficar alinhados à esquerda para fins de legibilidade.
+### Alinhamento do texto
+
+Textos curtos podem ser centralizados dentro do Elemento. Conteúdos mais extensos devem ser alinhados à esquerda para facilitar a leitura.
 
 
 
 ## Relação entre Elementos e Caminhos
+
 ---
 
 Até aqui, você entendeu como os Elementos pontuam e explicam acontecimentos ao longo do fluxograma. Os Caminhos mostram como esses Elementos se conectam em sequência, formando as diferentes continuidades possíveis.
