@@ -43,11 +43,94 @@ export default function Home() {
               </Link>
             </div>
 
-            <div
-              className={styles.mediaColumn}
-              aria-hidden="true"
-              data-home-media-placeholder>
-              {/* Imagem da home será inserida posteriormente */}
+            <div className={styles.mediaColumn} aria-hidden="true">
+              <svg
+                className={styles.heroFlow}
+                viewBox="0 0 720 900"
+                preserveAspectRatio="xMidYMid meet"
+                focusable="false">
+                <defs>
+                  <marker
+                    id="hero-v1-negative-arrow"
+                    markerWidth="12"
+                    markerHeight="12"
+                    refX="9"
+                    refY="6"
+                    orient="auto"
+                    markerUnits="strokeWidth">
+                    <path d="M 0 0 L 12 6 L 0 12 z" className={styles.heroFlowNegativeFill} />
+                  </marker>
+                  <marker
+                    id="hero-v1-positive-arrow"
+                    markerWidth="12"
+                    markerHeight="12"
+                    refX="9"
+                    refY="6"
+                    orient="auto"
+                    markerUnits="strokeWidth">
+                    <path d="M 0 0 L 12 6 L 0 12 z" className={styles.heroFlowPositiveFill} />
+                  </marker>
+                </defs>
+
+                <rect
+                  className={styles.heroFlowSurface}
+                  x="0"
+                  y="0"
+                  width="720"
+                  height="900"
+                  rx="18"
+                />
+
+                <path
+                  className={styles.heroFlowMainPath}
+                  d="M 0 112 H 122 V 0 M 122 112 V 510"
+                />
+
+                <path
+                  className={styles.heroFlowNegativePath}
+                  d="M 122 112 L 654 20"
+                  markerEnd="url(#hero-v1-negative-arrow)"
+                />
+
+                <text className={styles.heroFlowLabel} x="538" y="91">
+                  Pix
+                </text>
+
+                <text className={styles.heroFlowLabel} x="322" y="184">
+                  Pagamento
+                </text>
+
+                <g className={styles.heroFlowInterface}>
+                  <rect x="304" y="223" width="294" height="156" rx="8" />
+                  <path d="M 304 300 H 598" />
+                  <circle cx="322" cy="243" r="7" />
+                  <path d="M 336 240 H 360" />
+                  <path d="M 342 255 H 556" />
+                  <path d="M 342 267 H 524" />
+                  <path d="M 342 279 H 548" />
+                </g>
+
+                <circle className={styles.heroFlowPositiveNode} cx="122" cy="436" r="13" />
+                <path
+                  className={styles.heroFlowPositivePath}
+                  d="M 122 436 H 654"
+                  markerEnd="url(#hero-v1-positive-arrow)"
+                />
+
+                <text className={styles.heroFlowLabel} x="535" y="407">
+                  Sucesso
+                </text>
+
+                <circle className={styles.heroFlowNegativeNode} cx="122" cy="514" r="13" />
+
+                <text
+                  className={styles.heroFlowCaption}
+                  x="360"
+                  y="842"
+                  textAnchor="middle">
+                  O fluxo se adapta às decisões da pessoa.
+                </text>
+              </svg>
             </div>
           </div>
         </section>
