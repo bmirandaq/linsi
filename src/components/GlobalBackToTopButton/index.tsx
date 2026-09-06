@@ -89,6 +89,7 @@ export default function GlobalBackToTopButton() {
     <button
       aria-label="Voltar ao topo"
       className={`${styles.button} ${shown ? styles.buttonShown : ''}`}
+      data-linsi-back-to-top="true"
       type="button"
       onClick={scrollToTop}
     >
