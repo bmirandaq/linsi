@@ -27,6 +27,12 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
+      - name: Preparar download da Skill
+        run: |
+          mkdir -p static/downloads/assistente-linsi
+          cd assistant
+          zip -r ../static/downloads/assistente-linsi/skill.zip skill
+
       - name: Rodar contratos, build e auditorias
         run: npm run build
         env:
