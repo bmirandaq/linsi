@@ -345,7 +345,7 @@
   }
 
   .origin {
-    margin-top: var(--linsi-space-64);
+    margin-top: var(--linsi-space-96);
     padding-top: 0;
   }
 }
