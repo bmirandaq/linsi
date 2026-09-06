@@ -1,4 +1,7 @@
 import React, {useEffect, type ReactNode} from 'react';
+import {useLocation} from '@docusaurus/router';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import BackToTopButton from '@theme/BackToTopButton';
 
 import '@fontsource-variable/inter';
 import '@fontsource-variable/manrope';
@@ -19,6 +22,11 @@ type Props = {
 };
 
 export default function Root({children}: Props) {
+  const location = useLocation();
+  const docsRoot = useBaseUrl('/docs');
+  const isDocsRoute =
+    location.pathname === docsRoot || location.pathname.startsWith(`${docsRoot}/`);
+
   useEffect(() => {
     const syncSelectors = (value: FontPreference) => {
       document
@@ -51,5 +59,12 @@ export default function Root({children}: Props) {
     return () => document.removeEventListener('change', handleFontChange);
   }, []);
 
-  return <>{children}<CursorTrail /></>;
+  return (
+    <>
+      {children}
+      {/* Docs already render this component in Docusaurus DocRoot/Layout. */}
+      {!isDocsRoute && <BackToTopButton />}
+      <CursorTrail />
+    </>
+  );
 }
