@@ -2,17 +2,15 @@
 @media (min-width: 997px) {
   html.docs-doc-page [class*='docRoot'] {
     column-gap: var(--linsi-doc-column-gap);
-    grid-template-columns: var(--doc-sidebar-width) minmax(0, 1fr);
   }
 
   .theme-doc-sidebar-container {
     align-self: flex-start !important;
-    height: auto !important;
-    left: var(--linsi-page-inline);
-    margin: 0 !important;
+    height: fit-content !important;
+    margin: 0 0 var(--linsi-space-16) !important;
     max-height: none !important;
     overflow: hidden !important;
-    position: fixed !important;
+    position: sticky !important;
     top: calc(var(--ifm-navbar-height) + var(--linsi-space-8)) !important;
     width: var(--doc-sidebar-width) !important;
   }
