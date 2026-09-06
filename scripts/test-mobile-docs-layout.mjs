@@ -5,6 +5,7 @@ import {chromium} from 'playwright';
 
 const baseUrl = process.env.SMOKE_BASE_URL ?? 'http://127.0.0.1:3000';
 const screenshotPath = process.env.SCREENSHOT_PATH;
+const fontPreference = process.env.FONT_PREFERENCE ?? 'manrope';
 const viewport = {width: 440, height: 956};
 
 const browser = await chromium.launch({headless: true});
@@ -16,6 +17,15 @@ const context = await browser.newContext({
   colorScheme: 'dark',
   ignoreHTTPSErrors: true,
 });
+
+await context.addInitScript((font) => {
+  try {
+    window.localStorage.setItem('linsi-font-family', font);
+  } catch {
+    // The page applies the default if localStorage is unavailable.
+  }
+}, fontPreference);
+
 const page = await context.newPage();
 
 try {
@@ -27,6 +37,10 @@ try {
   assert.ok(response.status() < 400, `HTTP ${response.status()}`);
 
   await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'dark'));
+  await page.waitForFunction(
+    (font) => document.documentElement.dataset.fontFamily === font,
+    fontPreference,
+  );
   await page.waitForTimeout(250);
 
   const metrics = await page.evaluate(() => {
@@ -54,6 +68,8 @@ try {
         transform: style.transform,
         clipPath: style.clipPath,
         contain: style.contain,
+        fontFamily: style.fontFamily,
+        fontSize: style.fontSize,
       };
     };
 
@@ -114,6 +130,7 @@ try {
     const principleChars = lineRects(principleParagraph);
 
     return {
+      fontFamily: document.documentElement.dataset.fontFamily ?? null,
       viewport: {
         innerWidth: window.innerWidth,
         visualViewportWidth: window.visualViewport?.width ?? null,
@@ -145,7 +162,7 @@ try {
     };
   });
 
-  console.log(`iPhone 16 Pro Max docs metrics for ${baseUrl}:`);
+  console.log(`iPhone 16 Pro Max docs metrics for ${baseUrl} using ${fontPreference}:`);
   console.log(JSON.stringify(metrics, null, 2));
 
   if (screenshotPath) {
@@ -163,7 +180,10 @@ try {
     );
   };
 
+  assert.equal(metrics.fontFamily, fontPreference, 'stored font preference was not applied');
   assert.equal(metrics.viewport.innerWidth, viewport.width, 'browser innerWidth differs from emulated viewport');
+  assert.equal(metrics.viewport.rootScrollWidth, viewport.width, 'document creates horizontal overflow');
+  assert.equal(metrics.viewport.bodyScrollWidth, viewport.width, 'body creates horizontal overflow');
   assertInsideViewport('docs main', metrics.docMain);
   assertInsideViewport('docs container', metrics.container);
   assertInsideViewport('docs article', metrics.article);
@@ -183,4 +203,4 @@ try {
   await browser.close();
 }
 
-console.log(`iPhone 16 Pro Max docs layout passed viewport-bound checks for ${baseUrl}.`);
+console.log(`iPhone 16 Pro Max docs layout passed viewport-bound checks for ${baseUrl} using ${fontPreference}.`);
