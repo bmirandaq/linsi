@@ -6,6 +6,7 @@ slug: boas-praticas
 O manual da LINSI explica como a notação funciona e as boas práticas ajudam a ir além. Use-as como referência e adapte quando fizer sentido para o que você estiver construindo.
 
 ## Defina o escopo da visão
+
 ---
 
 Antes de começar um fluxograma, defina o que a representação *precisa mostrar, onde ela começa e até onde vai*.
@@ -26,6 +27,7 @@ Também considere seu papel e o contexto do trabalho. Você pode mostrar process
 
 
 ## Mesmas coisas, mesmos termos
+
 ---
 
 Se algo aparece mais de uma vez no fluxograma, use sempre o mesmo nome, termo ou expressão. 
@@ -37,6 +39,7 @@ O mesmo vale para situações equivalentes: manter uma forma parecida de descrev
 
 
 ## Deixe os Elementos respirarem
+
 ---
 
 Não tente encaixar tudo no menor espaço possível ou, pior, manter tudo colado.
@@ -48,6 +51,7 @@ Quando Elementos ficam muito próximos, Setas, rótulos e desdobramentos começa
 
 
 ## Cuide do contraste e da legibilidade
+
 ---
 
 Texto, fundo, bordas e conexões precisam continuar fáceis de distinguir.
@@ -58,7 +62,8 @@ Se adaptar as cores propostas pela LINSI, mantenha contraste suficiente, mas tam
 
 
 
-## Revise como quem vai consultar o fluxograma
+## Zoom-out ao revisar
+
 ---
 
 Faça uma leitura do início ao fim como se o fluxograma tivesse sido criado por outra pessoa. Valide se você consegue identificar:
