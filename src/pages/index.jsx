@@ -17,7 +17,7 @@ export default function Home() {
     <Layout description="LINSI — Linguagem Simplificada de Fluxogramas de UX">
       <main className={styles.main}>
         <section className={styles.intro} aria-labelledby="home-title">
-          <div className={clsx('container', styles.layout)}>
+          <div className={clsx('container', styles.layout)} style={{alignItems: 'start'}}>
             <div className={styles.copyColumn}>
               <img
                 className={styles.logo}
@@ -26,6 +26,7 @@ export default function Home() {
                 src={logo}
                 width="163"
                 height="96"
+                style={{marginBottom: 'var(--linsi-space-16)'}}
               />
               <Heading as="h1" id="home-title" className={styles.visuallyHidden}>
                 LINSI
@@ -43,13 +44,16 @@ export default function Home() {
               </Link>
             </div>
 
-            <div className={styles.mediaColumn} aria-hidden="true">
+            <div
+              className={styles.mediaColumn}
+              aria-hidden="true"
+              style={{alignSelf: 'start', aspectRatio: '1 / 1', justifySelf: 'start'}}>
               <svg
                 className={styles.heroFlow}
-                viewBox="0 0 600 760"
+                viewBox="-168 0 600 600"
                 preserveAspectRatio="xMidYMid meet"
                 focusable="false">
-                <rect className={styles.heroFlowSurface} width="600" height="760" rx="28" />
+                <rect className={styles.heroFlowSurface} x="-168" width="600" height="600" rx="28" />
 
                 <g className={styles.heroFlowColumn}>
                   <rect x="104" y="50" width="294" height="30" rx="1" className={styles.heroFlowColumnTitle} />
@@ -117,33 +121,6 @@ export default function Home() {
                   <rect x="104" y="515" width="455" height="30" rx="1" />
                   <text x="331.5" y="535" textAnchor="middle">Sem cadastro</text>
                 </g>
-
-                <path className={styles.heroFlowPath} d="M162 452 V635 H284" />
-                <path className={styles.heroFlowArrow} d="M280 631 L284 635 L280 639" />
-                <path className={styles.heroFlowPathAlternative} d="M162 452 V686 H284" />
-                <path className={styles.heroFlowArrowAlternative} d="M280 682 L284 686 L280 690" />
-
-                <g className={styles.heroFlowNodeOrange}>
-                  <rect x="284" y="617" width="115" height="36" rx="15" />
-                  <text x="341.5" y="639" textAnchor="middle">Criar conta</text>
-                </g>
-
-                <g className={styles.heroFlowNodeOrange}>
-                  <rect x="284" y="668" width="115" height="36" rx="15" />
-                  <text x="341.5" y="690" textAnchor="middle">Continuar sem cadastro</text>
-                </g>
-
-                <path className={styles.heroFlowPath} d="M399 635 H444" />
-                <path className={styles.heroFlowArrow} d="M440 631 L444 635 L440 639" />
-
-                <g className={styles.heroFlowCard}>
-                  <rect x="444" y="615" width="115" height="40" rx="1" />
-                  <text x="451" y="629" className={styles.heroFlowCardTitle}>FORMS DE CADASTRO</text>
-                  <text x="451" y="646">(...)</text>
-                </g>
-
-                <path className={styles.heroFlowPath} d="M559 635 H600" />
-                <path className={styles.heroFlowPath} d="M399 686 H600" />
               </svg>
             </div>
           </div>
