@@ -65,15 +65,7 @@ jobs:
         run: |
           for font in manrope inter opendyslexic georgia; do
             echo "=== $font ==="
-            FONT_PREFERENCE="$font" SCREENSHOT_PATH="test-output/mobile-docs-$font.png" node scripts/test-mobile-docs-layout.mjs
+            FONT_PREFERENCE="$font" node scripts/test-mobile-docs-layout.mjs
           done
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
-
-      - name: Salvar capturas da regressão mobile
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: mobile-docs-rendering
-          path: test-output/mobile-docs-*.png
-          if-no-files-found: ignore
