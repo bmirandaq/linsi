@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import Layout from '@theme/Layout';
-import BackToTopButton from '@theme/BackToTopButton';
 import Heading from '@theme/Heading';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import clsx from 'clsx';
@@ -125,7 +124,6 @@ export default function CafeBea() {
           </div>
         </div>
       </main>
-      <BackToTopButton />
     </Layout>
   );
 }
