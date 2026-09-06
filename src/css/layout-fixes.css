@@ -58,7 +58,7 @@
   border-radius: var(--linsi-radius-sm);
   box-decoration-break: clone;
   overflow-wrap: anywhere;
-  padding: 0.125rem var(--linsi-space-8);
+  padding: calc(var(--linsi-space-4) / 2) var(--linsi-space-8);
   white-space: normal;
   word-break: break-word;
 }
@@ -97,5 +97,5 @@
   font-size: 0.625rem;
   font-weight: 700;
   line-height: 1;
-  padding: 3px 6px;
+  padding: calc(var(--linsi-space-4) * 0.75) calc(var(--linsi-space-8) * 0.75);
 }
