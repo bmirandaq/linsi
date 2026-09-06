@@ -7,6 +7,7 @@ import '@fontsource-variable/plus-jakarta-sans';
 import '@fontsource/opendyslexic/400.css';
 import '@fontsource/opendyslexic/700.css';
 import CursorTrail from '@site/src/components/CursorTrail';
+import GlobalBackToTopButton from '@site/src/components/GlobalBackToTopButton';
 
 import {
   applyStoredFontPreference,
@@ -54,6 +55,7 @@ export default function Root({children}: Props) {
   return (
     <>
       {children}
+      <GlobalBackToTopButton />
       <CursorTrail />
     </>
   );
