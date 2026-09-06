@@ -2,7 +2,7 @@ name: Empacotar Assistente LINSI
 
 on:
   push:
-    branches: [assistant-phase-1]
+    branches: [assistant-phase-1, main]
     paths:
       - 'assistant/skill/**'
       - '.github/workflows/package-assistant-skill.yml'
