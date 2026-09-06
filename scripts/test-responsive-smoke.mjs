@@ -15,8 +15,8 @@ const viewports = [
   { name: 'desktop', width: 1200, height: 900 },
   { name: 'docs-breakpoint', width: 997, height: 900 },
   { name: 'tablet', width: 768, height: 900 },
-  { name: 'mobile', width: 390, height: 844 },
-  { name: 'mobile-small', width: 360, height: 800 },
+  { name: 'mobile', width: 390, height: 844, mobile: true },
+  { name: 'mobile-small', width: 360, height: 800, mobile: true },
 ];
 
 const browser = await chromium.launch({ headless: true });
@@ -28,7 +28,10 @@ const recordFailure = (scope, error) => {
 
 for (const viewport of viewports) {
   const context = await browser.newContext({
-    viewport,
+    viewport: { width: viewport.width, height: viewport.height },
+    deviceScaleFactor: viewport.mobile ? 2 : 1,
+    isMobile: Boolean(viewport.mobile),
+    hasTouch: Boolean(viewport.mobile),
     ignoreHTTPSErrors: true,
   });
 
@@ -120,23 +123,55 @@ for (const viewport of viewports) {
       }
 
       if (viewport.width === 390 && (route === '/' || route === '/docs/principios')) {
-        const backToTop = page.locator('.theme-back-to-top-button');
-        assert.equal(await backToTop.count(), 1, 'back to top should render exactly once');
+        const backToTop = page.locator('[data-linsi-back-to-top="true"]');
+        assert.equal(await backToTop.count(), 1, 'global back to top should render exactly once');
         assert.equal(await backToTop.isVisible(), false, 'back to top should start hidden');
 
-        const scrollableDistance = await page.evaluate(
-          () => document.documentElement.scrollHeight - window.innerHeight,
-        );
+        const scrollableDistance = await page.evaluate(() => {
+          const scroller = document.scrollingElement ?? document.documentElement;
+          return scroller.scrollHeight - window.innerHeight;
+        });
         assert.ok(scrollableDistance > 300, 'route is not long enough to validate back to top');
 
         await page.evaluate(() => {
-          const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+          const scroller = document.scrollingElement ?? document.documentElement;
+          const maxScroll = scroller.scrollHeight - window.innerHeight;
           window.scrollTo(0, Math.min(700, maxScroll));
         });
         await page.waitForFunction(() => window.scrollY > 300);
         await backToTop.waitFor({state: 'visible', timeout: 3_000});
+        await page.waitForTimeout(180);
 
-        await backToTop.click();
+        const visualState = await backToTop.evaluate((element) => {
+          const style = getComputedStyle(element);
+          const rect = element.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          const hit = document.elementFromPoint(centerX, centerY);
+          return {
+            opacity: Number(style.opacity),
+            visibility: style.visibility,
+            pointerEvents: style.pointerEvents,
+            width: rect.width,
+            height: rect.height,
+            left: rect.left,
+            top: rect.top,
+            right: rect.right,
+            bottom: rect.bottom,
+            hitTested: hit === element || element.contains(hit),
+          };
+        });
+
+        assert.ok(visualState.opacity >= 0.99, `back to top opacity is ${visualState.opacity}`);
+        assert.equal(visualState.visibility, 'visible', 'back to top visibility is not visible');
+        assert.equal(visualState.pointerEvents, 'auto', 'back to top is not interactive');
+        assert.ok(visualState.width >= 47 && visualState.height >= 47, 'back to top rendered smaller than 48px');
+        assert.ok(visualState.left >= 0 && visualState.top >= 0, 'back to top starts outside viewport');
+        assert.ok(visualState.right <= viewport.width, 'back to top exceeds viewport width');
+        assert.ok(visualState.bottom <= viewport.height, 'back to top exceeds viewport height');
+        assert.equal(visualState.hitTested, true, 'back to top is visually covered by another element');
+
+        await backToTop.tap();
         await page.waitForFunction(() => window.scrollY < 10);
         await backToTop.waitFor({state: 'hidden', timeout: 3_000});
       }
@@ -157,5 +192,5 @@ if (failures.length) {
   for (const failure of failures) console.error(`- ${failure}`);
   if (!reportOnly) process.exit(1);
 } else {
-  console.log(`Responsive browser smoke passed against ${baseUrl}: ${routes.length} routes × ${viewports.length} viewports, plus search, dark-mode and mobile back-to-top checks.`);
+  console.log(`Responsive browser smoke passed against ${baseUrl}: ${routes.length} routes × ${viewports.length} viewports, plus search, dark-mode and touch-emulated mobile back-to-top checks.`);
 }
