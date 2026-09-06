@@ -1,7 +1,6 @@
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
-import BackToTopButton from '@theme/BackToTopButton';
 import Heading from '@theme/Heading';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
@@ -121,7 +120,6 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <BackToTopButton />
     </Layout>
   );
 }
