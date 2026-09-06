@@ -1,10 +1,7 @@
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import path from 'node:path';
 import {chromium} from 'playwright';
 
 const baseUrl = process.env.SMOKE_BASE_URL ?? 'http://127.0.0.1:3000';
-const screenshotPath = process.env.SCREENSHOT_PATH;
 const fontPreference = process.env.FONT_PREFERENCE ?? 'manrope';
 const viewport = {width: 440, height: 956};
 
@@ -22,17 +19,47 @@ await context.addInitScript((font) => {
   try {
     window.localStorage.setItem('linsi-font-family', font);
   } catch {
-    // The page applies the default if localStorage is unavailable.
+    // The site falls back to its default font when storage is unavailable.
   }
 }, fontPreference);
 
 const page = await context.newPage();
+
+const getTextPaintBounds = async (locator) =>
+  locator.evaluate((element) => {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    const rects = [];
+
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      const text = node.textContent ?? '';
+
+      for (let index = 0; index < text.length; index += 1) {
+        if (/\s/.test(text[index])) continue;
+
+        const range = document.createRange();
+        range.setStart(node, index);
+        range.setEnd(node, index + 1);
+        const box = range.getBoundingClientRect();
+
+        if (box.width || box.height) {
+          rects.push({left: box.left, right: box.right});
+        }
+      }
+    }
+
+    return {
+      minLeft: rects.length ? Math.min(...rects.map(({left}) => left)) : null,
+      maxRight: rects.length ? Math.max(...rects.map(({right}) => right)) : null,
+    };
+  });
 
 try {
   const response = await page.goto(`${baseUrl}/docs/principios`, {
     waitUntil: 'networkidle',
     timeout: 30_000,
   });
+
   assert.ok(response, 'navigation produced no response');
   assert.ok(response.status() < 400, `HTTP ${response.status()}`);
 
@@ -41,161 +68,63 @@ try {
     (font) => document.documentElement.dataset.fontFamily === font,
     fontPreference,
   );
-  await page.waitForTimeout(250);
 
-  const metrics = await page.evaluate(() => {
-    const rect = (element) => {
-      if (!element) return null;
-      const box = element.getBoundingClientRect();
-      const style = getComputedStyle(element);
-      return {
-        left: box.left,
-        right: box.right,
-        top: box.top,
-        bottom: box.bottom,
-        width: box.width,
-        clientWidth: element.clientWidth,
-        scrollWidth: element.scrollWidth,
-        minWidth: style.minWidth,
-        maxWidth: style.maxWidth,
-        widthCss: style.width,
-        overflowX: style.overflowX,
-        overflowY: style.overflowY,
-        display: style.display,
-        position: style.position,
-        boxSizing: style.boxSizing,
-        flex: style.flex,
-        transform: style.transform,
-        clipPath: style.clipPath,
-        contain: style.contain,
-        fontFamily: style.fontFamily,
-        fontSize: style.fontSize,
-      };
-    };
+  const article = page.locator('.theme-doc-markdown').first();
+  const lead = article.locator(':scope > p').first();
+  const principle = article.locator('.principle').first();
+  const principleParagraph = principle.locator('p').first();
+  const navbar = page.locator('.navbar').first();
+  const navbarRight = page.locator('.navbar__items--right').first();
 
-    const lineRects = (element) => {
-      if (!element) return [];
-      const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
-      const rects = [];
-      while (walker.nextNode()) {
-        const node = walker.currentNode;
-        const text = node.textContent ?? '';
-        for (let i = 0; i < text.length; i += 1) {
-          if (/\s/.test(text[i])) continue;
-          const range = document.createRange();
-          range.setStart(node, i);
-          range.setEnd(node, i + 1);
-          const box = range.getBoundingClientRect();
-          if (!box.width && !box.height) continue;
-          rects.push({left: box.left, right: box.right, top: box.top, bottom: box.bottom});
-        }
-      }
-      return rects;
-    };
-
-    const ancestorStyles = (element) => {
-      const result = [];
-      let current = element;
-      while (current && current !== document.documentElement) {
-        const style = getComputedStyle(current);
-        const box = current.getBoundingClientRect();
-        result.push({
-          tag: current.tagName,
-          className: typeof current.className === 'string' ? current.className : '',
-          left: box.left,
-          right: box.right,
-          width: box.width,
-          overflowX: style.overflowX,
-          overflowY: style.overflowY,
-          transform: style.transform,
-          clipPath: style.clipPath,
-          contain: style.contain,
-        });
-        current = current.parentElement;
-      }
-      return result;
-    };
-
-    const docMain = document.querySelector("[class*='docMainContainer']");
-    const container = docMain?.querySelector(':scope > .container') ?? null;
-    const row = docMain?.querySelector('.row') ?? null;
-    const col = docMain?.querySelector('.col') ?? null;
-    const article = document.querySelector('.theme-doc-markdown');
-    const lead = article?.querySelector(':scope > p') ?? null;
-    const principle = article?.querySelector('.principle') ?? null;
-    const principleParagraph = principle?.querySelector('p') ?? null;
-    const navbar = document.querySelector('.navbar');
-    const navbarRight = document.querySelector('.navbar__items--right');
-    const leadChars = lineRects(lead);
-    const principleChars = lineRects(principleParagraph);
-
-    return {
-      fontFamily: document.documentElement.dataset.fontFamily ?? null,
-      viewport: {
-        innerWidth: window.innerWidth,
-        visualViewportWidth: window.visualViewport?.width ?? null,
-        rootClientWidth: document.documentElement.clientWidth,
-        rootScrollWidth: document.documentElement.scrollWidth,
-        bodyClientWidth: document.body.clientWidth,
-        bodyScrollWidth: document.body.scrollWidth,
-      },
-      docsWrapper: rect(document.querySelector("[class*='docsWrapper']")),
-      docRoot: rect(document.querySelector("[class*='docRoot']")),
-      docMain: rect(docMain),
-      container: rect(container),
-      row: rect(row),
-      col: rect(col),
-      article: rect(article),
-      lead: rect(lead),
-      principle: rect(principle),
-      principleParagraph: rect(principleParagraph),
-      navbar: rect(navbar),
-      navbarRight: rect(navbarRight),
-      textPaint: {
-        leadMaxRight: leadChars.length ? Math.max(...leadChars.map((item) => item.right)) : null,
-        principleMaxRight: principleChars.length ? Math.max(...principleChars.map((item) => item.right)) : null,
-        leadMinLeft: leadChars.length ? Math.min(...leadChars.map((item) => item.left)) : null,
-        principleMinLeft: principleChars.length ? Math.min(...principleChars.map((item) => item.left)) : null,
-      },
-      leadAncestors: ancestorStyles(lead),
-      principleAncestors: ancestorStyles(principleParagraph),
-    };
-  });
-
-  console.log(`iPhone 16 Pro Max docs metrics for ${baseUrl} using ${fontPreference}:`);
-  console.log(JSON.stringify(metrics, null, 2));
-
-  if (screenshotPath) {
-    fs.mkdirSync(path.dirname(screenshotPath), {recursive: true});
-    await page.screenshot({path: screenshotPath, fullPage: true});
-    console.log(`Saved screenshot to ${screenshotPath}`);
+  for (const locator of [article, lead, principle, principleParagraph, navbar, navbarRight]) {
+    await locator.waitFor({state: 'visible'});
   }
 
-  const assertInsideViewport = (name, box) => {
+  const viewportState = await page.evaluate(() => ({
+    fontFamily: document.documentElement.dataset.fontFamily ?? null,
+    innerWidth: window.innerWidth,
+    rootClientWidth: document.documentElement.clientWidth,
+    rootScrollWidth: document.documentElement.scrollWidth,
+    bodyScrollWidth: document.body.scrollWidth,
+  }));
+
+  assert.equal(viewportState.fontFamily, fontPreference, 'stored font preference was not applied');
+  assert.equal(viewportState.innerWidth, viewport.width, 'browser innerWidth differs from emulated viewport');
+  assert.equal(viewportState.rootClientWidth, viewport.width, 'document client width differs from emulated viewport');
+  assert.equal(viewportState.rootScrollWidth, viewport.width, 'document creates horizontal overflow');
+  assert.equal(viewportState.bodyScrollWidth, viewport.width, 'body creates horizontal overflow');
+
+  const assertInsideViewport = async (name, locator) => {
+    const box = await locator.boundingBox();
     assert.ok(box, `${name} box is unavailable`);
-    assert.ok(box.left >= -1, `${name} starts outside viewport at ${box.left}px`);
+    assert.ok(box.x >= -1, `${name} starts outside viewport at ${box.x}px`);
     assert.ok(
-      box.right <= viewport.width + 1,
-      `${name} exceeds viewport by ${Math.round(box.right - viewport.width)}px`,
+      box.x + box.width <= viewport.width + 1,
+      `${name} exceeds viewport by ${Math.round(box.x + box.width - viewport.width)}px`,
     );
   };
 
-  assert.equal(metrics.fontFamily, fontPreference, 'stored font preference was not applied');
-  assert.equal(metrics.viewport.innerWidth, viewport.width, 'browser innerWidth differs from emulated viewport');
-  assert.equal(metrics.viewport.rootScrollWidth, viewport.width, 'document creates horizontal overflow');
-  assert.equal(metrics.viewport.bodyScrollWidth, viewport.width, 'body creates horizontal overflow');
-  assertInsideViewport('docs main', metrics.docMain);
-  assertInsideViewport('docs container', metrics.container);
-  assertInsideViewport('docs article', metrics.article);
-  assertInsideViewport('docs lead paragraph', metrics.lead);
-  assertInsideViewport('principle paragraph', metrics.principleParagraph);
-  assertInsideViewport('navbar', metrics.navbar);
-  assertInsideViewport('navbar right controls', metrics.navbarRight);
-  assert.ok(metrics.textPaint.leadMaxRight <= viewport.width + 1, `lead text paint exceeds viewport at ${metrics.textPaint.leadMaxRight}px`);
-  assert.ok(metrics.textPaint.principleMaxRight <= viewport.width + 1, `principle text paint exceeds viewport at ${metrics.textPaint.principleMaxRight}px`);
+  await assertInsideViewport('docs article', article);
+  await assertInsideViewport('docs lead paragraph', lead);
+  await assertInsideViewport('principle', principle);
+  await assertInsideViewport('principle paragraph', principleParagraph);
+  await assertInsideViewport('navbar', navbar);
+  await assertInsideViewport('navbar right controls', navbarRight);
+
+  const leadPaint = await getTextPaintBounds(lead);
+  const principlePaint = await getTextPaintBounds(principleParagraph);
+
+  assert.ok(leadPaint.minLeft >= -1, `lead text paint starts outside viewport at ${leadPaint.minLeft}px`);
+  assert.ok(leadPaint.maxRight <= viewport.width + 1, `lead text paint exceeds viewport at ${leadPaint.maxRight}px`);
+  assert.ok(principlePaint.minLeft >= -1, `principle text paint starts outside viewport at ${principlePaint.minLeft}px`);
+  assert.ok(principlePaint.maxRight <= viewport.width + 1, `principle text paint exceeds viewport at ${principlePaint.maxRight}px`);
+
+  const principleOverflow = await principle.evaluate(
+    (element) => element.scrollWidth - element.clientWidth,
+  );
   assert.ok(
-    metrics.principle.scrollWidth <= metrics.principle.clientWidth + 1,
-    `principle creates ${metrics.principle.scrollWidth - metrics.principle.clientWidth}px of internal horizontal overflow`,
+    principleOverflow <= 1,
+    `principle creates ${principleOverflow}px of internal horizontal overflow`,
   );
 } finally {
   await page.close();
@@ -203,4 +132,4 @@ try {
   await browser.close();
 }
 
-console.log(`iPhone 16 Pro Max docs layout passed viewport-bound checks for ${baseUrl} using ${fontPreference}.`);
+console.log(`iPhone 16 Pro Max docs layout passed at 440x956 using ${fontPreference}.`);
