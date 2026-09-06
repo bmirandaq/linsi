@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import Layout from '@theme/Layout';
 
 const SKILL_SOURCE_URL =
-  'https://github.com/bmirandaq/linsi/tree/assistant-phase-1/assistant/skill';
+  'https://github.com/bmirandaq/linsi/tree/main/assistant/skill';
 
 export default function AssistantSkillSource() {
   useEffect(() => {
