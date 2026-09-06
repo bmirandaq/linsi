@@ -1,0 +1,15 @@
+.marker {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :global(html.linsi-custom-cursor),
+  :global(html.linsi-custom-cursor body),
+  :global(html.linsi-custom-cursor :is(a, button, summary, select, label[for], [role='button'])) {
+    cursor: url('@site/static/img/cursor-linsi.svg') 1 1, auto;
+  }
+
+  :global(html.linsi-custom-cursor :is(button:disabled, [aria-disabled='true'])) {
+    cursor: not-allowed;
+  }
+}
