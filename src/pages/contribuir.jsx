@@ -1,6 +1,5 @@
 import React, {useState, useCallback, useRef, useEffect} from 'react';
 import Layout from '@theme/Layout';
-import BackToTopButton from '@theme/BackToTopButton';
 import clsx from 'clsx';
 import MaterialSymbol from '@site/src/components/MaterialSymbol';
 import styles from './contribuir.module.css';
@@ -289,7 +288,6 @@ export default function Contato() {
             </form>
         </div>
       </main>
-      <BackToTopButton />
     </Layout>
   );
 }
