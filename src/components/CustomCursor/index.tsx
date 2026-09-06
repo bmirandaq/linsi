@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import styles from './styles.module.css';
+import {useEffect} from 'react';
+import './styles.module.css';
 
 export default function CustomCursor() {
   useEffect(() => {
@@ -19,5 +19,5 @@ export default function CustomCursor() {
     };
   }, []);
 
-  return <span className={styles.marker} aria-hidden="true" />;
+  return null;
 }
