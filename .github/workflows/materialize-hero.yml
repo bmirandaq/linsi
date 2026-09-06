@@ -21,7 +21,35 @@ jobs:
         shell: bash
         run: |
           mkdir -p static/img
-          cat .github/hero-asset/part0 .github/hero-asset/part1 .github/hero-asset/part2 .github/hero-asset/part3 .github/hero-asset/part4 | base64 --decode > static/img/cover-hero.png
+          cat \
+            .github/hero-asset/part0 \
+            .github/hero-asset/exact/08000 \
+            .github/hero-asset/exact/09000 \
+            .github/hero-asset/exact/10000 \
+            .github/hero-asset/exact/11000 \
+            .github/hero-asset/exact/12000 \
+            .github/hero-asset/exact/13000 \
+            .github/hero-asset/exact/14000 \
+            .github/hero-asset/exact/15000 \
+            .github/hero-asset/exact/16000 \
+            .github/hero-asset/exact/17000 \
+            .github/hero-asset/exact/18000 \
+            .github/hero-asset/exact/19000 \
+            .github/hero-asset/exact/20000 \
+            .github/hero-asset/exact/21000 \
+            .github/hero-asset/exact/22000 \
+            .github/hero-asset/exact/23000 \
+            .github/hero-asset/part3 \
+            .github/hero-asset/exact/32000 \
+            .github/hero-asset/exact/33000 \
+            .github/hero-asset/exact/34000 \
+            .github/hero-asset/exact/35000 \
+            .github/hero-asset/exact/35500 \
+            .github/hero-asset/exact/36000 \
+            .github/hero-asset/exact/36500 \
+            .github/hero-asset/exact/37000 \
+            .github/hero-asset/exact/38000 \
+            | base64 --decode > static/img/cover-hero.png
           test "$(git hash-object static/img/cover-hero.png)" = "5de356f5040e1d7809e9df3dff4cf69337e97cc4"
 
       - name: Commit binary asset and clean temporary files
@@ -31,6 +59,6 @@ jobs:
           rm .github/workflows/materialize-hero.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add static/img/cover-hero.png .github/hero-asset .github/workflows/materialize-hero.yml
+          git add -A
           git commit -m "fix: add provided hero image asset"
           git push
