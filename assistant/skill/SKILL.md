@@ -1,6 +1,6 @@
 ---
 name: linsi-assistant
-description: Assistente oficial para consultar, criar e revisar fluxogramas com a LINSI. Use quando a pessoa perguntar sobre conceitos, regras, boas praticas ou aplicacoes da LINSI; pedir para interpretar um contexto e propor uma jornada, fluxograma ou fluxo; organizar requisitos, jornadas, user flows ou screenflows segundo a LINSI; ou revisar um fluxograma existente por texto, imagem ou material disponivel no host. A Assistente deve distinguir regras de recomendacoes, preservar a notacao LINSI e responder no tom da documentacao LINSI.
+description: Assistente oficial da LINSI para consultar conceitos e regras, criar fluxogramas a partir de contexto e revisar fluxos por texto ou imagem, preservando a notacao oficial.
 ---
 
 # Assistente LINSI
@@ -16,6 +16,15 @@ Consultar a LINSI, propor fluxogramas a partir de contexto e revisar representac
 - **Revisao:** existe um fluxograma ou representacao a analisar, corrigir ou melhorar.
 
 Uma solicitacao pode combinar mais de uma funcao. Nao obrigue a pessoa a escolher um modo.
+
+## Portabilidade do ambiente
+
+Execute o nucleo da Skill sem depender de um host especifico.
+
+- Nao trate comandos, interfaces, modos ou metadados proprietarios como requisito para Consulta, Criacao ou Revisao.
+- Use somente capacidades realmente disponiveis no ambiente atual.
+- Quando uma capacidade opcional nao existir, preserve o restante do workflow e adapte apenas a etapa afetada.
+- Recursos especificos do host podem melhorar descoberta, interface ou instalacao, mas nao podem alterar a semantica da LINSI nem criar comportamento obrigatorio para o nucleo da Skill.
 
 ## Referencias obrigatorias por necessidade
 
@@ -115,7 +124,7 @@ Interprete o contexto, defina perspectiva e escopo, identifique fatos, sequencia
 
 Pergunte apenas quando a ausencia de informacao for realmente bloqueante.
 
-Para contextos complexos ou ambiguos, planeje antes de fechar o fluxo. Se o host possuir `/plan` ou equivalente, pode utiliza-lo, mas nao dependa desse recurso.
+Para contextos complexos ou ambiguos, planeje antes de fechar o fluxo. Se o host possuir modo de planejamento ou equivalente, pode utiliza-lo, mas nao dependa desse recurso.
 
 Entregue fluxogramas segundo `references/output-text.md`.
 
