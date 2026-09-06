@@ -46,90 +46,104 @@ export default function Home() {
             <div className={styles.mediaColumn} aria-hidden="true">
               <svg
                 className={styles.heroFlow}
-                viewBox="0 0 720 900"
+                viewBox="0 0 600 760"
                 preserveAspectRatio="xMidYMid meet"
                 focusable="false">
-                <defs>
-                  <marker
-                    id="hero-v1-negative-arrow"
-                    markerWidth="12"
-                    markerHeight="12"
-                    refX="9"
-                    refY="6"
-                    orient="auto"
-                    markerUnits="strokeWidth">
-                    <path d="M 0 0 L 12 6 L 0 12 z" className={styles.heroFlowNegativeFill} />
-                  </marker>
-                  <marker
-                    id="hero-v1-positive-arrow"
-                    markerWidth="12"
-                    markerHeight="12"
-                    refX="9"
-                    refY="6"
-                    orient="auto"
-                    markerUnits="strokeWidth">
-                    <path d="M 0 0 L 12 6 L 0 12 z" className={styles.heroFlowPositiveFill} />
-                  </marker>
-                </defs>
+                <rect className={styles.heroFlowSurface} width="600" height="760" rx="28" />
 
-                <rect
-                  className={styles.heroFlowSurface}
-                  x="0"
-                  y="0"
-                  width="720"
-                  height="900"
-                  rx="18"
-                />
-
-                <path
-                  className={styles.heroFlowMainPath}
-                  d="M 0 112 H 122 V 0 M 122 112 V 510"
-                />
-
-                <path
-                  className={styles.heroFlowNegativePath}
-                  d="M 122 112 L 654 20"
-                  markerEnd="url(#hero-v1-negative-arrow)"
-                />
-
-                <text className={styles.heroFlowLabel} x="538" y="91">
-                  Pix
-                </text>
-
-                <text className={styles.heroFlowLabel} x="322" y="184">
-                  Pagamento
-                </text>
-
-                <g className={styles.heroFlowInterface}>
-                  <rect x="304" y="223" width="294" height="156" rx="8" />
-                  <path d="M 304 300 H 598" />
-                  <circle cx="322" cy="243" r="7" />
-                  <path d="M 336 240 H 360" />
-                  <path d="M 342 255 H 556" />
-                  <path d="M 342 267 H 524" />
-                  <path d="M 342 279 H 548" />
+                <g className={styles.heroFlowColumn}>
+                  <rect x="104" y="50" width="294" height="30" rx="1" className={styles.heroFlowColumnTitle} />
+                  <rect x="104" y="80" width="294" height="29" rx="1" className={styles.heroFlowColumnBand} />
+                  <text x="117" y="69" className={styles.heroFlowColumnTitleText}>Funnel</text>
+                  <text x="251" y="98" textAnchor="middle" className={styles.heroFlowColumnBandText}>Entrada</text>
                 </g>
 
-                <circle className={styles.heroFlowPositiveNode} cx="122" cy="436" r="13" />
-                <path
-                  className={styles.heroFlowPositivePath}
-                  d="M 122 436 H 654"
-                  markerEnd="url(#hero-v1-positive-arrow)"
-                />
+                <g className={styles.heroFlowColumn}>
+                  <rect x="-58" y="50" width="113" height="30" rx="1" className={styles.heroFlowColumnTitle} />
+                  <rect x="-58" y="80" width="113" height="29" rx="1" className={styles.heroFlowColumnBand} />
+                </g>
 
-                <text className={styles.heroFlowLabel} x="535" y="407">
-                  Sucesso
-                </text>
+                <g className={styles.heroFlowNodeOrange}>
+                  <rect x="-51" y="190" width="106" height="36" rx="15" />
+                  <text x="6" y="211" textAnchor="middle">pedido</text>
+                </g>
 
-                <circle className={styles.heroFlowNegativeNode} cx="122" cy="514" r="13" />
+                <path className={styles.heroFlowPath} d="M55 208 H120" />
+                <path className={styles.heroFlowArrow} d="M116 204 L120 208 L116 212" />
 
-                <text
-                  className={styles.heroFlowCaption}
-                  x="360"
-                  y="842"
-                  textAnchor="middle">
-                  O fluxo se adapta às decisões da pessoa.
-                </text>
+                <g className={styles.heroFlowDecision}>
+                  <path d="M162 168 L202 208 L162 248 L122 208 Z" />
+                  <text x="162" y="205" textAnchor="middle">Cliente</text>
+                  <text x="162" y="216" textAnchor="middle">autenticado?</text>
+                </g>
+
+                <path className={styles.heroFlowPathPositive} d="M202 208 H600" />
+                <text x="249" y="202" className={styles.heroFlowSmallText}>Sim</text>
+
+                <path className={styles.heroFlowPathNegative} d="M162 248 V336" />
+                <path className={styles.heroFlowArrowNegative} d="M158 332 L162 336 L166 332" />
+                <text x="153" y="296" className={styles.heroFlowSmallText}>Não</text>
+
+                <g className={styles.heroFlowCard}>
+                  <rect x="104" y="339" width="114" height="113" rx="1" />
+                  <text x="112" y="355" className={styles.heroFlowCardTitle}>Acessar</text>
+                  <text x="112" y="378">Formas de autenticação</text>
+                  <text x="112" y="391">• Google, Outlook etc.</text>
+                  <text x="112" y="404">• Usuário e senha comum</text>
+                  <text x="112" y="425">Outras ações</text>
+                  <text x="112" y="438">• Criar conta</text>
+                  <text x="112" y="451">• Continuar sem cadastro</text>
+                </g>
+
+                <path className={styles.heroFlowPath} d="M218 395 H250 V373 H284" />
+                <path className={styles.heroFlowArrow} d="M280 369 L284 373 L280 377" />
+                <path className={styles.heroFlowPath} d="M218 395 H250 V423 H284" />
+                <path className={styles.heroFlowArrow} d="M280 419 L284 423 L280 427" />
+
+                <g className={styles.heroFlowNodeOrange}>
+                  <rect x="284" y="355" width="115" height="36" rx="15" />
+                  <text x="341.5" y="377" textAnchor="middle">Entrar (comum)</text>
+                </g>
+
+                <g className={styles.heroFlowNodeOrange}>
+                  <rect x="284" y="405" width="115" height="36" rx="15" />
+                  <text x="341.5" y="427" textAnchor="middle">Entrar com integrações</text>
+                </g>
+
+                <path className={styles.heroFlowPath} d="M399 373 H498 V208" />
+                <path className={styles.heroFlowPath} d="M399 423 H498 V208" />
+
+                <g className={styles.heroFlowSection}>
+                  <rect x="104" y="515" width="455" height="30" rx="1" />
+                  <text x="331.5" y="535" textAnchor="middle">Sem cadastro</text>
+                </g>
+
+                <path className={styles.heroFlowPath} d="M162 452 V635 H284" />
+                <path className={styles.heroFlowArrow} d="M280 631 L284 635 L280 639" />
+                <path className={styles.heroFlowPathAlternative} d="M162 452 V686 H284" />
+                <path className={styles.heroFlowArrowAlternative} d="M280 682 L284 686 L280 690" />
+
+                <g className={styles.heroFlowNodeOrange}>
+                  <rect x="284" y="617" width="115" height="36" rx="15" />
+                  <text x="341.5" y="639" textAnchor="middle">Criar conta</text>
+                </g>
+
+                <g className={styles.heroFlowNodeOrange}>
+                  <rect x="284" y="668" width="115" height="36" rx="15" />
+                  <text x="341.5" y="690" textAnchor="middle">Continuar sem cadastro</text>
+                </g>
+
+                <path className={styles.heroFlowPath} d="M399 635 H444" />
+                <path className={styles.heroFlowArrow} d="M440 631 L444 635 L440 639" />
+
+                <g className={styles.heroFlowCard}>
+                  <rect x="444" y="615" width="115" height="40" rx="1" />
+                  <text x="451" y="629" className={styles.heroFlowCardTitle}>FORMS DE CADASTRO</text>
+                  <text x="451" y="646">(...)</text>
+                </g>
+
+                <path className={styles.heroFlowPath} d="M559 635 H600" />
+                <path className={styles.heroFlowPath} d="M399 686 H600" />
               </svg>
             </div>
           </div>
