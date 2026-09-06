@@ -173,6 +173,10 @@ try {
   assertInsideViewport('navbar right controls', metrics.navbarRight);
   assert.ok(metrics.textPaint.leadMaxRight <= viewport.width + 1, `lead text paint exceeds viewport at ${metrics.textPaint.leadMaxRight}px`);
   assert.ok(metrics.textPaint.principleMaxRight <= viewport.width + 1, `principle text paint exceeds viewport at ${metrics.textPaint.principleMaxRight}px`);
+  assert.ok(
+    metrics.principle.scrollWidth <= metrics.principle.clientWidth + 1,
+    `principle creates ${metrics.principle.scrollWidth - metrics.principle.clientWidth}px of internal horizontal overflow`,
+  );
 } finally {
   await page.close();
   await context.close();
