@@ -51,8 +51,8 @@ export default function CursorTrail() {
         const previous = points[index - 1];
         const point = points[index];
         const freshness = Math.max(0, 1 - (now - previous.time) / lifetime);
-        context.globalAlpha = freshness * 0.35;
-        context.lineWidth = freshness * 4;
+        context.globalAlpha = freshness * 0.22;
+        context.lineWidth = 0.75 + freshness * 1.5;
         context.beginPath();
         context.moveTo((before.x + previous.x) / 2, (before.y + previous.y) / 2);
         context.quadraticCurveTo(
