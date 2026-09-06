@@ -85,6 +85,24 @@ for (const viewport of viewports) {
           sidebarBox.x + sidebarBox.width <= articleBox.x + 2,
           `sidebar overlaps article by ${Math.round(sidebarBox.x + sidebarBox.width - articleBox.x)}px`,
         );
+
+        const sidebarState = await sidebar.evaluate((element) => {
+          const style = getComputedStyle(element);
+          const menu = element.querySelector('.menu');
+          const menuStyle = menu ? getComputedStyle(menu) : null;
+          return {
+            position: style.position,
+            left: style.left,
+            menuOverflowY: menuStyle?.overflowY ?? null,
+            menuScrollable: menu ? menu.scrollHeight > menu.clientHeight + 1 : false,
+          };
+        });
+
+        assert.equal(sidebarState.position, 'sticky', 'docs sidebar must stay in layout flow with sticky positioning');
+        assert.equal(sidebarState.left, 'auto', `docs sidebar should not be manually offset; left is ${sidebarState.left}`);
+        assert.notEqual(sidebarState.menuOverflowY, 'auto', 'docs sidebar menu must not create its own vertical scroll');
+        assert.notEqual(sidebarState.menuOverflowY, 'scroll', 'docs sidebar menu must not force vertical scrolling');
+        assert.equal(sidebarState.menuScrollable, false, 'docs sidebar menu content is clipped into an internal scroll area');
       }
 
       if (route === '/' && (viewport.width === 1440 || viewport.width === 390)) {
@@ -192,5 +210,5 @@ if (failures.length) {
   for (const failure of failures) console.error(`- ${failure}`);
   if (!reportOnly) process.exit(1);
 } else {
-  console.log(`Responsive browser smoke passed against ${baseUrl}: ${routes.length} routes × ${viewports.length} viewports, plus search, dark-mode and touch-emulated mobile back-to-top checks.`);
+  console.log(`Responsive browser smoke passed against ${baseUrl}: ${routes.length} routes × ${viewports.length} viewports, plus docs sidebar geometry, search, dark-mode and touch-emulated mobile back-to-top checks.`);
 }

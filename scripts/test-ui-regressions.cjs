@@ -58,13 +58,18 @@ assert.match(
 );
 assert.match(
   layoutFixesCss,
-  /grid-template-columns:\s*var\(--doc-sidebar-width\) minmax\(0, 1fr\);/,
-  'O layout precisa reservar a coluna da sidebar mesmo com o painel fixo.',
+  /html\.docs-doc-page \[class\*='docRoot'\]\s*\{[\s\S]*?column-gap:\s*var\(--linsi-doc-column-gap\);/,
+  'Sidebar e conteúdo devem preservar o gap estrutural da documentação.',
 );
 assert.match(
   layoutFixesCss,
-  /\.theme-doc-sidebar-container\s*\{[\s\S]*?max-height:\s*none !important;[\s\S]*?overflow:\s*hidden !important;[\s\S]*?position:\s*fixed !important;/,
-  'A sidebar desktop deve ficar fixa e crescer com o próprio conteúdo.',
+  /\.theme-doc-sidebar-container\s*\{[\s\S]*?max-height:\s*none !important;[\s\S]*?overflow:\s*hidden !important;[\s\S]*?position:\s*sticky !important;/,
+  'A sidebar desktop deve permanecer no fluxo, sticky e sem limite interno de altura.',
+);
+assert.doesNotMatch(
+  layoutFixesCss,
+  /position:\s*fixed !important|left:\s*var\(--linsi-page-inline\)|grid-template-columns:/,
+  'A sidebar desktop não deve sair do fluxo nem compensar o layout com posicionamento fixo.',
 );
 assert.match(
   layoutFixesCss,
@@ -175,4 +180,4 @@ assert.doesNotMatch(
   'O feedback do Pix deve permanecer no próprio botão.',
 );
 
-console.log('UI regression contracts passed: fixed docs sidebar, mobile docs navigation, docs spacing, footer spacing, navbar mobile and key page behavior.');
+console.log('UI regression contracts passed: stable docs sidebar, mobile docs navigation, docs spacing, footer spacing, navbar mobile and key page behavior.');
