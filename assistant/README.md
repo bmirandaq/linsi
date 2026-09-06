@@ -65,7 +65,7 @@ assistant/
 
 ## Distribuicao da primeira beta
 
-Versao alvo: `v0.1-beta`.
+Versao: `0.1-beta`.
 
 Suporte oficial inicial:
 
@@ -78,4 +78,4 @@ O uso do Assistente nao deve exigir clone completo do repositorio.
 
 ## Estado
 
-Fase 1 em fechamento tecnico para beta na branch `assistant-phase-1`.
+Fase 1 consolidada como beta `0.1-beta`. A fonte distribuida da Skill fica em `assistant/skill/` na `main`; o workflow de empacotamento gera `skill.zip` para distribuicao e testes.
