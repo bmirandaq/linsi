@@ -30,6 +30,8 @@
 }
 
 .capabilitiesGrid {
+  border-bottom: 0;
+  border-top: 0;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin: var(--linsi-space-24) 0 var(--linsi-space-32);
 }
@@ -38,12 +40,12 @@
 .capabilitiesGrid :global(.flow-benefit:nth-child(even)) {
   border-bottom: 0;
   border-right: 0;
-  padding: var(--linsi-space-24) var(--linsi-space-16) var(--linsi-space-48) 0;
+  padding: var(--linsi-space-24) var(--linsi-space-24) var(--linsi-space-48) 0;
 }
 
 .capabilitiesGrid :global(.flow-benefit + .flow-benefit) {
   border-left: 1px solid var(--linsi-border-color);
-  padding-left: var(--linsi-space-16);
+  padding-left: var(--linsi-space-24);
 }
 
 .capabilitiesGrid :global(.flow-benefit:last-child) {
@@ -51,7 +53,7 @@
 }
 
 .capabilitiesGrid :global(.flow-benefit__icon) {
-  right: var(--linsi-space-16);
+  right: var(--linsi-space-24);
 }
 
 .capabilitiesGrid :global(.flow-benefit:last-child .flow-benefit__icon) {
