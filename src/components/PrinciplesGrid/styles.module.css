@@ -154,8 +154,11 @@
 @media (max-width: 768px) {
   .grid {
     grid-template-columns: minmax(0, 1fr);
-    overflow-x: clip;
     row-gap: var(--linsi-space-48);
+  }
+
+  .grid :global(.principle)::before {
+    display: none;
   }
 
   .grid :global(.principle:nth-child(5)) {
