@@ -60,3 +60,12 @@ jobs:
         run: node scripts/test-responsive-smoke.mjs
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
+
+      - name: Validar docs mobile no iPhone 16 Pro Max em todas as fontes
+        run: |
+          for font in manrope inter opendyslexic georgia; do
+            echo "=== $font ==="
+            FONT_PREFERENCE="$font" node scripts/test-mobile-docs-layout.mjs
+          done
+        env:
+          SMOKE_BASE_URL: http://127.0.0.1:3000
