@@ -49,7 +49,7 @@ Envie um fluxograma existente. A Assistente revisa a estrutura, aplicação LINS
 
 </div>
 
-<span className={'button button--primary ' + styles.downloadCta} aria-disabled="true">Baixar Skill Assistente LINSI</span>
+<a className={'button button--primary ' + styles.downloadCta} href="/downloads/assistente-linsi/skill.zip" download>Baixar Skill Assistente LINSI</a>
 
 ## Detalhes da versão
 
