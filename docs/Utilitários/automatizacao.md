@@ -5,60 +5,61 @@ sidebar_class_name: linsi-sidebar-assistant-beta
 slug: /assistente
 hide_title: true
 ---
-
 import styles from './automatizacao.module.css';
 
-<div className={styles.titleRow}>
-  <h1>Assistente LINSI</h1>
-  <span className={styles.beta}>Beta</span>
-</div>
+# Assistente LINSI
+
+Beta
 
 ## O que você pode fazer
 
-<div className={'flow-benefits__grid ' + styles.capabilitiesGrid}>
 
-<article className="flow-benefit">
+
+&nbsp;
 
 ### Consultar
 
 Tire dúvidas sobre aplicação da LINSI com base na documentação oficial.
 
-<span className="material-symbols-outlined flow-benefit__icon" aria-hidden="true">search</span>
+search
 
-</article>
 
-<article className="flow-benefit">
+
+&nbsp;
 
 ### Criar
 
 Envie o contexto da experiência, mesmo que incompleto. A Assistente interpreta e propõe pra você.
 
-<span className="material-symbols-outlined flow-benefit__icon" aria-hidden="true">edit_note</span>
+edit_note
 
-</article>
 
-<article className="flow-benefit">
+
+&nbsp;
 
 ### Revisar
 
 Envie um fluxograma existente. A Assistente revisa a estrutura, aplicação LINSI e clareza da representação.
 
-<span className="material-symbols-outlined flow-benefit__icon" aria-hidden="true">checklist</span>
+checklist
 
-</article>
 
-</div>
 
-<a className={'button button--primary ' + styles.downloadCta} href="/downloads/assistente-linsi/skill.zip" download>Baixar Skill Assistente LINSI</a>
+&nbsp;
+
+<a className={'button button--primary ' + styles.downloadCta} href="/downloads/assistente-linsi/skill.zip" download>Baixar Skill Assistente LINSI
+
+## Compatibilidade
+
+A Assistente LINSI 0.1-beta é portátil e pode ser usada no ChatGPT, Claude, Codex, Claude Code e outros ambientes compatíveis com Agent Skills.
+
+A forma de instalação e algumas capacidades podem variar conforme o ambiente.
+
+Para CLIs, você pode solicitar a instalação desta forma:
+
+`Instale a skill: https://github.com/bmirandaq/linsi/tree/main/assistant/skill`
 
 ## Detalhes da versão
-
-Suporte oficial nesta versão 0.1-beta:
-
-- ChatGPT – Importar conforme descrito em <a href="https://help.openai.com/pt-br/articles/20001066-skills-in-chatgpt" target="_blank" rel="noopener noreferrer">Skills no ChatGPT</a>
-- Codex CLI – Comando: <code className={styles.installCommand}>codex "Instale a Skill: https://github.com/bmirandaq/linsi/tree/main/assistant/skill"</code>
-
-Itens contemplados:
 
 - Consulta à documentação;
 - Criação de propostas;
@@ -67,6 +68,7 @@ Itens contemplados:
 - Análise visual quando suportada pelo ambiente.
 
 :::secondary[Próximas fases]
+
 - Output em JSON para plugins e integrações;
 - Plugin para Figma;
 - Integração com Miro.
@@ -81,3 +83,4 @@ Acesse a página [Contribuir ou pedir ajuda](/contribuir) e envie uma mensagem c
 - Algum comportamento inesperado, erro ou dificuldade no uso da Assistente;
 - Algum caso ou lacuna não coberta pela documentação da LINSI. A Assistente pode te ajudar a preencher o formulário;
 - Qualquer outra dúvida pertinente.
+
