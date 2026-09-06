@@ -101,9 +101,26 @@ Decisoes consolidadas para o formato:
 - `Retomada` deve preservar sua funcao de continuidade para outro ponto ja representado quando uma conexao direta longa prejudicaria a leitura ou quando a continuidade estiver em outro fluxo/jornada;
 - o formato deve ser proporcional e nao antecipar propriedades especificas de ferramentas ou do JSON da Fase 2.
 
+### Portabilidade e ambientes prioritarios
+
+**Data:** 2026-09-06
+
+**Status:** consolidado para a beta
+
+A Assistente LINSI e uma Agent Skill portatil. Seu comportamento central nao deve depender de comandos, interfaces, modos ou metadados proprietarios de um host.
+
+Ecossistemas prioritarios para desenvolvimento, distribuicao e validacao:
+
+- **OpenAI:** ChatGPT e Codex;
+- **Anthropic:** Claude e Claude Code.
+
+O nucleo distribuivel permanece unico. Recursos especificos de host podem existir como metadata ou adapter complementar, desde que nao alterem a semantica da LINSI nem se tornem requisito para Consulta, Criacao ou Revisao.
+
+Compatibilidade com outros hosts pode existir quando eles consumirem a mesma estrutura de Agent Skill, sem que isso implique suporte, validacao ou comportamento identico.
+
 ### Distribuicao
 
-**Data:** 2026-09-05
+**Data:** 2026-09-06
 
 **Status:** consolidado para a primeira beta
 
@@ -111,14 +128,11 @@ O usuario final nao deve precisar clonar o repositorio inteiro.
 
 A primeira release sera identificada como versao `0.1-beta`.
 
-Suporte oficial da beta:
+A distribuicao deve usar um unico `skill.zip`, com a pasta raiz `linsi-assistant/`. O mesmo nucleo deve servir aos ambientes prioritarios; apenas o metodo de instalacao pode variar entre eles.
 
-- ChatGPT;
-- Codex CLI.
+`agents/openai.yaml` e metadata especifica do ecossistema OpenAI e nao define o funcionamento central da Skill.
 
-Outros hosts nao entram no suporte oficial enquanto nao puderem ser testados.
-
-Na pagina publica, `Beta` deve aparecer como tag ao lado do titulo. A numeracao da versao deve aparecer apenas como texto de apoio, sem destaque. A evolucao visual e de conteudo dessa pagina sera tratada separadamente do fechamento tecnico da Skill.
+Na pagina publica, `Beta` deve aparecer como tag ao lado do titulo. A numeracao da versao deve aparecer apenas como texto de apoio, sem destaque. A evolucao visual e de conteudo dessa pagina sera tratada separadamente e qualquer alteracao nela exige validacao de conteudo antes da implementacao.
 
 ### Fechamento da 0.1-beta
 
