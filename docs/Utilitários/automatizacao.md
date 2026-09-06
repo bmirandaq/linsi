@@ -5,47 +5,49 @@ sidebar_class_name: linsi-sidebar-assistant-beta
 slug: /assistente
 hide_title: true
 ---
+
 import styles from './automatizacao.module.css';
 
-# Assistente LINSI
-
-Beta
+<div className={styles.titleRow}>
+  <h1>Assistente LINSI</h1>
+  <span className={styles.beta}>Beta</span>
+</div>
 
 ## O que você pode fazer
 
+<div className={'flow-benefits__grid ' + styles.capabilitiesGrid}>
 
-
-&nbsp;
+<article className="flow-benefit">
 
 ### Consultar
 
 Tire dúvidas sobre aplicação da LINSI com base na documentação oficial.
 
-search
+<span className="material-symbols-outlined flow-benefit__icon" aria-hidden="true">search</span>
 
+</article>
 
-
-&nbsp;
+<article className="flow-benefit">
 
 ### Criar
 
 Envie o contexto da experiência, mesmo que incompleto. A Assistente interpreta e propõe pra você.
 
-edit_note
+<span className="material-symbols-outlined flow-benefit__icon" aria-hidden="true">edit_note</span>
 
+</article>
 
-
-&nbsp;
+<article className="flow-benefit">
 
 ### Revisar
 
 Envie um fluxograma existente. A Assistente revisa a estrutura, aplicação LINSI e clareza da representação.
 
-checklist
+<span className="material-symbols-outlined flow-benefit__icon" aria-hidden="true">checklist</span>
 
+</article>
 
-
-&nbsp;
+</div>
 
 <a className={'button button--primary ' + styles.downloadCta} href="/downloads/assistente-linsi/skill.zip" download>Baixar Skill Assistente LINSI</a>
 
@@ -83,4 +85,3 @@ Acesse a página [Contribuir ou pedir ajuda](/contribuir) e envie uma mensagem c
 - Algum comportamento inesperado, erro ou dificuldade no uso da Assistente;
 - Algum caso ou lacuna não coberta pela documentação da LINSI. A Assistente pode te ajudar a preencher o formulário;
 - Qualquer outra dúvida pertinente.
-
