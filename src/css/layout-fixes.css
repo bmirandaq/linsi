@@ -1,52 +1,49 @@
 /* Desktop docs layout fixes */
 @media (min-width: 997px) {
-  .theme-doc-sidebar-container[class*='docSidebarContainerHidden'] {
-    height: var(--linsi-sidebar-expanded-height, 240px) !important;
-    margin-bottom: 0 !important;
-    max-height: var(--linsi-sidebar-expanded-height, 240px) !important;
-    min-height: var(--linsi-sidebar-expanded-height, 240px) !important;
-  }
-
-  .theme-doc-sidebar-container[class*='docSidebarContainerHidden']
-    > [class*='sidebarViewport'] {
-    height: 100% !important;
-    max-height: 100% !important;
-  }
-
-  .theme-doc-sidebar-container[class*='docSidebarContainerHidden']
-    [class*='expandButton'] {
-    height: 100% !important;
-    inset: 0 !important;
-    min-height: 0 !important;
-    position: absolute !important;
-  }
-
   html.docs-doc-page [class*='docRoot'] {
     column-gap: var(--linsi-doc-column-gap);
+    grid-template-columns: var(--doc-sidebar-width) minmax(0, 1fr);
+  }
+
+  .theme-doc-sidebar-container {
+    align-self: flex-start !important;
+    height: auto !important;
+    left: var(--linsi-page-inline);
+    margin: 0 !important;
+    max-height: none !important;
+    overflow: hidden !important;
+    position: fixed !important;
+    top: calc(var(--ifm-navbar-height) + var(--linsi-space-8)) !important;
+    width: var(--doc-sidebar-width) !important;
+  }
+
+  .theme-doc-sidebar-container > div,
+  .theme-doc-sidebar-container [class*='sidebarViewport'],
+  .theme-doc-sidebar-container
+    [class*='sidebar']:not([class*='sidebarLogo']):not([class*='sidebarViewport']) {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .theme-doc-sidebar-container .menu {
+    max-height: none !important;
+    overflow: visible !important;
+    scrollbar-gutter: auto;
+    width: 100%;
   }
 
   html.docs-doc-page .main-wrapper {
     padding-bottom: var(--linsi-space-64);
   }
+}
 
-  [data-theme='light']
-    .theme-doc-sidebar-container
-    button[class*='collapseSidebarButton']:hover,
-  [data-theme='light']
-    .theme-doc-sidebar-container
-    button[class*='expandButton']:hover {
-    background: var(--linsi-accent-secondary-soft) !important;
-    color: var(--linsi-accent-secondary) !important;
-  }
-
-  [data-theme='dark']
-    .theme-doc-sidebar-container
-    button[class*='collapseSidebarButton']:hover,
-  [data-theme='dark']
-    .theme-doc-sidebar-container
-    button[class*='expandButton']:hover {
-    background: var(--linsi-bg-surface-raised) !important;
-    color: var(--linsi-accent-secondary) !important;
+@media (max-width: 996px) {
+  .navbar-sidebar
+    .menu__list
+    > :not(.linsi-sidebar-section)
+    + .linsi-sidebar-section {
+    margin-top: var(--linsi-space-16);
   }
 }
 
