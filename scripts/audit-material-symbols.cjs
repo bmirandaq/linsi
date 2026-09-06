@@ -33,7 +33,11 @@ if (!fs.existsSync(buildDirectory)) {
 
 for (const file of listFiles(sourceDirectory, (entry) => /\.[jt]sx?$/.test(entry))) {
   const source = fs.readFileSync(file, 'utf8');
-  if (/<svg\b/i.test(source)) {
+  const sourceWithoutEditorialHero = source.replace(
+    /<svg\b(?=[^>]*className=\{styles\.heroFlow\})[^>]*>[\s\S]*?<\/svg>/gi,
+    '',
+  );
+  if (/<svg\b/i.test(sourceWithoutEditorialHero)) {
     fail(`${relative(file)} contém SVG inline em código de interface.`);
   }
 }
@@ -69,7 +73,8 @@ for (const file of listFiles(buildDirectory, (entry) => entry.endsWith('.html'))
   for (const match of html.matchAll(/<svg\b[^>]*>[\s\S]*?<\/svg>/gi)) {
     const svg = match[0];
     const isHiddenSprite = /^<svg\b[^>]*style=["'][^"']*display\s*:\s*none/i.test(svg);
-    if (!isHiddenSprite) {
+    const isEditorialHero = /^<svg\b[^>]*class="[^"]*\bheroFlow_[^"]*"/i.test(svg);
+    if (!isHiddenSprite && !isEditorialHero) {
       fail(`${relative(file)} contém SVG visível: ${svg.replace(/\s+/g, ' ').slice(0, 140)}…`);
     }
   }
@@ -130,4 +135,4 @@ console.log(
 console.log(
   'Navbar validada: Quero contribuir usa material-symbols-outlined/open_in_new e não contém SVG.',
 );
-console.log('Exceções preservadas: logos, favicon, QR Code e imagens editoriais/de conteúdo.');
+console.log('Exceções preservadas: logos, favicon, QR Code, imagens editoriais/de conteúdo e a ilustração SVG da Hero v1.');
