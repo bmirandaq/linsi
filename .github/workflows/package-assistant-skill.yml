@@ -18,17 +18,25 @@ jobs:
       - name: Baixar repositorio
         uses: actions/checkout@v6
 
-      - name: Verificar estrutura minima da Skill
+      - name: Verificar nucleo portatil da Skill
         run: |
           test -f assistant/skill/SKILL.md
-          test -f assistant/skill/agents/openai.yaml
           test -d assistant/skill/references
+
+      - name: Verificar metadata OpenAI
+        run: test -f assistant/skill/agents/openai.yaml
 
       - name: Empacotar Skill
         run: |
-          mkdir -p dist
-          cd assistant
-          zip -r ../dist/skill.zip skill
+          mkdir -p dist/package/linsi-assistant
+          cp -R assistant/skill/. dist/package/linsi-assistant/
+          cd dist/package
+          zip -r ../skill.zip linsi-assistant
+
+      - name: Verificar estrutura do pacote
+        run: |
+          unzip -l dist/skill.zip | grep -q 'linsi-assistant/SKILL.md'
+          unzip -l dist/skill.zip | grep -q 'linsi-assistant/references/'
 
       - name: Publicar artefato
         uses: actions/upload-artifact@v4
