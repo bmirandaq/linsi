@@ -118,6 +118,28 @@ for (const viewport of viewports) {
         );
         assert.ok(darkOverflow <= 2, `dark mode horizontal overflow of ${darkOverflow}px`);
       }
+
+      if (viewport.width === 390 && (route === '/' || route === '/docs/principios')) {
+        const backToTop = page.locator('.theme-back-to-top-button');
+        assert.equal(await backToTop.count(), 1, 'back to top should render exactly once');
+        assert.equal(await backToTop.isVisible(), false, 'back to top should start hidden');
+
+        const scrollableDistance = await page.evaluate(
+          () => document.documentElement.scrollHeight - window.innerHeight,
+        );
+        assert.ok(scrollableDistance > 300, 'route is not long enough to validate back to top');
+
+        await page.evaluate(() => {
+          const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+          window.scrollTo(0, Math.min(700, maxScroll));
+        });
+        await page.waitForFunction(() => window.scrollY > 300);
+        await backToTop.waitFor({state: 'visible', timeout: 3_000});
+
+        await backToTop.click();
+        await page.waitForFunction(() => window.scrollY < 10);
+        await backToTop.waitFor({state: 'hidden', timeout: 3_000});
+      }
     } catch (error) {
       recordFailure(scope, error);
     } finally {
@@ -135,5 +157,5 @@ if (failures.length) {
   for (const failure of failures) console.error(`- ${failure}`);
   if (!reportOnly) process.exit(1);
 } else {
-  console.log(`Responsive browser smoke passed against ${baseUrl}: ${routes.length} routes × ${viewports.length} viewports, plus search and dark-mode checks.`);
+  console.log(`Responsive browser smoke passed against ${baseUrl}: ${routes.length} routes × ${viewports.length} viewports, plus search, dark-mode and mobile back-to-top checks.`);
 }
