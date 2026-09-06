@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Layout from '@theme/Layout';
+import BackToTopButton from '@theme/BackToTopButton';
 import Heading from '@theme/Heading';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import clsx from 'clsx';
@@ -46,7 +47,7 @@ export default function CafeBea() {
     <Layout
       title="Pagar café pra Bea"
       description="LINSI é um projeto independente. Se te ajudou, ajude a mantê-la viva também">
-      <main className={styles.main}>
+      <main className={clsx(styles.main, 'linsi-page-enter')}>
         <div className={clsx('container', styles.container)}>
           <div className={styles.inner}>
             <div className={styles.contentStack}>
@@ -124,6 +125,7 @@ export default function CafeBea() {
           </div>
         </div>
       </main>
+      <BackToTopButton />
     </Layout>
   );
 }

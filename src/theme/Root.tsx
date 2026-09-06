@@ -6,6 +6,7 @@ import '@fontsource-variable/material-symbols-outlined/wght.css';
 import '@fontsource-variable/plus-jakarta-sans';
 import '@fontsource/opendyslexic/400.css';
 import '@fontsource/opendyslexic/700.css';
+import CursorTrail from '@site/src/components/CursorTrail';
 
 import {
   applyStoredFontPreference,
@@ -50,5 +51,5 @@ export default function Root({children}: Props) {
     return () => document.removeEventListener('change', handleFontChange);
   }, []);
 
-  return children;
+  return <>{children}<CursorTrail /></>;
 }

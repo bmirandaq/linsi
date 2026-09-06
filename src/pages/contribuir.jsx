@@ -1,5 +1,7 @@
 import React, {useState, useCallback, useRef, useEffect} from 'react';
 import Layout from '@theme/Layout';
+import BackToTopButton from '@theme/BackToTopButton';
+import clsx from 'clsx';
 import MaterialSymbol from '@site/src/components/MaterialSymbol';
 import styles from './contribuir.module.css';
 
@@ -166,7 +168,7 @@ export default function Contato() {
   return (
     <Layout title="Contribuir ou pedir ajuda" description="Contribuir ou pedir ajuda — LINSI">
 
-      <main className={styles.page}>
+      <main className={clsx(styles.page, 'linsi-page-enter')}>
         <div className={styles.shell}>
           <header className={styles.header}>
             <h1 className={styles.title}>Contribuir ou pedir ajuda</h1>
@@ -287,6 +289,7 @@ export default function Contato() {
             </form>
         </div>
       </main>
+      <BackToTopButton />
     </Layout>
   );
 }

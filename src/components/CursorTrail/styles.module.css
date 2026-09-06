@@ -1,0 +1,26 @@
+.trail {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10000;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :global(html.linsi-custom-cursor),
+  :global(html.linsi-custom-cursor body),
+  :global(html.linsi-custom-cursor :is(a, button, summary, select, label[for], [role='button'])) {
+    cursor: url('@site/static/img/cursor-linsi.svg') 2 2, auto;
+  }
+
+  :global(html.linsi-custom-cursor :is(button:disabled, [aria-disabled='true'])) {
+    cursor: not-allowed;
+  }
+}
+
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .trail {
+    display: none;
+  }
+}
