@@ -39,6 +39,12 @@ jobs:
       - name: Auditar dependências
         run: npm run audit:dependencies
 
+      - name: Preparar download da Skill
+        run: |
+          mkdir -p static/downloads/assistente-linsi
+          cd assistant
+          zip -r ../static/downloads/assistente-linsi/skill.zip skill
+
       - name: Gerar site
         run: npm run build
         env:

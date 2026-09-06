@@ -49,14 +49,14 @@ Envie um fluxograma existente. A Assistente revisa a estrutura, aplicação LINS
 
 </div>
 
-<span className={'button button--primary ' + styles.downloadCta} aria-disabled="true">Baixar Skill Assistente LINSI</span>
+<a className={'button button--primary ' + styles.downloadCta} href="/downloads/assistente-linsi/skill.zip" download>Baixar Skill Assistente LINSI</a>
 
 ## Detalhes da versão
 
 Suporte oficial nesta versão 0.1-beta:
 
 - ChatGPT – Importar conforme descrito em <a href="https://help.openai.com/pt-br/articles/20001066-skills-in-chatgpt" target="_blank" rel="noopener noreferrer">Skills no ChatGPT</a>
-- Codex CLI – Comando: <code className={styles.installCommand}>codex "Instale a Skill: https://linsi.beamiranda.com.br/assistant"</code>
+- Codex CLI – Comando: <code className={styles.installCommand}>codex "Instale a Skill: https://github.com/bmirandaq/linsi/tree/main/assistant/skill"</code>
 
 Itens contemplados:
 
