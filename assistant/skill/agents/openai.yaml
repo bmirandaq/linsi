@@ -1,3 +1,5 @@
 interface:
   display_name: "Assistente LINSI"
   short_description: "Consulte, crie e revise fluxogramas com a LINSI."
+  icon_small: "./assets/linsi-assistant-icon.svg"
+  icon_large: "./assets/linsi-assistant-icon.svg"
