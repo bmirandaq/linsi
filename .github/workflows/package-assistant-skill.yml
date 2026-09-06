@@ -23,6 +23,33 @@ jobs:
           test -f assistant/skill/SKILL.md
           test -d assistant/skill/references
 
+      - name: Validar metadados portateis
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          text = Path('assistant/skill/SKILL.md').read_text(encoding='utf-8')
+          frontmatter = re.match(r'^---\n(.*?)\n---', text, re.S)
+          if not frontmatter:
+              raise SystemExit('SKILL.md sem frontmatter YAML valido')
+
+          fields = {}
+          for line in frontmatter.group(1).splitlines():
+              if ':' in line:
+                  key, value = line.split(':', 1)
+                  fields[key.strip()] = value.strip()
+
+          if fields.get('name') != 'linsi-assistant':
+              raise SystemExit('name deve ser linsi-assistant')
+
+          description = fields.get('description', '')
+          if not description:
+              raise SystemExit('description obrigatoria')
+          if len(description) > 200:
+              raise SystemExit(f'description excede 200 caracteres: {len(description)}')
+          PY
+
       - name: Verificar metadata OpenAI
         run: test -f assistant/skill/agents/openai.yaml
 
