@@ -65,8 +65,18 @@ jobs:
         run: node scripts/test-mobile-docs-layout.mjs
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
+          SCREENSHOT_PATH: test-output/mobile-docs-local.png
 
       - name: Validar docs mobile publicadas no iPhone 16 Pro Max
         run: node scripts/test-mobile-docs-layout.mjs
         env:
           SMOKE_BASE_URL: https://linsi.beamiranda.com.br
+          SCREENSHOT_PATH: test-output/mobile-docs-live.png
+
+      - name: Salvar capturas da regressão mobile
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-docs-rendering
+          path: test-output/mobile-docs-*.png
+          if-no-files-found: ignore
