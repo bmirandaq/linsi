@@ -89,6 +89,7 @@ const config = {
         indexPages: true,
         language: 'pt',
         maxSearchResults: 8,
+        style: 'none',
       },
     ],
   ],
