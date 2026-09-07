@@ -104,8 +104,13 @@ assert.match(
 
 assert.match(
   footer,
-  /to="\/contribuir"/,
-  'O destino de Quero contribuir no footer deve apontar para /contribuir.',
+  /to="\/contribuir-ajuda"[\s\S]*?Contribuir e pedir ajuda/,
+  'O footer deve usar o novo label e apontar para /contribuir-ajuda.',
+);
+assert.doesNotMatch(
+  footer,
+  /to="\/contribuir">/,
+  'O footer não deve manter o slug antigo da página de contribuição.',
 );
 assert.match(
   footerCss,
