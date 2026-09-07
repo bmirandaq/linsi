@@ -254,7 +254,9 @@ export default function Contato() {
                 </div>
 
                 <div className={styles.field}>
-                  <label htmlFor="linkedin">Perfil do LinkedIn</label>
+                  <label htmlFor="linkedin">
+                    Perfil do LinkedIn <span className={styles.optionalLabel}>(opcional)</span>
+                  </label>
                   <input
                     id="linkedin"
                     name="linkedin"
@@ -270,7 +272,9 @@ export default function Contato() {
                 </div>
 
                 <div className={styles.field}>
-                  <label htmlFor="whatsapp">WhatsApp</label>
+                  <label htmlFor="whatsapp">
+                    WhatsApp <span className={styles.optionalLabel}>(opcional)</span>
+                  </label>
                   <input
                     id="whatsapp"
                     name="whatsapp"
