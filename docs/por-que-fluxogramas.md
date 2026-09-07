@@ -7,6 +7,19 @@ Fluxogramas ajudam a tirar uma experiência da cabeça, de várias conversas esp
 
 Antes de avançar para protótipos ou desenvolvimento, eles ajudam a entender melhor o que está acontecendo e onde ainda existem dúvidas, problemas ou oportunidades.
 
+<style>{`
+@media (min-width: 701px) {
+  .flow-benefits__grid {
+    border-bottom: 0;
+    border-top: 0;
+  }
+
+  .flow-benefit:nth-child(-n + 2) {
+    border-bottom: 0;
+  }
+}
+`}</style>
+
 <section className="flow-benefits" aria-labelledby="flow-benefits-title">
 
 <p className="flow-benefits__lead" id="flow-benefits-title">Na prática, estes são os principais benefícios:</p>
