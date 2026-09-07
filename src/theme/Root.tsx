@@ -2,7 +2,6 @@ import React, {useEffect, type ReactNode} from 'react';
 
 import '@fontsource-variable/inter';
 import '@fontsource-variable/manrope';
-import '@fontsource-variable/material-symbols-outlined/wght.css';
 import '@fontsource-variable/plus-jakarta-sans';
 import '@fontsource/opendyslexic/400.css';
 import '@fontsource/opendyslexic/700.css';

@@ -1,0 +1,128 @@
+:root {
+  --linsi-icon-coffee: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20960%20960%27%3E%3Cg%20transform%3D%27translate%280%20960%29%20scale%281%20-1%29%27%3E%3Cpath%20d%3D%27M440%20240Q323%20240%20241.5%20321.5Q160%20403%20160%20520V760Q160%20793%20183.5%20816.5Q207%20840%20240%20840H740Q798%20840%20839.0%20799.0Q880%20758%20880%20700Q880%20642%20839.0%20601.0Q798%20560%20740%20560H720V520Q720%20403%20638.5%20321.5Q557%20240%20440%20240ZM240%20640H640V760H240ZM440%20320Q523%20320%20581.5%20378.5Q640%20437%20640%20520V560H240V520Q240%20437%20298.5%20378.5Q357%20320%20440%20320ZM720%20640H740Q765%20640%20782.5%20657.5Q800%20675%20800%20700Q800%20725%20782.5%20742.5Q765%20760%20740%20760H720ZM160%20120V200H800V120ZM440%20560Q440%20560%20440.0%20560.0Q440%20560%20440%20560Q440%20560%20440.0%20560.0Q440%20560%20440%20560Z%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  --linsi-icon-search: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20960%20960%27%3E%3Cg%20transform%3D%27translate%280%20960%29%20scale%281%20-1%29%27%3E%3Cpath%20d%3D%27M784%20120%20532%20372Q502%20348%20463.0%20334.0Q424%20320%20380%20320Q271%20320%20195.5%20395.5Q120%20471%20120.0%20580.0Q120%20689%20195.5%20764.5Q271%20840%20380%20840Q489%20840%20564.5%20764.5Q640%20689%20640%20580Q640%20536%20626.0%20497.0Q612%20458%20588%20428L840%20176ZM380%20400Q455%20400%20507.5%20452.5Q560%20505%20560.0%20580.0Q560%20655%20507.5%20707.5Q455%20760%20380%20760Q305%20760%20252.5%20707.5Q200%20655%20200.0%20580.0Q200%20505%20252.5%20452.5Q305%20400%20380%20400Z%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  --linsi-icon-close: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20960%20960%27%3E%3Cg%20transform%3D%27translate%280%20960%29%20scale%281%20-1%29%27%3E%3Cpath%20d%3D%27M256%20200%20200%20256%20424%20480%20200%20704%20256%20760%20480%20536%20704%20760%20760%20704%20536%20480%20760%20256%20704%20200%20480%20424Z%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  --linsi-icon-expand-more: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20960%20960%27%3E%3Cg%20transform%3D%27translate%280%20960%29%20scale%281%20-1%29%27%3E%3Cpath%20d%3D%27M480%20345%20240%20585%20296%20641%20480%20457%20664%20641%20720%20585Z%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  --linsi-icon-link: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20960%20960%27%3E%3Cg%20transform%3D%27translate%280%20960%29%20scale%281%20-1%29%27%3E%3Cpath%20d%3D%27M440%20280H280Q197%20280%20138.5%20338.5Q80%20397%2080.0%20480.0Q80%20563%20138.5%20621.5Q197%20680%20280%20680H440V600H280Q230%20600%20195.0%20565.0Q160%20530%20160.0%20480.0Q160%20430%20195.0%20395.0Q230%20360%20280%20360H440ZM320%20440V520H640V440ZM520%20280V360H680Q730%20360%20765.0%20395.0Q800%20430%20800.0%20480.0Q800%20530%20765.0%20565.0Q730%20600%20680%20600H520V680H680Q763%20680%20821.5%20621.5Q880%20563%20880.0%20480.0Q880%20397%20821.5%20338.5Q763%20280%20680%20280Z%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  --linsi-icon-arrow-back: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20960%20960%27%3E%3Cg%20transform%3D%27translate%280%20960%29%20scale%281%20-1%29%27%3E%3Cpath%20d%3D%27M313%20440%20537%20216%20480%20160%20160%20480%20480%20800%20537%20744%20313%20520H800V440Z%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  --linsi-icon-arrow-forward: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20960%20960%27%3E%3Cg%20transform%3D%27translate%280%20960%29%20scale%281%20-1%29%27%3E%3Cpath%20d%3D%27M647%20440H160V520H647L423%20744L480%20800L800%20480L480%20160L423%20216Z%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  --linsi-icon-arrow-upward: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%20960%20960%27%3E%3Cg%20transform%3D%27translate%280%20960%29%20scale%281%20-1%29%27%3E%3Cpath%20d%3D%27M440%20160V647L216%20423L160%20480L480%20800L800%20480L744%20423L520%20647V160Z%27%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+}
+
+svg.material-symbols-outlined {
+  display: inline-block;
+  flex: 0 0 auto;
+  vertical-align: middle;
+}
+
+.linsi-font-selector__icon {
+  height: 20px;
+  width: 20px;
+}
+
+.linsi-coffee-link::after,
+.navbar .aa-DetachedSearchButtonIcon::before,
+.aa-ClearButton::before,
+.aa-DetachedCancelButton::before,
+.menu__caret::before,
+.menu__link--sublist-caret::after,
+.theme-doc-markdown .hash-link::before,
+.pagination-nav__link--prev .pagination-nav__label::before,
+.pagination-nav__link--next .pagination-nav__label::after,
+.theme-back-to-top-button::after {
+  background-color: currentColor;
+  content: '';
+  font: initial;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+}
+
+.linsi-coffee-link::after {
+  height: 20px;
+  -webkit-mask-image: var(--linsi-icon-coffee);
+  mask-image: var(--linsi-icon-coffee);
+  width: 20px;
+}
+
+.navbar .aa-DetachedSearchButtonIcon::before {
+  height: 24px;
+  -webkit-mask-image: var(--linsi-icon-search);
+  mask-image: var(--linsi-icon-search);
+  width: 24px;
+}
+
+.aa-ClearButton::before {
+  height: 20px;
+  -webkit-mask-image: var(--linsi-icon-close);
+  mask-image: var(--linsi-icon-close);
+  width: 20px;
+}
+
+.aa-DetachedCancelButton::before {
+  height: 24px;
+  -webkit-mask-image: var(--linsi-icon-close);
+  mask-image: var(--linsi-icon-close);
+  width: 24px;
+}
+
+.menu__caret::before,
+.menu__link--sublist-caret::after {
+  height: 20px;
+  -webkit-mask-image: var(--linsi-icon-expand-more);
+  mask-image: var(--linsi-icon-expand-more);
+  width: 20px;
+}
+
+.theme-doc-markdown .hash-link::before {
+  display: inline-block;
+  height: 20px;
+  -webkit-mask-image: var(--linsi-icon-link);
+  mask-image: var(--linsi-icon-link);
+  width: 20px;
+}
+
+.pagination-nav__link--prev .pagination-nav__label::before {
+  height: 20px;
+  -webkit-mask-image: var(--linsi-icon-arrow-back);
+  mask-image: var(--linsi-icon-arrow-back);
+  width: 20px;
+}
+
+.pagination-nav__link--next .pagination-nav__label::after {
+  height: 20px;
+  -webkit-mask-image: var(--linsi-icon-arrow-forward);
+  mask-image: var(--linsi-icon-arrow-forward);
+  width: 20px;
+}
+
+.theme-back-to-top-button::after {
+  height: 24px;
+  margin: auto;
+  -webkit-mask-image: var(--linsi-icon-arrow-upward);
+  mask-image: var(--linsi-icon-arrow-upward);
+  width: 24px;
+}
+
+/* No first paint, o conteúdo deve estar disponível sem esperar a animação de entrada. */
+html[data-has-hydrated='false'] .linsi-page-enter,
+html[data-has-hydrated='false'] .theme-doc-markdown {
+  animation: none !important;
+}
+
+/* O texto visível do switch acompanha o tema já aplicado no <html>, antes da hidratação. */
+[data-linsi-color-mode-label] {
+  font-size: 0 !important;
+}
+
+[data-linsi-color-mode-label]::after {
+  content: 'Modo claro';
+  font-size: 0.8125rem;
+}
+
+html[data-theme='dark'] [data-linsi-color-mode-label]::after {
+  content: 'Modo escuro';
+}

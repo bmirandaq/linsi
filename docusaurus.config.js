@@ -8,7 +8,11 @@ const fontSelectorHtml = `
       <option value="opendyslexic">OpenDyslexic</option>
       <option value="georgia">Georgia</option>
     </select>
-    <span class="material-symbols-outlined linsi-font-selector__icon" aria-hidden="true">expand_more</span>
+    <svg class="linsi-font-selector__icon" aria-hidden="true" viewBox="0 0 960 960" focusable="false">
+      <g transform="translate(0 960) scale(1 -1)">
+        <path d="M480 345 240 585 296 641 480 457 664 641 720 585" fill="currentColor" />
+      </g>
+    </svg>
   </label>
 `;
 
@@ -67,6 +71,7 @@ const config = {
             './src/css/changelog.css',
             './src/css/palette-v2.css',
             './src/css/layout-fixes.css',
+            './src/css/performance.css',
           ],
         },
       },
@@ -86,10 +91,6 @@ const config = {
         maxSearchResults: 8,
       },
     ],
-  ],
-
-  clientModules: [
-    './src/scripts/clear-search-on-reopen.js',
   ],
 
   themeConfig: {
@@ -120,7 +121,7 @@ const config = {
           className: 'linsi-coffee-link',
         },
         {
-          to: '/contribuir',
+          to: '/contribuir-ajuda',
           label: 'Contribuir ou pedir ajuda',
           position: 'left',
           className: 'linsi-contribute-link',

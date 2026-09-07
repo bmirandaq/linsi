@@ -29,6 +29,8 @@ export default function Footer() {
               alt="LINSI"
               width="163"
               height="96"
+              loading="lazy"
+              decoding="async"
             />
             <img
               className={`${styles.logo} ${styles.logoDark}`}
@@ -36,6 +38,8 @@ export default function Footer() {
               alt="LINSI"
               width="163"
               height="96"
+              loading="lazy"
+              decoding="async"
             />
             <p className={styles.brandCopy}>
               Linguagem Simplificada de Fluxogramas de UX para representar,
@@ -113,6 +117,8 @@ export default function Footer() {
                 aria-hidden="true"
                 width="32"
                 height="32"
+                loading="lazy"
+                decoding="async"
               />
               Bea Miranda
             </a>

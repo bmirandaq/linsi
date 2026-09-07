@@ -31,95 +31,82 @@ if (!fs.existsSync(buildDirectory)) {
   fail('A pasta build/ não existe. Execute npm run build antes da auditoria.');
 }
 
-for (const file of listFiles(sourceDirectory, (entry) => /\.[jt]sx?$/.test(entry))) {
-  const source = fs.readFileSync(file, 'utf8');
-  const sourceWithoutEditorialHero = source.replace(
-    /<svg\b(?=[^>]*className=\{styles\.heroFlow\})[^>]*>[\s\S]*?<\/svg>/gi,
-    '',
-  );
-  if (/<svg\b/i.test(sourceWithoutEditorialHero)) {
-    fail(`${relative(file)} contém SVG inline em código de interface.`);
-  }
-}
-
-for (const file of [
+const rootSourceFiles = [
   ...listFiles(sourceDirectory, (entry) => /\.(?:css|[jt]sx?)$/.test(entry)),
   path.join(root, 'docusaurus.config.js'),
-]) {
-  if (/\u2615|\uFE0F/u.test(fs.readFileSync(file, 'utf8'))) {
-    fail(`${relative(file)} contém emoji usado como ícone de interface.`);
+];
+
+for (const file of rootSourceFiles) {
+  const source = fs.readFileSync(file, 'utf8');
+  if (/@fontsource-variable\/material-symbols-outlined/i.test(source)) {
+    fail(`${relative(file)} ainda importa a fonte Material Symbols.`);
   }
 }
 
-let materialSymbolCount = 0;
+const materialFontFiles = listFiles(
+  buildDirectory,
+  (entry) =>
+    /material-symbols/i.test(path.basename(entry)) && /\.(?:woff2?|ttf|otf)$/i.test(entry),
+);
+
+for (const file of materialFontFiles) {
+  fail(`${relative(file)} ainda publica a fonte Material Symbols.`);
+}
+
+let svgSymbolCount = 0;
 let navbarContributionChecked = false;
+const ligaturePattern =
+  /<[^>]*class="[^"]*material-symbols-outlined[^"]*"[^>]*>\s*(?:menu|expand_more|search|coffee|arrow_[a-z_]+|content_copy|visibility|design_services|post_add|help|chat_bubble|checklist|edit_note|handshake|info|savings|troubleshoot|link|close)\s*<\//gi;
+
 for (const file of listFiles(buildDirectory, (entry) => entry.endsWith('.html'))) {
   const html = fs.readFileSync(file, 'utf8');
-  materialSymbolCount += (html.match(/material-symbols-outlined/g) ?? []).length;
+  svgSymbolCount += (html.match(/<svg\b[^>]*class="[^"]*material-symbols-outlined/g) ?? []).length;
+
+  if (ligaturePattern.test(html)) {
+    fail(`${relative(file)} ainda contém ligatura textual de Material Symbols.`);
+  }
+  ligaturePattern.lastIndex = 0;
 
   if (!navbarContributionChecked) {
-    const navbarContribution = html.match(
-      /<a\b(?=[^>]*class="[^"]*linsi-contribute-link)(?=[^>]*href="\/contribuir")[^>]*>[\s\S]*?<\/a>/i,
-    )?.[0];
+    const canonicalContribution = html.match(
+      /<a\b(?=[^>]*class="[^"]*linsi-contribute-link)(?=[^>]*href="\/contribuir-ajuda")[^>]*>/i,
+    );
+    const legacyContribution = html.match(
+      /<a\b(?=[^>]*class="[^"]*linsi-contribute-link)(?=[^>]*href="\/contribuir")[^>]*>/i,
+    );
 
-    if (navbarContribution) {
-      navbarContributionChecked = true;
-      if (/<svg\b/i.test(navbarContribution)) {
-        fail('Quero contribuir na navbar contém SVG em vez de Material Symbols.');
-      }
-    }
-  }
-
-  for (const match of html.matchAll(/<svg\b[^>]*>[\s\S]*?<\/svg>/gi)) {
-    const svg = match[0];
-    const isHiddenSprite = /^<svg\b[^>]*style=["'][^"']*display\s*:\s*none/i.test(svg);
-    const isEditorialHero = /^<svg\b[^>]*class="[^"]*\bheroFlow_[^"]*"/i.test(svg);
-    if (!isHiddenSprite && !isEditorialHero) {
-      fail(`${relative(file)} contém SVG visível: ${svg.replace(/\s+/g, ' ').slice(0, 140)}…`);
+    if (canonicalContribution) navbarContributionChecked = true;
+    if (legacyContribution) {
+      fail('A navbar ainda aponta para a rota legada /contribuir.');
     }
   }
 }
 
-if (materialSymbolCount === 0) {
-  fail('Nenhum Material Symbol foi encontrado no HTML gerado.');
+if (svgSymbolCount === 0) {
+  fail('Nenhum Material Symbol SVG local foi encontrado no HTML gerado.');
 }
 
 if (!navbarContributionChecked) {
-  fail('Não foi possível localizar Quero contribuir na navbar gerada.');
+  fail('Não foi possível localizar a rota canônica /contribuir-ajuda na navbar gerada.');
 }
 
-const customCss = fs.readFileSync(path.join(sourceDirectory, 'css', 'custom.css'), 'utf8');
+const performanceCss = fs.readFileSync(
+  path.join(sourceDirectory, 'css', 'performance.css'),
+  'utf8',
+);
+
 for (const {description, pattern} of [
-  {
-    description: 'ícones injetados pelo Algolia',
-    pattern:
-      /\.aa-SubmitIcon,[\s\S]*?\.aa-ItemActionButton svg\s*\{[^}]*display:\s*none\s*!important;/,
-  },
-  {
-    description: 'caret da navegação lateral',
-    pattern: /\.menu__caret::before,[\s\S]*?content:\s*'expand_more';/,
-  },
-  {
-    description: 'navegação anterior',
-    pattern:
-      /\.pagination-nav__link--prev \.pagination-nav__label::before\s*\{[^}]*content:\s*'arrow_back';/,
-  },
-  {
-    description: 'navegação seguinte',
-    pattern:
-      /\.pagination-nav__link--next \.pagination-nav__label::after\s*\{[^}]*content:\s*'arrow_forward';/,
-  },
-  {
-    description: 'âncora de títulos',
-    pattern: /\.theme-doc-markdown \.hash-link::before\s*\{[^}]*content:\s*'link';/,
-  },
-  {
-    description: 'atalho de café na navbar',
-    pattern: /\.linsi-coffee-link::after\s*\{[^}]*content:\s*'coffee';/,
-  },
+  {description: 'busca', pattern: /--linsi-icon-search:/},
+  {description: 'fechar busca', pattern: /--linsi-icon-close:/},
+  {description: 'caret', pattern: /--linsi-icon-expand-more:/},
+  {description: 'âncora', pattern: /--linsi-icon-link:/},
+  {description: 'café', pattern: /--linsi-icon-coffee:/},
+  {description: 'navegação anterior', pattern: /--linsi-icon-arrow-back:/},
+  {description: 'navegação seguinte', pattern: /--linsi-icon-arrow-forward:/},
+  {description: 'voltar ao topo', pattern: /--linsi-icon-arrow-upward:/},
 ]) {
-  if (!pattern.test(customCss)) {
-    fail(`Falta a cobertura Material Symbols para ${description}.`);
+  if (!pattern.test(performanceCss)) {
+    fail(`Falta cobertura SVG local para ${description}.`);
   }
 }
 
@@ -130,9 +117,6 @@ if (failures.length > 0) {
 }
 
 console.log(
-  `Auditoria de ícones aprovada: ${materialSymbolCount} ocorrências Material Symbols e nenhum SVG funcional visível.`,
+  `Auditoria de ícones aprovada: ${svgSymbolCount} ocorrências SVG locais e nenhuma font Material Symbols publicada.`,
 );
-console.log(
-  'Navbar validada: Quero contribuir usa material-symbols-outlined/open_in_new e não contém SVG.',
-);
-console.log('Exceções preservadas: logos, favicon, QR Code, imagens editoriais/de conteúdo e a ilustração SVG da Hero v1.');
+console.log('Navbar validada com rota canônica /contribuir-ajuda e sem ligaturas visíveis.');
