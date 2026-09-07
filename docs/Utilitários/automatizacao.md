@@ -66,14 +66,12 @@ Para CLIs, você pode solicitar a instalação desta forma:
 - Consulta à documentação;
 - Criação de propostas;
 - Output textual estruturado;
-- Revisão de fluxogramas;
-- Análise visual quando suportada pelo ambiente.
+- Revisão de fluxogramas, incluindo análise visual quando suportada pelo ambiente.
 
 :::secondary[Próximas fases]
 
-- Output em JSON para plugins e integrações;
-- Plugin para Figma;
-- Integração com Miro.
+- Output em JSON para materializar a proposta por meio de plugins e integrações;
+- Plugin para Figma para importar JSON e gerar o fluxograma LINSI no arquivo.
 :::
 
 ---

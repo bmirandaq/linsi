@@ -64,6 +64,7 @@ const config = {
           customCss: [
             './src/css/spacing.css',
             './src/css/custom.css',
+            './src/css/changelog.css',
             './src/css/palette-v2.css',
             './src/css/layout-fixes.css',
           ],

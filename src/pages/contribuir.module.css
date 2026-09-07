@@ -121,6 +121,10 @@
   font-weight: 400;
 }
 
+.optionalLabel {
+  color: var(--linsi-neutral-base);
+}
+
 .field input,
 .field textarea {
   background: var(--ifm-background-surface-color);

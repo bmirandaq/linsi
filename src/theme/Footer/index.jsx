@@ -66,8 +66,8 @@ export default function Footer() {
               <li>
                 <Link
                   className={`${styles.link} ${styles.linkWithIcon}`}
-                  to="/contribuir">
-                  Quero contribuir
+                  to="/contribuir-ajuda">
+                  Contribuir e pedir ajuda
                 </Link>
               </li>
               <li>

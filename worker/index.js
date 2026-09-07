@@ -3,6 +3,8 @@ const CONTACT_ACTION = 'contact';
 const MAX_LENGTHS = {
   apelido: 120,
   email: 254,
+  linkedin: 300,
+  whatsapp: 32,
   assunto: 200,
   mensagem: 5000,
   turnstileToken: 2048,
@@ -17,7 +19,6 @@ function isAllowedOrigin(origin, env) {
 }
 
 function corsHeaders(origin) {
-
   return {
     'Access-Control-Allow-Origin': origin,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -70,6 +71,49 @@ function requiredString(value, maxLength) {
   return normalized;
 }
 
+function optionalString(value, maxLength) {
+  if (value === undefined || value === null) return '';
+  if (typeof value !== 'string') return null;
+  const normalized = value.trim();
+  if (!normalized) return '';
+  if (normalized.length > maxLength) return null;
+  return normalized;
+}
+
+function normalizeLinkedIn(value) {
+  const raw = optionalString(value, MAX_LENGTHS.linkedin);
+  if (raw === null) return null;
+  if (!raw) return '';
+
+  const candidate = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+  let url;
+  try {
+    url = new URL(candidate);
+  } catch {
+    return null;
+  }
+
+  if (!['linkedin.com', 'www.linkedin.com'].includes(url.hostname.toLowerCase())) {
+    return null;
+  }
+  if (!['http:', 'https:'].includes(url.protocol)) return null;
+  if (url.search || url.hash) return null;
+
+  const segments = url.pathname.split('/').filter(Boolean);
+  if (segments.length !== 2 || segments[0].toLowerCase() !== 'in') return null;
+  if (!/^[A-Za-z0-9-]+$/.test(segments[1])) return null;
+
+  return `https://www.linkedin.com/in/${segments[1]}`;
+}
+
+function normalizeWhatsApp(value) {
+  const raw = optionalString(value, MAX_LENGTHS.whatsapp);
+  if (raw === null) return null;
+  if (!raw) return '';
+  if (!/^\d+$/.test(raw)) return null;
+  return raw;
+}
+
 async function registerNotion(payload, env) {
   const { motivo, apelido, email, assunto, mensagem } = payload;
 
@@ -107,13 +151,25 @@ async function registerNotion(payload, env) {
 }
 
 async function sendResend(payload, env) {
-  const { motivo, apelido, email, assunto, mensagem } = payload;
+  const { motivo, apelido, email, linkedin, whatsapp, assunto, mensagem } = payload;
 
   const reasonLabels = {
     contribuir: 'Quero contribuir',
     ajuda: 'Preciso de ajuda',
     outro: 'Outros assuntos',
   };
+
+  const textLines = [
+    `Motivo: ${reasonLabels[motivo] || motivo}`,
+    `Apelido: ${apelido}`,
+    `E-mail: ${email}`,
+    ...(linkedin ? [`LinkedIn: ${linkedin}`] : []),
+    ...(whatsapp ? [`WhatsApp: ${whatsapp}`] : []),
+    `Assunto: ${assunto}`,
+    '',
+    'Mensagem:',
+    mensagem,
+  ];
 
   const resp = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -126,15 +182,7 @@ async function sendResend(payload, env) {
       to: [env.CONTACT_TO_EMAIL || 'beatriz@beamiranda.com.br'],
       reply_to: email,
       subject: `[LINSI] ${assunto}`,
-      text: [
-        `Motivo: ${reasonLabels[motivo] || motivo}`,
-        `Apelido: ${apelido}`,
-        `E-mail: ${email}`,
-        `Assunto: ${assunto}`,
-        '',
-        'Mensagem:',
-        mensagem,
-      ].join('\n'),
+      text: textLines.join('\n'),
     }),
   });
 
@@ -175,6 +223,8 @@ export default {
     const motivo = payload?.motivo;
     const apelido = requiredString(payload?.apelido, MAX_LENGTHS.apelido);
     const email = requiredString(payload?.email, MAX_LENGTHS.email);
+    const linkedin = normalizeLinkedIn(payload?.linkedin);
+    const whatsapp = normalizeWhatsApp(payload?.whatsapp);
     const assunto = requiredString(payload?.assunto, MAX_LENGTHS.assunto);
     const mensagem = requiredString(payload?.mensagem, MAX_LENGTHS.mensagem);
     const turnstileToken = requiredString(
@@ -190,6 +240,12 @@ export default {
     }
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return json({ error: 'E-mail inválido' }, 400, cors);
+    }
+    if (linkedin === null) {
+      return json({ error: 'LinkedIn inválido' }, 400, cors);
+    }
+    if (whatsapp === null) {
+      return json({ error: 'WhatsApp inválido' }, 400, cors);
     }
     if (!assunto) {
       return json({ error: 'Assunto obrigatório' }, 400, cors);
@@ -207,15 +263,25 @@ export default {
       return json({ error: 'Verificação falhou' }, 403, cors);
     }
 
+    const normalizedPayload = {
+      motivo,
+      apelido,
+      email,
+      linkedin,
+      whatsapp,
+      assunto,
+      mensagem,
+    };
+
     try {
-      await registerNotion({ motivo, apelido, email, assunto, mensagem }, env);
+      await registerNotion(normalizedPayload, env);
     } catch (err) {
       console.error('Notion registration failed:', err);
       return json({ error: 'Erro ao registrar' }, 500, cors);
     }
 
     try {
-      await sendResend({ motivo, apelido, email, assunto, mensagem }, env);
+      await sendResend(normalizedPayload, env);
     } catch (err) {
       console.error('Resend notification failed (non-blocking):', err);
     }
