@@ -11,14 +11,6 @@ const TEMPLATES = [
     disabled: false,
   },
   {
-    id: 'figma-design',
-    title: 'Figma Design',
-    description: 'Screenflow',
-    actionLabel: 'Acessar template',
-    href: 'https://www.figma.com/community',
-    disabled: false,
-  },
-  {
     id: 'miro',
     title: 'Miro',
     actionLabel: 'Em breve',
