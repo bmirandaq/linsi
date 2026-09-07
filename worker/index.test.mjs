@@ -24,11 +24,14 @@ assert.match(frontend, /turnstile\.execute\(turnstileWidgetId\.current\)/);
 assert.doesNotMatch(frontend, /['"]skip['"]/);
 assert.doesNotMatch(source, /['"]skip['"]/);
 assert.match(redirectPage, /<Redirect to="\/contribuir-ajuda" \/>/);
-assert.match(
-  frontend,
-  /pattern="\(\?:https\?:\/\/\)\?\(\?:www\[\.\]\)\?linkedin\[\.\]com\/in\/\[A-Za-z0-9-\]\+\/\?"/,
-);
-assert.match(frontend, /linkedin: normalizeLinkedInForSubmit\(linkedin\)/);
+const linkedinPattern = new RegExp(`^(?:${frontend.match(/pattern="([^"]*linkedin[^\"]*)"/)[1]})$`, 'v');
+for (const value of ['linkedin.com/in/name-user', 'https://www.linkedin.com/in/name-user/']) {
+  assert.ok(linkedinPattern.test(value), `O pattern HTML deve aceitar ${value}.`);
+}
+for (const value of ['qualquer texto', 'https://example.com/in/name-user', 'https://www.linkedin.com/company/linsi']) {
+  assert.ok(!linkedinPattern.test(value), `O pattern HTML deve rejeitar ${value}.`);
+}
+assert.match(frontend, /linkedin: normalizeLinkedInForSubmit\(/);
 assert.match(frontend, /setWhatsapp\(e\.target\.value\.replace\(\/\\D\/g, ''\)\)/);
 
 const fieldOrder = ['id="nome"', 'id="email"', 'id="linkedin"', 'id="whatsapp"'];
@@ -124,6 +127,14 @@ await withFetch(async () => {
     env,
   );
   assert.equal(external.status, 400);
+  for (const linkedin of [
+    'https://user:password@linkedin.com/in/name-user',
+    'https://linkedin.com:8443/in/name-user',
+    'https://linkedin.com//in/name-user',
+    'https://linkedin.com/in/name-user?tracking=1',
+  ]) {
+    assert.equal((await worker.fetch(request({...validPayload, linkedin}), env)).status, 400);
+  }
 });
 
 await withFetch(async () => {
@@ -147,7 +158,7 @@ await withFetch(async (url) => {
 let calls = [];
 await withFetch(async (url) => {
   calls.push(String(url));
-  if (String(url).includes('siteverify')) {
+  if (String(url) === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
     return Response.json({
       success: true,
       hostname: 'outro.example',
@@ -165,14 +176,14 @@ calls = [];
 let resendBody;
 await withFetch(async (url, options = {}) => {
   calls.push(String(url));
-  if (String(url).includes('siteverify')) {
+  if (String(url) === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
     return Response.json({
       success: true,
       hostname: 'linsi.beamiranda.com.br',
       action: 'contact',
     });
   }
-  if (String(url).includes('api.resend.com')) {
+  if (String(url) === 'https://api.resend.com/emails') {
     resendBody = JSON.parse(options.body);
   }
   return new Response('{}', {status: 200});
@@ -192,14 +203,14 @@ calls = [];
 resendBody = undefined;
 await withFetch(async (url, options = {}) => {
   calls.push(String(url));
-  if (String(url).includes('siteverify')) {
+  if (String(url) === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
     return Response.json({
       success: true,
       hostname: 'linsi.beamiranda.com.br',
       action: 'contact',
     });
   }
-  if (String(url).includes('api.resend.com')) {
+  if (String(url) === 'https://api.resend.com/emails') {
     resendBody = JSON.parse(options.body);
   }
   return new Response('{}', {status: 200});
@@ -213,14 +224,14 @@ await withFetch(async (url, options = {}) => {
 calls = [];
 resendBody = undefined;
 await withFetch(async (url, options = {}) => {
-  if (String(url).includes('siteverify')) {
+  if (String(url) === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
     return Response.json({
       success: true,
       hostname: 'linsi.beamiranda.com.br',
       action: 'contact',
     });
   }
-  if (String(url).includes('api.resend.com')) {
+  if (String(url) === 'https://api.resend.com/emails') {
     resendBody = JSON.parse(options.body);
   }
   return new Response('{}', {status: 200});
@@ -233,4 +244,24 @@ await withFetch(async (url, options = {}) => {
   assert.match(resendBody.text, /^LinkedIn: https:\/\/www\.linkedin\.com\/in\/name-user$/m);
 });
 
-console.log('Worker security/contact tests passed: origin, limits, optional contacts, LinkedIn normalization, WhatsApp digits and Turnstile fail closed.');
+for (const mensagem of ['x'.repeat(2000), 'x'.repeat(2001), 'x'.repeat(5000), 'x'.repeat(1999) + '😀'.repeat(1000)]) {
+  let notionBody;
+  await withFetch(async (url, options) => {
+    if (String(url) === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
+      return Response.json({success: true, hostname: 'linsi.beamiranda.com.br', action: 'contact'});
+    }
+    if (String(url) === 'https://api.notion.com/v1/pages') {
+      notionBody = JSON.parse(options.body);
+      const chunks = notionBody.properties.Mensagem.rich_text;
+      assert.ok(chunks.every(({text}) => text.content.length <= 2000));
+      assert.ok(chunks.every(({text}) => text.content.isWellFormed()));
+      assert.equal(chunks.map(({text}) => text.content).join(''), mensagem);
+    }
+    return Response.json({});
+  }, async () => {
+    assert.equal((await worker.fetch(request({...validPayload, mensagem}), env)).status, 200);
+    assert.ok(notionBody);
+  });
+}
+
+console.log('Worker security/contact tests passed: native HTML pattern, optional contacts, LinkedIn normalization, WhatsApp digits, Notion text limits and Turnstile fail closed.');
