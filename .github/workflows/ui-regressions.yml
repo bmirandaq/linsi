@@ -61,6 +61,11 @@ jobs:
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
 
+      - name: Validar canvas do dark mode
+        run: node scripts/test-dark-canvas.mjs
+        env:
+          SMOKE_BASE_URL: http://127.0.0.1:3000
+
       - name: Validar formulário com integrações simuladas
         run: node scripts/test-contact-form.mjs
         env:

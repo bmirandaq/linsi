@@ -77,7 +77,8 @@
   --linsi-search-border: var(--linsi-border-base);
 }
 
-[data-theme='dark'] {
+/* Match Infima's html[data-theme='dark'] specificity so LINSI semantic roles win. */
+html[data-theme='dark'] {
   /* Dark semantic roles */
   --linsi-bg-canvas: var(--linsi-brand-02-ultradark);
   --linsi-bg-shell: var(--linsi-brand-02-darkest);
