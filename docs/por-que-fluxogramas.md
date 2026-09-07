@@ -13,10 +13,6 @@ Antes de avançar para protótipos ou desenvolvimento, eles ajudam a entender me
     border-bottom: 0;
     border-top: 0;
   }
-
-  .flow-benefit:nth-child(-n + 2) {
-    border-bottom: 0;
-  }
 }
 `}</style>
 
