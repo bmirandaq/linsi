@@ -122,7 +122,9 @@ try {
   // Submitting while the external script loads must wait for its readiness.
   scriptDelay = 3000;
   challengeDelay = 0;
+  const scriptRequested = page.waitForRequest('https://challenges.cloudflare.com/turnstile/v0/api.js*');
   await page.goto(`${baseUrl}/contribuir-ajuda`, {waitUntil: 'domcontentloaded'});
+  await scriptRequested;
   for (const [id, value] of Object.entries({nome: 'Teste', email: 'teste@example.com', assunto: 'Teste', mensagem: 'Teste local'})) {
     await page.locator(`#${id}`).fill(value);
   }
