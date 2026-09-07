@@ -75,54 +75,71 @@ export default function Contato() {
   const turnstileResolver = useRef(null);
   const turnstileReady = useRef(null);
   const turnstileExecuted = useRef(false);
+  const turnstileCancelled = useRef(false);
 
   useEffect(() => {
-    if (!TURNSTILE_SITE_KEY || typeof window === 'undefined') return;
-
-    let cancelled = false;
-
-    turnstileReady.current = loadTurnstile().then((turnstile) => {
-      if (cancelled || !turnstileRef.current) return null;
-      try {
-        turnstileExecuted.current = false;
-        turnstileWidgetId.current = turnstile.render(turnstileRef.current, {
-          sitekey: TURNSTILE_SITE_KEY,
-          size: 'normal',
-          appearance: 'always',
-          execution: 'execute',
-          action: 'contact',
-          callback: (token) => {
-            turnstileResolver.current?.(token);
-          },
-          'error-callback': () => {
-            turnstileResolver.current?.(null);
-          },
-          'timeout-callback': () => {
-            turnstileResolver.current?.(null);
-          },
-        });
-        return turnstileWidgetId.current;
-      } catch {
-        turnstileWidgetId.current = null;
-        return null;
-      }
-    }).catch(() => null);
+    turnstileCancelled.current = false;
 
     return () => {
-      cancelled = true;
+      turnstileCancelled.current = true;
       turnstileResolver.current?.(null);
       if (turnstileWidgetId.current !== null && window.turnstile) {
         try {
           window.turnstile.remove(turnstileWidgetId.current);
         } catch {}
       }
+      turnstileWidgetId.current = null;
+      turnstileReady.current = null;
     };
   }, []);
 
-  const getTurnstileToken = useCallback(() => {
-    if (!turnstileReady.current) {
+  const ensureTurnstileReady = useCallback(() => {
+    if (!TURNSTILE_SITE_KEY || typeof window === 'undefined') {
       return Promise.resolve(null);
     }
+
+    if (turnstileReady.current) {
+      return turnstileReady.current;
+    }
+
+    turnstileReady.current = loadTurnstile()
+      .then((turnstile) => {
+        if (turnstileCancelled.current || !turnstileRef.current) return null;
+        if (turnstileWidgetId.current !== null) return turnstileWidgetId.current;
+
+        try {
+          turnstileExecuted.current = false;
+          turnstileWidgetId.current = turnstile.render(turnstileRef.current, {
+            sitekey: TURNSTILE_SITE_KEY,
+            size: 'normal',
+            appearance: 'always',
+            execution: 'execute',
+            action: 'contact',
+            callback: (token) => {
+              turnstileResolver.current?.(token);
+            },
+            'error-callback': () => {
+              turnstileResolver.current?.(null);
+            },
+            'timeout-callback': () => {
+              turnstileResolver.current?.(null);
+            },
+          });
+          return turnstileWidgetId.current;
+        } catch {
+          turnstileWidgetId.current = null;
+          return null;
+        }
+      })
+      .catch(() => {
+        turnstileReady.current = null;
+        return null;
+      });
+
+    return turnstileReady.current;
+  }, []);
+
+  const getTurnstileToken = useCallback(() => {
     return new Promise((resolve) => {
       let settled = false;
       const finish = (token) => {
@@ -133,7 +150,7 @@ export default function Contato() {
         resolve(token);
       };
       const timeout = setTimeout(() => finish(null), 30000);
-      turnstileReady.current.then((widgetId) => {
+      ensureTurnstileReady().then((widgetId) => {
         if (settled) return;
         if (widgetId === null || !window.turnstile) return finish(null);
         turnstileResolver.current = finish;
@@ -146,7 +163,7 @@ export default function Contato() {
         }
       });
     });
-  }, []);
+  }, [ensureTurnstileReady]);
 
   const handleSubmit = useCallback(
     async (e) => {
@@ -219,6 +236,10 @@ export default function Contato() {
     [status, getTurnstileToken],
   );
 
+  const warmTurnstile = useCallback(() => {
+    void ensureTurnstileReady();
+  }, [ensureTurnstileReady]);
+
   return (
     <Layout title="Contribuir ou pedir ajuda" description="Contribuir ou pedir ajuda — LINSI">
 
@@ -255,7 +276,11 @@ export default function Contato() {
             ))}
           </div>
 
-          <form className={styles.form} onSubmit={handleSubmit}>
+          <form
+            className={styles.form}
+            onSubmit={handleSubmit}
+            onFocusCapture={warmTurnstile}
+            onPointerDownCapture={warmTurnstile}>
             <input type="hidden" name="motivo" value={motivo} />
 
               <div className={styles.contactRow}>

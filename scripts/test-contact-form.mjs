@@ -122,10 +122,13 @@ try {
   // Submitting while the external script loads must wait for its readiness.
   scriptDelay = 3000;
   challengeDelay = 0;
+  const scriptsBeforeDeferredLoad = scriptRequests;
   const scriptRequested = page.waitForRequest('https://challenges.cloudflare.com/turnstile/v0/api.js*');
   await page.goto(`${baseUrl}/contribuir-ajuda`, {waitUntil: 'domcontentloaded'});
+  assert.equal(scriptRequests, scriptsBeforeDeferredLoad, 'Turnstile não deve carregar antes da primeira interação com o formulário.');
+  await page.locator('#nome').fill('Teste');
   await scriptRequested;
-  for (const [id, value] of Object.entries({nome: 'Teste', email: 'teste@example.com', assunto: 'Teste', mensagem: 'Teste local'})) {
+  for (const [id, value] of Object.entries({email: 'teste@example.com', assunto: 'Teste', mensagem: 'Teste local'})) {
     await page.locator(`#${id}`).fill(value);
   }
   await submit();

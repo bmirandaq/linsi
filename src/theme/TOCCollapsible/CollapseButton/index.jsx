@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import MaterialSymbol from '@site/src/components/MaterialSymbol';
 
 import styles from './styles.module.css';
 
@@ -16,11 +17,12 @@ export default function TOCCollapsibleCollapseButton({collapsed, ...props}) {
         props.className,
       )}>
       <span>{collapsed ? 'Expandir índice' : 'Recolher índice'}</span>
-      <span
-        className={clsx('material-symbols-outlined', styles.icon)}
-        aria-hidden="true">
-        expand_more
-      </span>
+      <MaterialSymbol
+        name="expand_more"
+        size={20}
+        className={styles.icon}
+        aria-hidden
+      />
     </button>
   );
 }

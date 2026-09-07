@@ -6,6 +6,7 @@ import React, {
   type MouseEvent,
 } from 'react';
 import {createPortal} from 'react-dom';
+import MaterialSymbol from '@site/src/components/MaterialSymbol';
 
 import styles from './styles.module.css';
 
@@ -122,7 +123,7 @@ export default function MDXImg({alt = '', ...props}: Props) {
         />
         <span className={styles.affordance} aria-hidden="true">
           <span>Ampliar</span>
-          <span className="material-symbols-outlined">search</span>
+          <MaterialSymbol name="search" size={20} aria-hidden />
         </span>
       </button>
 
@@ -140,9 +141,7 @@ export default function MDXImg({alt = '', ...props}: Props) {
               className={styles.close}
               aria-label="Fechar imagem ampliada"
               onClick={() => setOpen(false)}>
-              <span className="material-symbols-outlined" aria-hidden="true">
-                close
-              </span>
+              <MaterialSymbol name="close" size={24} aria-hidden />
             </button>
             <img className={styles.expandedImage} alt={alt} {...props} />
           </div>,

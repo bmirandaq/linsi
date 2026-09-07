@@ -6,6 +6,7 @@ slug: /assistente
 hide_title: true
 ---
 
+import MaterialSymbol from '@site/src/components/MaterialSymbol';
 import styles from './automatizacao.module.css';
 
 <div className={styles.titleRow}>
@@ -23,7 +24,7 @@ import styles from './automatizacao.module.css';
 
 Tire dúvidas sobre aplicação da LINSI com base na documentação oficial.
 
-<span className="material-symbols-outlined flow-benefit__icon" aria-hidden="true">search</span>
+<MaterialSymbol name="search" size={24} className="flow-benefit__icon" aria-hidden />
 
 </article>
 
@@ -33,7 +34,7 @@ Tire dúvidas sobre aplicação da LINSI com base na documentação oficial.
 
 Envie o contexto da experiência, mesmo que incompleto. A Assistente interpreta e propõe pra você.
 
-<span className="material-symbols-outlined flow-benefit__icon" aria-hidden="true">edit_note</span>
+<MaterialSymbol name="edit_note" size={24} className="flow-benefit__icon" aria-hidden />
 
 </article>
 
@@ -43,7 +44,7 @@ Envie o contexto da experiência, mesmo que incompleto. A Assistente interpreta 
 
 Envie um fluxograma existente. A Assistente revisa a estrutura, aplicação LINSI e clareza da representação.
 
-<span className="material-symbols-outlined flow-benefit__icon" aria-hidden="true">checklist</span>
+<MaterialSymbol name="checklist" size={24} className="flow-benefit__icon" aria-hidden />
 
 </article>
 
@@ -78,7 +79,7 @@ Para CLIs, você pode solicitar a instalação desta forma:
 
 ## Encontrou algum problema?
 
-Acesse a página [Contribuir ou pedir ajuda](/contribuir) e envie uma mensagem caso você encontre:
+Acesse a página [Contribuir ou pedir ajuda](/contribuir-ajuda) e envie uma mensagem caso você encontre:
 
 - Algum comportamento inesperado, erro ou dificuldade no uso da Assistente;
 - Algum caso ou lacuna não coberta pela documentação da LINSI. A Assistente pode te ajudar a preencher o formulário;

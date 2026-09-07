@@ -1,4 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
+import MaterialSymbol from '@site/src/components/MaterialSymbol';
 import styles from './styles.module.css';
 
 const SCROLL_THRESHOLD = 300;
@@ -91,9 +92,8 @@ export default function GlobalBackToTopButton() {
       className={`${styles.button} ${shown ? styles.buttonShown : ''}`}
       data-linsi-back-to-top="true"
       type="button"
-      onClick={scrollToTop}
-    >
-      <span className="material-symbols-outlined" aria-hidden="true">arrow_upward</span>
+      onClick={scrollToTop}>
+      <MaterialSymbol name="arrow_upward" size={24} aria-hidden />
     </button>
   );
 }

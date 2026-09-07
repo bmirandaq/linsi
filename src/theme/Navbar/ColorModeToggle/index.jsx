@@ -14,12 +14,15 @@ export default function NavbarColorModeToggle({className}) {
     <button
       type="button"
       className={clsx(styles.toggle, className)}
+      data-linsi-color-mode-toggle="true"
       role="switch"
       aria-checked={isDark}
       aria-label={`${modeLabel}: ${actionLabel}`}
       title={actionLabel}
       onClick={() => setColorMode(isDark ? 'light' : 'dark')}>
-      <span className={styles.label}>{modeLabel}</span>
+      <span className={styles.label} data-linsi-color-mode-label="true">
+        {modeLabel}
+      </span>
       <span className={styles.track} aria-hidden="true">
         <span className={styles.thumb} />
       </span>

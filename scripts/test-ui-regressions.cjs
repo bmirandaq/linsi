@@ -88,8 +88,13 @@ assert.doesNotMatch(
 );
 assert.match(
   mobileSidebarSecondaryMenu,
-  /<MaterialSymbol[\s\S]*?name="chevron_left"[\s\S]*?size=\{20\}/,
-  'O retorno do menu mobile deve usar chevron do Material Symbols.',
+  /<svg[\s\S]*?height="20"[\s\S]*?viewBox="0 0 960 960"[\s\S]*?width="20"/,
+  'O retorno do menu mobile deve preservar o chevron local de 20px.',
+);
+assert.match(
+  mobileSidebarSecondaryMenu,
+  /M560 240 320 480 560 720 616 664 432 480 616 296Z/,
+  'O retorno do menu mobile deve preservar o desenho do chevron Material Symbols.',
 );
 assert.match(
   mobileSidebarSecondaryMenuCss,
@@ -111,6 +116,11 @@ assert.doesNotMatch(
   footer,
   /to="\/contribuir">/,
   'O footer não deve manter o slug antigo da página de contribuição.',
+);
+assert.match(
+  footer,
+  /loading="lazy"[\s\S]*?decoding="async"/,
+  'As imagens abaixo da dobra do footer devem carregar sem prioridade inicial.',
 );
 assert.match(
   footerCss,
