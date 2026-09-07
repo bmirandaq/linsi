@@ -19,12 +19,14 @@ await context.route('https://challenges.cloudflare.com/turnstile/v0/api.js*', as
     (() => {
       let options;
       window.turnstile = {
-        ready: (callback) => queueMicrotask(callback),
+        ready: () => { throw new Error('Turnstile async requires its onload callback, not ready().'); },
         render: (_, value) => { options = value; return 'test-widget'; },
         reset: () => {},
         remove: () => {},
         execute: () => setTimeout(() => ${challengeFails ? "options['error-callback']()" : "options.callback('local-mock-token')"}, ${challengeDelay})
       };
+      const onload = new URL(document.currentScript.src).searchParams.get('onload');
+      if (onload) window[onload]();
     })();
   `});
 });

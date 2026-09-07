@@ -30,17 +30,20 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAAEjIIV8ZHpYobikz';
 let turnstileScriptPromise;
 
 function loadTurnstile() {
-  if (window.turnstile) {
-    return new Promise((resolve) => window.turnstile.ready(() => resolve(window.turnstile)));
-  }
+  if (turnstileScriptPromise) return turnstileScriptPromise;
+  if (window.turnstile) return Promise.resolve(window.turnstile);
   if (!turnstileScriptPromise) {
     turnstileScriptPromise = new Promise((resolve, reject) => {
       const script = document.createElement('script');
-      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      window.onLinsiTurnstileLoad = () => {
+        delete window.onLinsiTurnstileLoad;
+        resolve(window.turnstile);
+      };
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onLinsiTurnstileLoad';
       script.async = true;
-      script.onload = () => window.turnstile.ready(() => resolve(window.turnstile));
       script.onerror = () => {
         script.remove();
+        delete window.onLinsiTurnstileLoad;
         turnstileScriptPromise = null;
         reject(new Error('Turnstile indisponível'));
       };

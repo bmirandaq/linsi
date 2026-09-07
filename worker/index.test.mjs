@@ -158,7 +158,7 @@ await withFetch(async (url) => {
 let calls = [];
 await withFetch(async (url) => {
   calls.push(String(url));
-  if (String(url).includes('siteverify')) {
+  if (String(url) === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
     return Response.json({
       success: true,
       hostname: 'outro.example',
@@ -176,14 +176,14 @@ calls = [];
 let resendBody;
 await withFetch(async (url, options = {}) => {
   calls.push(String(url));
-  if (String(url).includes('siteverify')) {
+  if (String(url) === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
     return Response.json({
       success: true,
       hostname: 'linsi.beamiranda.com.br',
       action: 'contact',
     });
   }
-  if (String(url).includes('api.resend.com')) {
+  if (String(url) === 'https://api.resend.com/emails') {
     resendBody = JSON.parse(options.body);
   }
   return new Response('{}', {status: 200});
@@ -203,14 +203,14 @@ calls = [];
 resendBody = undefined;
 await withFetch(async (url, options = {}) => {
   calls.push(String(url));
-  if (String(url).includes('siteverify')) {
+  if (String(url) === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
     return Response.json({
       success: true,
       hostname: 'linsi.beamiranda.com.br',
       action: 'contact',
     });
   }
-  if (String(url).includes('api.resend.com')) {
+  if (String(url) === 'https://api.resend.com/emails') {
     resendBody = JSON.parse(options.body);
   }
   return new Response('{}', {status: 200});
@@ -224,14 +224,14 @@ await withFetch(async (url, options = {}) => {
 calls = [];
 resendBody = undefined;
 await withFetch(async (url, options = {}) => {
-  if (String(url).includes('siteverify')) {
+  if (String(url) === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
     return Response.json({
       success: true,
       hostname: 'linsi.beamiranda.com.br',
       action: 'contact',
     });
   }
-  if (String(url).includes('api.resend.com')) {
+  if (String(url) === 'https://api.resend.com/emails') {
     resendBody = JSON.parse(options.body);
   }
   return new Response('{}', {status: 200});
@@ -247,10 +247,10 @@ await withFetch(async (url, options = {}) => {
 for (const mensagem of ['x'.repeat(2000), 'x'.repeat(2001), 'x'.repeat(5000), 'x'.repeat(1999) + '😀'.repeat(1000)]) {
   let notionBody;
   await withFetch(async (url, options) => {
-    if (String(url).includes('siteverify')) {
+    if (String(url) === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
       return Response.json({success: true, hostname: 'linsi.beamiranda.com.br', action: 'contact'});
     }
-    if (String(url).includes('api.notion.com')) {
+    if (String(url) === 'https://api.notion.com/v1/pages') {
       notionBody = JSON.parse(options.body);
       const chunks = notionBody.properties.Mensagem.rich_text;
       assert.ok(chunks.every(({text}) => text.content.length <= 2000));
