@@ -15,6 +15,7 @@ Conecta os elementos e indica a direção de leitura do fluxo.
 ![Setas Comum, Alternativa, Positiva e Negativa](/img/uploads/Elementos/setas.png)
 
 ### Tipos de seta
+
 ---
 
 - **Comum:** indica continuidade sem atribuir um significado específico. Usa a cor cinza.
@@ -27,6 +28,7 @@ Escolha o tipo de Seta pelo significado da continuidade. Quando não houver um r
 Uma resposta “Sim” não torna a Seta automaticamente Positiva. O tipo depende do que essa resposta significa naquele ponto do fluxo.
 
 ### Rótulos nas Setas
+
 ---
 
 Os rótulos são opcionais, exceto nas Setas que saem de uma Condição. Nesse caso, devem responder diretamente à pergunta da Condição.
@@ -34,12 +36,12 @@ Os rótulos são opcionais, exceto nas Setas que saem de uma Condição. Nesse c
 Mantenha os rótulos próximos aos Elementos de origem para facilitar a identificação de cada saída. Sempre que possível, posicione-os em trechos horizontais da linha e evite curvas ou cruzamentos.
 
 ### Organização das Setas
+
 ---
 
 Evite cruzamentos entre Setas e priorize conexões simples, fáceis de acompanhar.
 
 Quando uma conexão distante comprometer a leitura, use o Elemento Retomada para indicar a continuidade sem estender a Seta pelo fluxograma.
-
 
 ## Interface
 
@@ -82,8 +84,6 @@ Apresenta um conteúdo transitório sobre uma Tela sem substituí-la, como modal
 ![Estrutura do conteúdo de uma Janela de filtros](/img/uploads/Elementos/interface-janela-2.png)
 
 Em screenflows, o protótipo passa a cumprir a função do Elemento **Interface**.
-
-[img-example]
 
 
 
@@ -222,6 +222,7 @@ Pode ser dispensado quando a ferramenta utilizada oferecer função nativa de co
 
 
 ## Forma e conteúdo dos Elementos
+
 ---
 
 ### Diferenciação visual
