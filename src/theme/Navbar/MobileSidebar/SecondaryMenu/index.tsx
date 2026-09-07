@@ -8,11 +8,12 @@ function ChevronLeftIcon() {
   return (
     <svg
       aria-hidden="true"
-      className={styles.backIcon}
+      className={`${styles.backIcon} material-symbols-outlined`}
       focusable="false"
       height="20"
       viewBox="0 0 960 960"
       width="20">
+      <title>chevron_left</title>
       <g transform="translate(0 960) scale(1 -1)">
         <path
           d="M560 240 320 480 560 720 616 664 432 480 616 296Z"
