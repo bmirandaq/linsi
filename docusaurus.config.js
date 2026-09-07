@@ -25,6 +25,18 @@ const fontPreferenceInitScript = `
   } catch (_) {}
 `;
 
+// Mantém o canvas do navegador alinhado ao tema antes de o CSS principal terminar de carregar.
+// Os fallbacks espelham os tokens atuais; quando a paleta carrega, --linsi-bg-canvas assume a fonte de verdade.
+const rootCanvasInitStyle = `
+  html {
+    background-color: var(--linsi-bg-canvas, #f5f8fd);
+  }
+
+  html[data-theme='dark'] {
+    background-color: var(--linsi-bg-canvas, #04081f);
+  }
+`;
+
 const config = {
   title: 'LINSI – Linguagem Simplificada de Fluxogramas de UX',
   tagline: 'Linguagem Simplificada de Fluxogramas de UX',
@@ -52,6 +64,11 @@ const config = {
       tagName: 'script',
       attributes: {},
       innerHTML: fontPreferenceInitScript,
+    },
+    {
+      tagName: 'style',
+      attributes: {'data-linsi-root-canvas': 'true'},
+      innerHTML: rootCanvasInitStyle,
     },
   ],
 
