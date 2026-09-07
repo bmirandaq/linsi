@@ -97,13 +97,12 @@ function normalizeLinkedIn(value) {
     return null;
   }
   if (!['http:', 'https:'].includes(url.protocol)) return null;
-  if (url.search || url.hash) return null;
+  if (url.search || url.hash || url.username || url.password || url.port) return null;
 
-  const segments = url.pathname.split('/').filter(Boolean);
-  if (segments.length !== 2 || segments[0].toLowerCase() !== 'in') return null;
-  if (!/^[A-Za-z0-9-]+$/.test(segments[1])) return null;
+  const profile = /^\/in\/([A-Za-z0-9-]+)\/?$/i.exec(url.pathname);
+  if (!profile) return null;
 
-  return `https://www.linkedin.com/in/${segments[1]}`;
+  return `https://www.linkedin.com/in/${profile[1]}`;
 }
 
 function normalizeWhatsApp(value) {
@@ -138,7 +137,7 @@ async function registerNotion(payload, env) {
         Motivo: { select: { name: reasonLabels[motivo] || motivo } },
         Apelido: { rich_text: [{ text: { content: apelido } }] },
         'E-mail': { email },
-        Mensagem: { rich_text: [{ text: { content: mensagem } }] },
+        Mensagem: { rich_text: notionRichText(mensagem) },
         'Recebido em': { date: { start: new Date().toISOString() } },
       },
     }),
@@ -148,6 +147,20 @@ async function registerNotion(payload, env) {
     const err = await resp.text();
     throw new Error(`Notion error: ${resp.status} ${err}`);
   }
+}
+
+function notionRichText(value) {
+  const chunks = [];
+  let chunk = '';
+  for (const character of value) {
+    if (chunk.length + character.length > 2000) {
+      chunks.push({ text: { content: chunk } });
+      chunk = '';
+    }
+    chunk += character;
+  }
+  if (chunk) chunks.push({ text: { content: chunk } });
+  return chunks;
 }
 
 async function sendResend(payload, env) {

@@ -127,10 +127,12 @@
 
 .field input,
 .field textarea {
+  --field-focus-shadow: 0 0 0 0 transparent;
   background: var(--ifm-background-surface-color);
   border: 1px solid var(--linsi-border-color);
   border-radius: var(--linsi-radius-md);
   color: var(--ifm-font-color-base);
+  box-shadow: var(--field-focus-shadow);
   font: inherit;
   outline: none;
   padding: var(--linsi-space-8) var(--linsi-space-16);
@@ -157,8 +159,15 @@
 
 .field input:focus,
 .field textarea:focus {
+  --field-focus-shadow: 0 0 0 3px color-mix(in srgb, var(--linsi-focus-color) 18%, transparent);
   border-color: var(--linsi-focus-color);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--linsi-focus-color) 18%, transparent);
+}
+
+.field input:is(:autofill, :-webkit-autofill) {
+  -webkit-text-fill-color: var(--ifm-font-color-base);
+  caret-color: var(--ifm-font-color-base);
+  box-shadow: inset 0 0 0 1000px var(--ifm-background-surface-color),
+    var(--field-focus-shadow);
 }
 
 /* ── Submit ── */

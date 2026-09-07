@@ -27,11 +27,34 @@ const REASONS = [
 
 const CONTACT_API_URL = 'https://linsi-form-handler.bmirandaqux.workers.dev';
 const TURNSTILE_SITE_KEY = '0x4AAAAAAEjIIV8ZHpYobikz';
+let turnstileScriptPromise;
+
+function loadTurnstile() {
+  if (window.turnstile) {
+    return new Promise((resolve) => window.turnstile.ready(() => resolve(window.turnstile)));
+  }
+  if (!turnstileScriptPromise) {
+    turnstileScriptPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      script.onload = () => window.turnstile.ready(() => resolve(window.turnstile));
+      script.onerror = () => {
+        script.remove();
+        turnstileScriptPromise = null;
+        reject(new Error('Turnstile indisponível'));
+      };
+      document.head.appendChild(script);
+    });
+  }
+  return turnstileScriptPromise;
+}
 
 function normalizeLinkedInForSubmit(value) {
   const trimmed = value.trim();
   if (!trimmed) return '';
-  return `https://${trimmed.replace(/^https?:\/\//i, '')}`;
+  const match = /^(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/([A-Za-z0-9-]+)\/?$/i.exec(trimmed);
+  return match ? `https://www.linkedin.com/in/${match[1]}` : trimmed;
 }
 
 export default function Contato() {
@@ -47,21 +70,21 @@ export default function Contato() {
   const turnstileRef = useRef(null);
   const turnstileWidgetId = useRef(null);
   const turnstileResolver = useRef(null);
+  const turnstileReady = useRef(null);
+  const turnstileExecuted = useRef(false);
 
   useEffect(() => {
     if (!TURNSTILE_SITE_KEY || typeof window === 'undefined') return;
 
     let cancelled = false;
 
-    const script = document.createElement('script');
-    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-    script.async = true;
-    script.onload = () => {
-      if (cancelled || !window.turnstile || !turnstileRef.current) return;
+    turnstileReady.current = loadTurnstile().then((turnstile) => {
+      if (cancelled || !turnstileRef.current) return null;
       try {
-        turnstileWidgetId.current = window.turnstile.render(turnstileRef.current, {
+        turnstileExecuted.current = false;
+        turnstileWidgetId.current = turnstile.render(turnstileRef.current, {
           sitekey: TURNSTILE_SITE_KEY,
-          size: 'invisible',
+          size: 'normal',
           appearance: 'always',
           execution: 'execute',
           action: 'contact',
@@ -75,14 +98,12 @@ export default function Contato() {
             turnstileResolver.current?.(null);
           },
         });
+        return turnstileWidgetId.current;
       } catch {
         turnstileWidgetId.current = null;
+        return null;
       }
-    };
-    script.onerror = () => {
-      turnstileWidgetId.current = null;
-    };
-    document.head.appendChild(script);
+    }).catch(() => null);
 
     return () => {
       cancelled = true;
@@ -96,7 +117,7 @@ export default function Contato() {
   }, []);
 
   const getTurnstileToken = useCallback(() => {
-    if (!window.turnstile || turnstileWidgetId.current === null) {
+    if (!turnstileReady.current) {
       return Promise.resolve(null);
     }
     return new Promise((resolve) => {
@@ -108,14 +129,19 @@ export default function Contato() {
         turnstileResolver.current = null;
         resolve(token);
       };
-      const timeout = setTimeout(() => finish(null), 10000);
-      turnstileResolver.current = finish;
-      try {
-        window.turnstile.reset(turnstileWidgetId.current);
-        window.turnstile.execute(turnstileWidgetId.current);
-      } catch {
-        finish(null);
-      }
+      const timeout = setTimeout(() => finish(null), 30000);
+      turnstileReady.current.then((widgetId) => {
+        if (settled) return;
+        if (widgetId === null || !window.turnstile) return finish(null);
+        turnstileResolver.current = finish;
+        try {
+          if (turnstileExecuted.current) window.turnstile.reset(turnstileWidgetId.current);
+          turnstileExecuted.current = true;
+          window.turnstile.execute(turnstileWidgetId.current);
+        } catch {
+          finish(null);
+        }
+      });
     });
   }, []);
 
@@ -124,9 +150,28 @@ export default function Contato() {
       e.preventDefault();
       if (status === 'loading') return;
 
+      // Autofill can update the DOM without updating React's controlled state.
+      const formData = new FormData(e.currentTarget);
+      const payload = {
+        motivo: formData.get('motivo'),
+        apelido: formData.get('nome'),
+        email: formData.get('email'),
+        linkedin: normalizeLinkedInForSubmit(String(formData.get('linkedin') || '')),
+        whatsapp: String(formData.get('whatsapp') || '').replace(/\D/g, ''),
+        assunto: formData.get('assunto'),
+        mensagem: formData.get('mensagem'),
+      };
+      setNome(String(payload.apelido || ''));
+      setEmail(String(payload.email || ''));
+      setLinkedin(payload.linkedin);
+      setWhatsapp(payload.whatsapp);
+      setAssunto(String(payload.assunto || ''));
+      setMensagem(String(payload.mensagem || ''));
       setStatus('loading');
       setErrorMsg('');
 
+      let timeout;
+      let failureMessage = 'Não foi possível concluir a verificação de segurança. Recarregue a página e tente novamente.';
       try {
         const turnstileToken = await getTurnstileToken();
 
@@ -134,54 +179,41 @@ export default function Contato() {
           throw new Error('Verificação de segurança indisponível');
         }
 
-        if (!CONTACT_API_URL) {
-          await new Promise((r) => setTimeout(r, 650));
-          setStatus('success');
-          return;
-        }
-
+        failureMessage = 'Não foi possível conectar ao serviço de envio. Verifique sua conexão e tente novamente.';
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 15000);
+        timeout = setTimeout(() => controller.abort(), 15000);
 
         const res = await fetch(CONTACT_API_URL, {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({
-            motivo,
-            apelido: nome,
-            email,
-            linkedin: normalizeLinkedInForSubmit(linkedin),
-            whatsapp,
-            assunto,
-            mensagem,
+            ...payload,
             turnstileToken,
           }),
           signal: controller.signal,
         });
 
-        clearTimeout(timeout);
-
-        if (!res.ok) throw new Error('Erro ao enviar');
+        const result = await res.json().catch(() => null);
+        if (!res.ok || result?.ok !== true) {
+          if (res.status === 403) {
+            failureMessage = 'A verificação de segurança expirou ou foi recusada. Tente enviar novamente.';
+          } else if (res.status === 400) {
+            failureMessage = 'Confira os campos preenchidos e tente novamente. Use um perfil pessoal do LinkedIn e somente números no WhatsApp.';
+          } else {
+            failureMessage = 'Não foi possível registrar sua mensagem agora. Tente novamente em alguns minutos.';
+          }
+          throw new Error('Envio não confirmado');
+        }
 
         setStatus('success');
       } catch {
         setStatus('error');
-        setErrorMsg(
-          'Não foi possível enviar sua mensagem. Tente novamente.',
-        );
+        setErrorMsg(failureMessage);
+      } finally {
+        clearTimeout(timeout);
       }
     },
-    [
-      motivo,
-      nome,
-      email,
-      linkedin,
-      whatsapp,
-      assunto,
-      mensagem,
-      status,
-      getTurnstileToken,
-    ],
+    [status, getTurnstileToken],
   );
 
   return (
@@ -263,11 +295,12 @@ export default function Contato() {
                     type="text"
                     inputMode="url"
                     autoComplete="url"
-                    pattern="(?:https?://)?(?:www[.])?linkedin[.]com/in/[A-Za-z0-9-]+/?"
+                    pattern="(?:https?://)?(?:www[.])?linkedin[.]com/in/[A-Za-z0-9\-]+/?"
                     title="Use um perfil no formato linkedin.com/in/name-user"
                     maxLength={300}
                     value={linkedin}
                     onChange={(e) => setLinkedin(e.target.value)}
+                    onBlur={(e) => setLinkedin(normalizeLinkedInForSubmit(e.target.value))}
                   />
                 </div>
 
