@@ -72,7 +72,6 @@ Contexto principal naquele momento, é uma página ou tela. Exemplo exibido mais
 É representada por um retângulo com borda cinza.
 
 ### Interface do tipo Janela
-
 ---
 
 Apresenta um conteúdo transitório sobre uma Tela sem substituí-la, como modal, drawer ou popover. 
@@ -83,9 +82,14 @@ Apresenta um conteúdo transitório sobre uma Tela sem substituí-la, como modal
 
 ![Estrutura do conteúdo de uma Janela de filtros](/img/uploads/Elementos/interface-janela-2.png)
 
-Em screenflows, o protótipo passa a cumprir a função do Elemento **Interface**.
+### Interface em screenflows
+---
 
+O protótipo passa a cumprir a função do Elemento **Interface**. Exemplo:
 
+![Interfaces em Screenflow](/img/uploads/Elementos/sreenflow-interface.png)
+
+&nbsp;
 
 ## Processo
 
@@ -104,16 +108,26 @@ O Processo pode acontecer sem que a pessoa o perceba. Quando oferecer um resulta
 
 
 ## Ação
-
 ---
 
 Representa uma ação efetivamente realizada pela pessoa durante o fluxo. Geralmente corresponde a uma das possibilidades apresentadas na Interface anterior.
 
 ![Exemplo de Ação](/img/uploads/Elementos/acao.png)
 
-Quando aplicável, use o mesmo rótulo apresentado no botão, link ou controle da interface. Prefira textos diretos e no infinitivo como 'Finalizar pedido', 'Editar cadastro' ou 'Acessar detalhes'.
+Quando aplicável, use o mesmo rótulo apresentado no botão, link ou controle da interface. Prefira textos diretos e no infinitivo, como 'Finalizar pedido', 'Editar cadastro' ou 'Acessar detalhes'.
 
 É representada por uma cápsula laranja.
+
+### Ação em screenflows
+---
+
+O protótipo já pode deixar clara a ação realizada. Nesses casos, o Elemento **Ação** pode ser dispensado.
+
+A Seta pode partir diretamente do botão, link ou controle acionado e seguir para o próximo ponto do fluxo.
+
+Quando essa conexão não for possível ou prejudicar a leitura, a Seta pode partir da própria Interface. Nesse caso, use um rótulo para indicar qual ação foi realizada.
+
+![Ação em Screenflow](/img/uploads/Elementos/screenflow-acao.png)
 
 
 
