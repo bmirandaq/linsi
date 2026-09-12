@@ -46,7 +46,7 @@
   align-items: start;
   column-gap: var(--linsi-space-48);
   display: grid;
-  grid-template-columns: minmax(340px, 1fr) auto auto;
+  grid-template-columns: minmax(340px, 1fr) auto;
   min-height: 245px;
   min-width: 0;
   padding-bottom: var(--linsi-space-48);
@@ -212,7 +212,8 @@
     padding-bottom: var(--linsi-space-32);
   }
 
-  .brand {
+  .brand,
+  .navGroup {
     grid-column: 1 / -1;
   }
 

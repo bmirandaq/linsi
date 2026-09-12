@@ -5,10 +5,10 @@ import MaterialSymbol from '@site/src/components/MaterialSymbol';
 import styles from './styles.module.css';
 
 const exploreLinks = [
-  {label: 'Manual', to: '/docs/'},
   {label: 'Princípios', to: '/docs/principios'},
-  {label: 'Boas práticas', to: '/docs/boas-praticas'},
-  {label: 'Changelog', to: '/docs/changelog'},
+  {label: 'Assistente LINSI', to: '/docs/assistente'},
+  {label: 'Templates', to: '/docs/templates'},
+  {label: 'Contribuir e pedir ajuda', to: '/contribuir-ajuda'},
 ];
 
 export default function Footer() {
@@ -59,21 +59,6 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
-            </ul>
-          </nav>
-
-          <nav className={styles.navGroup} aria-labelledby="footer-projeto">
-            <p className={styles.navLabel} id="footer-projeto">
-              Projeto
-            </p>
-            <ul className={styles.navList}>
-              <li>
-                <Link
-                  className={`${styles.link} ${styles.linkWithIcon}`}
-                  to="/contribuir-ajuda">
-                  Contribuir e pedir ajuda
-                </Link>
-              </li>
               <li>
                 <Link
                   className={`${styles.link} ${styles.linkWithIcon}`}
@@ -103,10 +88,10 @@ export default function Footer() {
             </a>
           </p>
           <p>
-            Criada por{' '}
+            Criado por{' '}
             <a
               className={`${styles.link} ${styles.creatorLink}`}
-              href="https://www.linkedin.com/in/bmirandaq"
+              href="https://beamiranda.com.br"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Bea Miranda (abre em uma nova aba)">
