@@ -145,12 +145,6 @@ const config = {
           className: 'linsi-contribute-link',
         },
         {
-          href: 'https://beamiranda.com.br',
-          label: 'beamiranda.com.br',
-          position: 'left',
-          'aria-label': 'beamiranda.com.br (abre em uma nova aba)',
-        },
-        {
           type: 'search',
           position: 'right',
         },
