@@ -67,26 +67,6 @@ assert.match(
   'A sidebar desktop deve permanecer no fluxo, sticky e sem limite interno de altura.',
 );
 assert.doesNotMatch(
-  sidebarLayoutCss,
-  /docSidebarHidden|sidebarViewportHidden|doc-sidebar-hidden-width|transition:\s*width/,
-  'Os estilos da sidebar não devem preservar estados ou transições de recolhimento.',
-);
-assert.match(
-  spacingCss,
-  /--linsi-doc-column-gap:\s*var\(--linsi-space-48\);/,
-  'O gap estrutural da documentação deve usar o token de 48px.',
-);
-assert.match(
-  layoutFixesCss,
-  /html\.docs-doc-page \[class\*='docRoot'\]\s*\{[\s\S]*?column-gap:\s*var\(--linsi-doc-column-gap\);/,
-  'Sidebar e conteúdo devem preservar o gap estrutural da documentação.',
-);
-assert.match(
-  layoutFixesCss,
-  /\.theme-doc-sidebar-container\s*\{[\s\S]*?max-height:\s*none !important;[\s\S]*?overflow:\s*hidden !important;[\s\S]*?position:\s*sticky !important;/,
-  'A sidebar desktop deve permanecer no fluxo, sticky e sem limite interno de altura.',
-);
-assert.doesNotMatch(
   layoutFixesCss,
   /position:\s*fixed !important|left:\s*var\(--linsi-page-inline\)|grid-template-columns:/,
   'A sidebar desktop não deve sair do fluxo nem compensar o layout com posicionamento fixo.',
