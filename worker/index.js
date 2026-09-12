@@ -1,11 +1,18 @@
-const ALLOWED_REASONS = ['contribuir', 'ajuda', 'outro'];
+const REASON_LABELS = Object.freeze({
+  duvidas: 'Estou com dúvidas',
+  case: 'Enviar case pra ser exposto no site',
+  sugestao: 'Enviar sugestão de melhoria',
+  'problema-site': 'Problema no site',
+  'problema-assistente': 'Problema na Assistente LINSI',
+  outro: 'Outro assunto',
+});
+const ALLOWED_REASONS = Object.keys(REASON_LABELS);
 const CONTACT_ACTION = 'contact';
 const MAX_LENGTHS = {
   apelido: 120,
   email: 254,
   linkedin: 300,
   whatsapp: 32,
-  assunto: 200,
   mensagem: 5000,
   turnstileToken: 2048,
 };
@@ -114,13 +121,8 @@ function normalizeWhatsApp(value) {
 }
 
 async function registerNotion(payload, env) {
-  const { motivo, apelido, email, assunto, mensagem } = payload;
-
-  const reasonLabels = {
-    contribuir: 'Quero contribuir',
-    ajuda: 'Preciso de ajuda',
-    outro: 'Outros assuntos',
-  };
+  const { motivo, apelido, email, mensagem } = payload;
+  const assunto = REASON_LABELS[motivo];
 
   const resp = await fetch('https://api.notion.com/v1/pages', {
     method: 'POST',
@@ -134,7 +136,7 @@ async function registerNotion(payload, env) {
       properties: {
         Assunto: { title: [{ text: { content: assunto } }] },
         Status: { select: { name: 'Novo' } },
-        Motivo: { select: { name: reasonLabels[motivo] || motivo } },
+        Motivo: { select: { name: assunto } },
         Apelido: { rich_text: [{ text: { content: apelido } }] },
         'E-mail': { email },
         Mensagem: { rich_text: notionRichText(mensagem) },
@@ -164,21 +166,15 @@ function notionRichText(value) {
 }
 
 async function sendResend(payload, env) {
-  const { motivo, apelido, email, linkedin, whatsapp, assunto, mensagem } = payload;
-
-  const reasonLabels = {
-    contribuir: 'Quero contribuir',
-    ajuda: 'Preciso de ajuda',
-    outro: 'Outros assuntos',
-  };
+  const { motivo, apelido, email, linkedin, whatsapp, mensagem } = payload;
+  const assunto = REASON_LABELS[motivo];
 
   const textLines = [
-    `Motivo: ${reasonLabels[motivo] || motivo}`,
+    `Motivo: ${assunto}`,
     `Apelido: ${apelido}`,
     `E-mail: ${email}`,
     ...(linkedin ? [`LinkedIn: ${linkedin}`] : []),
     ...(whatsapp ? [`WhatsApp: ${whatsapp}`] : []),
-    `Assunto: ${assunto}`,
     '',
     'Mensagem:',
     mensagem,
@@ -238,7 +234,6 @@ export default {
     const email = requiredString(payload?.email, MAX_LENGTHS.email);
     const linkedin = normalizeLinkedIn(payload?.linkedin);
     const whatsapp = normalizeWhatsApp(payload?.whatsapp);
-    const assunto = requiredString(payload?.assunto, MAX_LENGTHS.assunto);
     const mensagem = requiredString(payload?.mensagem, MAX_LENGTHS.mensagem);
     const turnstileToken = requiredString(
       payload?.turnstileToken,
@@ -260,9 +255,6 @@ export default {
     if (whatsapp === null) {
       return json({ error: 'WhatsApp inválido' }, 400, cors);
     }
-    if (!assunto) {
-      return json({ error: 'Assunto obrigatório' }, 400, cors);
-    }
     if (!mensagem) {
       return json({ error: 'Mensagem obrigatória' }, 400, cors);
     }
@@ -282,7 +274,6 @@ export default {
       email,
       linkedin,
       whatsapp,
-      assunto,
       mensagem,
     };
 
