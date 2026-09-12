@@ -12,6 +12,15 @@ let scriptDelay = 0;
 let scriptRequests = 0;
 let challengeFails = false;
 
+const reasonOptions = [
+  ['duvidas', 'Estou com dúvidas'],
+  ['case', 'Enviar case pra ser exposto no site'],
+  ['sugestao', 'Enviar sugestão de melhoria'],
+  ['problema-site', 'Problema no site'],
+  ['problema-assistente', 'Problema na Assistente LINSI'],
+  ['outro', 'Outro assunto'],
+];
+
 await context.route('https://challenges.cloudflare.com/turnstile/v0/api.js*', async (route) => {
   scriptRequests += 1;
   if (scriptDelay) await new Promise((resolve) => setTimeout(resolve, scriptDelay));
@@ -38,32 +47,65 @@ await context.route(/https:\/\/api\.(notion|resend)\.com\//, () => {
   throw new Error('O teste não pode chamar Notion ou Resend.');
 });
 const page = await context.newPage();
-async function openForm() {
+
+async function openForm(motivo = 'duvidas') {
   await page.goto(`${baseUrl}/contribuir-ajuda`, {waitUntil: 'networkidle'});
+  await page.locator('#motivo').selectOption(motivo);
   await page.locator('#nome').fill('Teste automatizado');
   await page.locator('#email').fill('teste@example.com');
-  await page.locator('#assunto').fill('Teste local com mocks');
   await page.locator('#mensagem').fill('Esta mensagem não sai do teste automatizado.');
 }
+
 async function submit() {
   await page.getByRole('button', {name: 'Enviar mensagem', exact: true}).click();
 }
 
 try {
   await mkdir('test-results/contact-form', {recursive: true});
+
+  // Initial state: no real reason selected and no legacy subject field.
+  await page.goto(`${baseUrl}/contribuir-ajuda`, {waitUntil: 'networkidle'});
+  assert.equal(await page.locator('#motivo').inputValue(), '');
+  assert.equal(await page.locator('#motivo option:checked').textContent(), 'Abrir lista de opções');
+  assert.equal(await page.locator('#motivo').getAttribute('required'), '');
+  assert.equal(await page.locator('#motivo').evaluate((select) => select.validity.valueMissing), true);
+  assert.equal(await page.locator('#motivo option[value=""]').isDisabled(), true);
+  assert.equal(await page.locator('#assunto').count(), 0, 'O campo Assunto não deve existir no DOM.');
+  assert.equal(await page.locator('#mensagem').getAttribute('placeholder'), null, 'Mensagem não deve ter placeholder.');
+  assert.equal(await page.locator('#mensagem').getAttribute('required'), '');
+  assert.equal(await page.locator('#mensagem').getAttribute('maxlength'), '5000');
+
+  const submissionsBeforeMissingReason = submissions.length;
+  await page.locator('#nome').fill('Teste automatizado');
+  await page.locator('#email').fill('teste@example.com');
+  await page.locator('#mensagem').fill('Teste sem motivo.');
+  await submit();
+  assert.equal(submissions.length, submissionsBeforeMissingReason, 'O placeholder não pode ser enviado como motivo.');
+  assert.equal(await page.locator('#motivo').evaluate((select) => select.validity.valueMissing), true);
+
+  // Every new reason must submit the expected payload through the mocked Worker endpoint.
+  for (const [motivo, label] of reasonOptions) {
+    await openForm(motivo);
+    await submit();
+    await page.getByRole('status').filter({hasText: 'Mensagem recebida'}).waitFor();
+    assert.equal(submissions.at(-1).motivo, motivo, `Payload incorreto para ${label}.`);
+    assert.equal('assunto' in submissions.at(-1), false, 'O frontend não deve enviar Assunto.');
+  }
+
   await openForm();
   for (const value of ['texto qualquer', 'https://example.com/in/teste', 'https://linkedin.com/company/teste']) {
     await page.locator('#linkedin').fill(value);
     assert.equal(await page.locator('#linkedin').evaluate((e) => e.validity.patternMismatch), true);
+    const submissionsBeforeInvalidLinkedin = submissions.length;
     await submit();
-    assert.equal(submissions.length, 0, 'LinkedIn inválido deve impedir o envio no navegador.');
+    assert.equal(submissions.length, submissionsBeforeInvalidLinkedin, 'LinkedIn inválido deve impedir o envio no navegador.');
   }
   await page.locator('#linkedin').fill('');
   assert.equal(await page.locator('form').evaluate((form) => form.checkValidity()), true);
   await submit();
   await page.getByRole('status').filter({hasText: 'Mensagem recebida'}).waitFor();
-  assert.equal(submissions[0].linkedin, '');
-  assert.equal(submissions[0].whatsapp, '');
+  assert.equal(submissions.at(-1).linkedin, '');
+  assert.equal(submissions.at(-1).whatsapp, '');
 
   await openForm();
   apiStatus = 500;
@@ -126,9 +168,10 @@ try {
   const scriptRequested = page.waitForRequest('https://challenges.cloudflare.com/turnstile/v0/api.js*');
   await page.goto(`${baseUrl}/contribuir-ajuda`, {waitUntil: 'domcontentloaded'});
   assert.equal(scriptRequests, scriptsBeforeDeferredLoad, 'Turnstile não deve carregar antes da primeira interação com o formulário.');
+  await page.locator('#motivo').selectOption('duvidas');
   await page.locator('#nome').fill('Teste');
   await scriptRequested;
-  for (const [id, value] of Object.entries({email: 'teste@example.com', assunto: 'Teste', mensagem: 'Teste local'})) {
+  for (const [id, value] of Object.entries({email: 'teste@example.com', mensagem: 'Teste local'})) {
     await page.locator(`#${id}`).fill(value);
   }
   await submit();
@@ -142,7 +185,7 @@ try {
   for (const theme of ['light', 'dark']) {
     await page.evaluate((value) => document.documentElement.setAttribute('data-theme', value), theme);
     const {root} = await cdp.send('DOM.getDocument');
-    for (const id of ['nome', 'email', 'linkedin', 'whatsapp', 'assunto']) {
+    for (const id of ['nome', 'email', 'linkedin', 'whatsapp']) {
       const {nodeId} = await cdp.send('DOM.querySelector', {nodeId: root.nodeId, selector: `#${id}`});
       await cdp.send('CSS.forcePseudoState', {nodeId, forcedPseudoClasses: ['autofill']});
       await page.locator(`#${id}`).focus();
@@ -166,7 +209,7 @@ try {
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
   await page.screenshot({path: 'test-results/contact-form/mobile.png', fullPage: true});
   await context.close();
-  console.log('Contact browser tests passed: native validation, optional contacts, normalization, Turnstile readiness/slow verification, SPA navigation, API errors and light/dark autofill. No production submissions.');
+  console.log('Contact browser tests passed: empty reason placeholder, six mocked submissions, native validation, optional contacts, normalization, Turnstile readiness/slow verification, SPA navigation, API errors and light/dark autofill. No production submissions.');
 } finally {
   await browser.close();
 }
