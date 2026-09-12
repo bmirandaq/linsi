@@ -67,6 +67,26 @@ assert.match(
   'A sidebar desktop deve permanecer no fluxo, sticky e sem limite interno de altura.',
 );
 assert.doesNotMatch(
+  sidebarLayoutCss,
+  /docSidebarHidden|sidebarViewportHidden|doc-sidebar-hidden-width|transition:\s*width/,
+  'Os estilos da sidebar não devem preservar estados ou transições de recolhimento.',
+);
+assert.match(
+  spacingCss,
+  /--linsi-doc-column-gap:\s*var\(--linsi-space-48\);/,
+  'O gap estrutural da documentação deve usar o token de 48px.',
+);
+assert.match(
+  layoutFixesCss,
+  /html\.docs-doc-page \[class\*='docRoot'\]\s*\{[\s\S]*?column-gap:\s*var\(--linsi-doc-column-gap\);/,
+  'Sidebar e conteúdo devem preservar o gap estrutural da documentação.',
+);
+assert.match(
+  layoutFixesCss,
+  /\.theme-doc-sidebar-container\s*\{[\s\S]*?max-height:\s*none !important;[\s\S]*?overflow:\s*hidden !important;[\s\S]*?position:\s*sticky !important;/,
+  'A sidebar desktop deve permanecer no fluxo, sticky e sem limite interno de altura.',
+);
+assert.doesNotMatch(
   layoutFixesCss,
   /position:\s*fixed !important|left:\s*var\(--linsi-page-inline\)|grid-template-columns:/,
   'A sidebar desktop não deve sair do fluxo nem compensar o layout com posicionamento fixo.',
@@ -109,13 +129,33 @@ assert.match(
 
 assert.match(
   footer,
-  /to="\/contribuir-ajuda"[\s\S]*?Contribuir e pedir ajuda/,
-  'O footer deve usar o novo label e apontar para /contribuir-ajuda.',
+  /\{label: 'Contribuir e pedir ajuda', to: '\/contribuir-ajuda'\}/,
+  'O footer deve manter Contribuir e pedir ajuda na lista Explorar e apontar para /contribuir-ajuda.',
+);
+assert.match(
+  footer,
+  /\{label: 'Princípios', to: '\/docs\/principios'\}[\s\S]*?\{label: 'Assistente LINSI', to: '\/docs\/assistente'\}[\s\S]*?\{label: 'Templates', to: '\/docs\/templates'\}[\s\S]*?\{label: 'Contribuir e pedir ajuda', to: '\/contribuir-ajuda'\}/,
+  'A coluna Explorar deve preservar os quatro links editoriais definidos.',
+);
+assert.match(
+  footer,
+  /to="\/cafe-bea"[\s\S]*?Pagar café pra Bea/,
+  'O footer deve manter Pagar café pra Bea em Explorar.',
+);
+assert.doesNotMatch(
+  footer,
+  /footer-projeto|>\s*Projeto\s*</,
+  'O footer não deve reintroduzir a coluna Projeto.',
 );
 assert.doesNotMatch(
   footer,
   /to="\/contribuir">/,
   'O footer não deve manter o slug antigo da página de contribuição.',
+);
+assert.match(
+  footer,
+  /href="https:\/\/beamiranda\.com\.br"[\s\S]*?Bea Miranda/,
+  'O crédito da Bea deve apontar para o portfólio.',
 );
 assert.match(
   footer,
@@ -195,4 +235,4 @@ assert.doesNotMatch(
   'O feedback do Pix deve permanecer no próprio botão.',
 );
 
-console.log('UI regression contracts passed: stable docs sidebar, mobile docs navigation, docs spacing, footer spacing, navbar mobile and key page behavior.');
+console.log('UI regression contracts passed: stable docs sidebar, mobile docs navigation, docs spacing, footer structure, navbar mobile and key page behavior.');
