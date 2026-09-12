@@ -17,6 +17,15 @@ const frontendCss = await readFile(
 const moduleUrl = `data:text/javascript;base64,${Buffer.from(source).toString('base64')}`;
 const {default: worker} = await import(moduleUrl);
 
+const reasonLabels = {
+  duvidas: 'Estou com dúvidas',
+  case: 'Enviar case pra ser exposto no site',
+  sugestao: 'Enviar sugestão de melhoria',
+  'problema-site': 'Problema no site',
+  'problema-assistente': 'Problema na Assistente LINSI',
+  outro: 'Outro assunto',
+};
+
 assert.match(frontend, /TURNSTILE_SITE_KEY = '0x4AAAAAAEjIIV8ZHpYobikz'/);
 assert.match(frontend, /execution: 'execute'/);
 assert.match(frontend, /action: 'contact'/);
@@ -24,6 +33,7 @@ assert.match(frontend, /turnstile\.execute\(turnstileWidgetId\.current\)/);
 assert.doesNotMatch(frontend, /['"]skip['"]/);
 assert.doesNotMatch(source, /['"]skip['"]/);
 assert.match(redirectPage, /<Redirect to="\/contribuir-ajuda" \/>/);
+
 const linkedinPattern = new RegExp(`^(?:${frontend.match(/pattern="([^"]*linkedin[^\"]*)"/)[1]})$`, 'v');
 for (const value of ['linkedin.com/in/name-user', 'https://www.linkedin.com/in/name-user/']) {
   assert.ok(linkedinPattern.test(value), `O pattern HTML deve aceitar ${value}.`);
@@ -33,6 +43,24 @@ for (const value of ['qualquer texto', 'https://example.com/in/name-user', 'http
 }
 assert.match(frontend, /linkedin: normalizeLinkedInForSubmit\(/);
 assert.match(frontend, /setWhatsapp\(e\.target\.value\.replace\(\/\\D\/g, ''\)\)/);
+
+assert.match(frontend, /const \[motivo, setMotivo\] = useState\(''\)/);
+assert.match(frontend, /id="motivo"[\s\S]*?name="motivo"[\s\S]*?required[\s\S]*?value=\{motivo\}/);
+assert.match(frontend, /<option value="" disabled>Abrir lista de opções<\/option>/);
+assert.match(frontend, /linsi-font-selector__select/);
+assert.match(frontend, /linsi-font-selector__icon/);
+for (const [value, label] of Object.entries(reasonLabels)) {
+  assert.match(frontend, new RegExp(`value: '${value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}', label: '${label}'`));
+}
+assert.doesNotMatch(frontend, /id="assunto"|name="assunto"/);
+assert.doesNotMatch(frontend, /Conte o contexto, o que você precisa e inclua links se forem úteis\./);
+const mensagemBlock = frontend.match(/<textarea[\s\S]*?id="mensagem"[\s\S]*?\/>/)?.[0] || '';
+assert.ok(mensagemBlock, 'O textarea de mensagem deve continuar existindo.');
+assert.doesNotMatch(mensagemBlock, /placeholder=/);
+assert.match(mensagemBlock, /maxLength=\{5000\}/);
+assert.match(mensagemBlock, /required/);
+assert.doesNotMatch(frontendCss, /\.reasonCard|\.reasonGrid|\.reasonTitle|\.reasonCopy|\.reasonIcon/);
+assert.match(frontendCss, /\.reasonSelectControl/);
 
 const fieldOrder = ['id="nome"', 'id="email"', 'id="linkedin"', 'id="whatsapp"'];
 for (let i = 1; i < fieldOrder.length; i += 1) {
@@ -63,10 +91,9 @@ const env = {
   CONTACT_TO_EMAIL: 'beatriz@beamiranda.com.br',
 };
 const validPayload = {
-  motivo: 'ajuda',
+  motivo: 'duvidas',
   apelido: 'Pessoa de teste',
   email: 'teste@example.com',
-  assunto: 'Teste automatizado',
   mensagem: 'Esta mensagem não deve sair do teste automatizado.',
   turnstileToken: 'valid-token',
 };
@@ -104,6 +131,15 @@ await withFetch(async () => {
   const response = await worker.fetch(request(validPayload, 'https://evil.example'), env);
   assert.equal(response.status, 403);
   assert.equal(response.headers.get('Access-Control-Allow-Origin'), null);
+});
+
+await withFetch(async () => {
+  throw new Error('Um motivo inválido não pode chamar serviços externos.');
+}, async () => {
+  for (const motivo of ['', 'contribuir', 'ajuda', 'valor-arbitrario']) {
+    const response = await worker.fetch(request({...validPayload, motivo}), env);
+    assert.equal(response.status, 400, `O motivo ${JSON.stringify(motivo)} deve ser rejeitado.`);
+  }
 });
 
 await withFetch(async () => {
@@ -172,6 +208,43 @@ await withFetch(async (url) => {
   assert.equal(calls.length, 1);
 });
 
+for (const [motivo, label] of Object.entries(reasonLabels)) {
+  let notionBody;
+  let resendBody;
+  calls = [];
+  await withFetch(async (url, options = {}) => {
+    calls.push(String(url));
+    if (String(url) === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
+      return Response.json({
+        success: true,
+        hostname: 'linsi.beamiranda.com.br',
+        action: 'contact',
+      });
+    }
+    if (String(url) === 'https://api.notion.com/v1/pages') {
+      notionBody = JSON.parse(options.body);
+    }
+    if (String(url) === 'https://api.resend.com/emails') {
+      resendBody = JSON.parse(options.body);
+    }
+    return new Response('{}', {status: 200});
+  }, async () => {
+    const response = await worker.fetch(request({...validPayload, motivo}), env);
+    assert.equal(response.status, 200, `O motivo ${motivo} deve ser aceito.`);
+  });
+
+  assert.deepEqual(calls, [
+    'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+    'https://api.notion.com/v1/pages',
+    'https://api.resend.com/emails',
+  ]);
+  assert.equal(notionBody.properties.Assunto.title[0].text.content, label);
+  assert.equal(notionBody.properties.Motivo.select.name, label);
+  assert.equal(resendBody.subject, `[LINSI] ${label}`);
+  assert.match(resendBody.text, new RegExp(`^Motivo: ${label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'm'));
+  assert.doesNotMatch(resendBody.text, /^Assunto:/m);
+}
+
 calls = [];
 let resendBody;
 await withFetch(async (url, options = {}) => {
@@ -190,11 +263,6 @@ await withFetch(async (url, options = {}) => {
 }, async () => {
   const response = await worker.fetch(request(), env);
   assert.equal(response.status, 200);
-  assert.deepEqual(calls, [
-    'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-    'https://api.notion.com/v1/pages',
-    'https://api.resend.com/emails',
-  ]);
   assert.doesNotMatch(resendBody.text, /^LinkedIn:/m);
   assert.doesNotMatch(resendBody.text, /^WhatsApp:/m);
 });
@@ -264,4 +332,4 @@ for (const mensagem of ['x'.repeat(2000), 'x'.repeat(2001), 'x'.repeat(5000), 'x
   });
 }
 
-console.log('Worker security/contact tests passed: native HTML pattern, optional contacts, LinkedIn normalization, WhatsApp digits, Notion text limits and Turnstile fail closed.');
+console.log('Worker security/contact tests passed: six allowed reasons, derived subject, native HTML pattern, optional contacts, normalization, Notion text limits and Turnstile fail closed.');
