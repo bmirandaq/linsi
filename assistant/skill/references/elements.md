@@ -72,7 +72,7 @@ Nao exigir que as tres estejam sempre presentes.
 
 Acoes descritas dentro de Interface representam possibilidades disponiveis.
 
-Para mostrar qual acao foi efetivamente realizada em um Caminho, usar Elemento Acao.
+Em fluxos representados apenas com Elementos, usar Elemento Acao para mostrar qual acao foi efetivamente realizada em um Caminho. Em screenflows, aplicar a excecao documentada em `ELEM-ACT-004` quando o proprio prototipo deixar a acao realizada clara.
 
 ### ELEM-INT-004 — Tela
 - **Tipo:** definition + canonical-representation
@@ -89,6 +89,14 @@ Representacao canonica: retangulo com borda cinza.
 Interface do tipo Janela apresenta conteudo transitorio sobre uma Tela sem substitui-la, como modal, drawer ou popover.
 
 Representacao canonica: retangulo com borda cinza tracejada.
+
+### ELEM-INT-006 — Interface em screenflows
+- **Tipo:** rule
+- **Status:** canonical
+
+Em screenflows, o prototipo cumpre a funcao do Elemento Interface.
+
+Nao duplicar automaticamente o prototipo com um Elemento Interface separado quando o proprio prototipo ja representa aquilo que esta disponivel para a pessoa naquele ponto do fluxo.
 
 ## Processo
 
@@ -133,6 +141,16 @@ Quando aplicavel, usar o mesmo rotulo da interface. Preferir textos diretos no i
 - **Status:** canonical
 
 Capsula laranja.
+
+### ELEM-ACT-004 — Acao em screenflows
+- **Tipo:** rule + good-practice
+- **Status:** canonical
+
+Quando o prototipo deixar clara a acao realizada, o Elemento Acao pode ser dispensado.
+
+A Seta pode partir diretamente do botao, link ou controle acionado e seguir para o proximo ponto do fluxo.
+
+Quando essa conexao nao for possivel ou prejudicar a leitura, a Seta pode partir da propria Interface. Nesse caso, usar um rotulo para indicar qual acao foi realizada.
 
 ## Condicao
 
@@ -306,7 +324,7 @@ Ao criar ou revisar, verificar especialmente:
 
 - Interface nao e Acao;
 - Processo nao e Interface;
-- possibilidade de acao dentro da Interface nao e Acao efetivamente realizada;
+- possibilidade de acao dentro da Interface nao e Acao efetivamente realizada; em screenflows, o Elemento Acao pode ser dispensado quando o prototipo deixar a realizacao clara;
 - Nota nao e etapa do fluxo;
 - Comentario nao e contexto consolidado;
 - `Sim` nao significa automaticamente Seta Positiva;
