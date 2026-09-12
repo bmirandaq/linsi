@@ -1,28 +1,15 @@
 import React, {useState, useCallback, useRef, useEffect} from 'react';
 import Layout from '@theme/Layout';
 import clsx from 'clsx';
-import MaterialSymbol from '@site/src/components/MaterialSymbol';
 import styles from './contribuir.module.css';
 
-const REASONS = [
-  {
-    id: 'contribuir',
-    title: 'Quero contribuir',
-    copy: 'Enviar sugestão, case ou referência pra evolução da LINSI',
-    icon: 'post_add',
-  },
-  {
-    id: 'ajuda',
-    title: 'Preciso de ajuda',
-    copy: 'Tirar dúvidas ou reportar problemas',
-    icon: 'help',
-  },
-  {
-    id: 'outro',
-    title: 'Outros assuntos',
-    copy: null,
-    icon: 'chat_bubble',
-  },
+const REASON_OPTIONS = [
+  {value: 'duvidas', label: 'Estou com dúvidas'},
+  {value: 'case', label: 'Enviar case pra ser exposto no site'},
+  {value: 'sugestao', label: 'Enviar sugestão de melhoria'},
+  {value: 'problema-site', label: 'Problema no site'},
+  {value: 'problema-assistente', label: 'Problema na Assistente LINSI'},
+  {value: 'outro', label: 'Outro assunto'},
 ];
 
 const CONTACT_API_URL = 'https://linsi-form-handler.bmirandaqux.workers.dev';
@@ -61,12 +48,11 @@ function normalizeLinkedInForSubmit(value) {
 }
 
 export default function Contato() {
-  const [motivo, setMotivo] = useState('contribuir');
+  const [motivo, setMotivo] = useState('');
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [linkedin, setLinkedin] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
-  const [assunto, setAssunto] = useState('');
   const [mensagem, setMensagem] = useState('');
   const [status, setStatus] = useState('idle');
   const [errorMsg, setErrorMsg] = useState('');
@@ -178,14 +164,12 @@ export default function Contato() {
         email: formData.get('email'),
         linkedin: normalizeLinkedInForSubmit(String(formData.get('linkedin') || '')),
         whatsapp: String(formData.get('whatsapp') || '').replace(/\D/g, ''),
-        assunto: formData.get('assunto'),
         mensagem: formData.get('mensagem'),
       };
       setNome(String(payload.apelido || ''));
       setEmail(String(payload.email || ''));
       setLinkedin(payload.linkedin);
       setWhatsapp(payload.whatsapp);
-      setAssunto(String(payload.assunto || ''));
       setMensagem(String(payload.mensagem || ''));
       setStatus('loading');
       setErrorMsg('');
@@ -249,39 +233,43 @@ export default function Contato() {
             <h1 className={styles.title}>Contribuir ou pedir ajuda</h1>
           </header>
 
-          <p className={styles.subtitle}>
-            Escolha a opção que fizer mais sentido pra você:
-          </p>
-
-          <div className={styles.reasonGrid} role="group" aria-label="Motivo do contato">
-            {REASONS.map((r) => (
-              <button
-                key={r.id}
-                type="button"
-                className={styles.reasonCard}
-                aria-pressed={motivo === r.id}
-                onClick={() => {
-                  setMotivo(r.id);
-                  setStatus('idle');
-                }}>
-                <h2 className={styles.reasonTitle}>{r.title}</h2>
-                {r.copy && <p className={styles.reasonCopy}>{r.copy}</p>}
-                <MaterialSymbol
-                  className={styles.reasonIcon}
-                  name={r.icon}
-                  size={26}
-                  aria-hidden
-                />
-              </button>
-            ))}
-          </div>
-
           <form
             className={styles.form}
             onSubmit={handleSubmit}
             onFocusCapture={warmTurnstile}
             onPointerDownCapture={warmTurnstile}>
-            <input type="hidden" name="motivo" value={motivo} />
+              <div className={styles.reasonField}>
+                <label className={styles.subtitle} htmlFor="motivo">
+                  Escolha a opção que fizer mais sentido pra você:
+                </label>
+
+                <div className={clsx('linsi-font-selector', styles.reasonSelect)}>
+                  <select
+                    id="motivo"
+                    name="motivo"
+                    className={clsx('linsi-font-selector__select', styles.reasonSelectControl)}
+                    required
+                    value={motivo}
+                    onChange={(e) => {
+                      setMotivo(e.target.value);
+                      setStatus('idle');
+                    }}>
+                    <option value="" disabled>Abrir lista de opções</option>
+                    {REASON_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                  <svg
+                    className={clsx('linsi-font-selector__icon', styles.reasonSelectIcon)}
+                    aria-hidden="true"
+                    viewBox="0 0 960 960"
+                    focusable="false">
+                    <g transform="translate(0 960) scale(1 -1)">
+                      <path d="M480 345 240 585 296 641 480 457 664 641 720 585" fill="currentColor" />
+                    </g>
+                  </svg>
+                </div>
+              </div>
 
               <div className={styles.contactRow}>
                 <div className={styles.field}>
@@ -351,25 +339,10 @@ export default function Contato() {
               </div>
 
               <div className={styles.field}>
-                <label htmlFor="assunto">Assunto</label>
-                <input
-                  id="assunto"
-                  name="assunto"
-                  type="text"
-                  placeholder="Resuma em poucas palavras"
-                  maxLength={200}
-                  required
-                  value={assunto}
-                  onChange={(e) => setAssunto(e.target.value)}
-                />
-              </div>
-
-              <div className={styles.field}>
                 <label htmlFor="mensagem">Mensagem</label>
                 <textarea
                   id="mensagem"
                   name="mensagem"
-                  placeholder="Conte o contexto, o que você precisa e inclua links se forem úteis."
                   maxLength={5000}
                   required
                   value={mensagem}
