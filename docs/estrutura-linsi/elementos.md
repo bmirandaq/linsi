@@ -87,7 +87,7 @@ Apresenta um conteúdo transitório sobre uma Tela sem substituí-la, como modal
 
 O protótipo passa a cumprir a função do Elemento **Interface**. Exemplo:
 
-![Interfaces em Screenflow](/img/uploads/Elementos/sreenflow-interface.png)
+![Interfaces em Screenflow](/img/uploads/Elementos/screenflow-interface.png)
 
 &nbsp;
 

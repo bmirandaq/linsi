@@ -15,7 +15,7 @@
 | Fonte | Blob SHA observado |
 | --- | --- |
 | `docs/principios.md` | `c6b4cff372b53768fc74f5413107a3dff39c7f17` |
-| `docs/estrutura-linsi/elementos.md` | `a2d90639b308f1b3ccca8bfff973adfc83765042` |
+| `docs/estrutura-linsi/elementos.md` | `f03d6cac8f44d4fc62cf48b1e547b0b49a7894b0` |
 | `docs/estrutura-linsi/caminhos.md` | `05eafc2a8e6de93cf6ad07af6464a4de222237ee` |
 | `docs/estrutura-linsi/colunas.md` | `2d190312aba8b2b6b79590ddd32a7888ed17c121` |
 | `docs/boas-praticas.md` | `9ee86c7a7626c0010fabdd598063a8f86866b287` |
@@ -45,7 +45,8 @@ Ajustes incorporados apos os testes:
 - reforco para nao reintroduzir `Origem:` ou `Entrada:` no output textual;
 - uso de `Retomada` restrito a sua funcao de continuidade distante/externa, com destino inequivoco;
 - preferencia por links oficiais aplicados diretamente aos nomes das paginas/conceitos em ambientes que suportem esse formato;
-- registro dos cenarios de smoke como baseline em `assistant/tests/beta-smoke-0.1.md`.
+- registro dos cenarios de smoke como baseline em `assistant/tests/beta-smoke-0.1.md`;
+- sincronizacao das regras de Interface e Acao em screenflows com a documentacao oficial.
 
 A auditoria visual continua durante a beta como validacao de uso real, sem autorizar inferencia automatica de novas regras.
 
