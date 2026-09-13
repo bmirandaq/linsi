@@ -1,11 +1,15 @@
 {
   "subtitle": "Linguagem Simplificada de Fluxogramas de UX",
-  "positioning": [
-    "LINSI é uma notação visual para construção de fluxogramas de User Experience. Foi criada para representar e priorizar quem interage com produtos, plataformas e serviços digitais.",
-    "Torne seu raciocínio visível para quem precisa entender, discutir, revisar e evoluir experiências"
-  ],
+  "title": "Torne seu raciocínio visível",
+  "description": "LINSI é uma notação visual para construir fluxogramas centrados em quem interage com produtos, plataformas e serviços digitais.",
   "primaryAction": {
     "label": "Acessar manual",
     "href": "/docs/principios"
+  },
+  "workshop": {
+    "title": "Workshop: Mapeando experiências com LINSI",
+    "description": "Acompanhe na prática um cenário se transformar em um fluxograma completo com aplicação da LINSI. Espaço para dúvidas e trocas",
+    "meta": "Quinta-feira, 1 de outubro às 19h | Duração de 1h30 | Online no YouTube",
+    "actionLabel": "Tenho interesse"
   }
 }
