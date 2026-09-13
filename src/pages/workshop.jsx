@@ -78,9 +78,11 @@ export default function Workshop() {
   const [registrationId, setRegistrationId] = useState('');
   const [checkoutAmount, setCheckoutAmount] = useState(null);
   const [publicKey, setPublicKey] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('card');
   const [submitError, setSubmitError] = useState('');
   const [paymentError, setPaymentError] = useState('');
   const [brickReady, setBrickReady] = useState(false);
+  const [pixLoading, setPixLoading] = useState(false);
   const [pixData, setPixData] = useState(null);
   const [copied, setCopied] = useState(false);
 
@@ -94,8 +96,7 @@ export default function Workshop() {
 
   useEffect(() => {
     mountedRef.current = true;
-    const params = new URLSearchParams(window.location.search);
-    const prefilledCoupon = params.get('cupom');
+    const prefilledCoupon = new URLSearchParams(window.location.search).get('cupom');
     if (prefilledCoupon) setCupom(prefilledCoupon.trim());
 
     return () => {
@@ -122,6 +123,7 @@ export default function Workshop() {
       .then((turnstile) => {
         if (!mountedRef.current || !turnstileRef.current) return null;
         if (turnstileWidgetId.current !== null) return turnstileWidgetId.current;
+
         turnstileExecuted.current = false;
         turnstileWidgetId.current = turnstile.render(turnstileRef.current, {
           sitekey: TURNSTILE_SITE_KEY,
@@ -200,21 +202,18 @@ export default function Workshop() {
     }
   }, [cupom]);
 
-  const handleCouponChange = useCallback((event) => {
-    setCupom(event.target.value);
-    setCouponStatus('empty');
-    setCouponMessage('');
-  }, []);
-
   const handleContinue = useCallback(async (event) => {
     event.preventDefault();
     if (stage !== 'form') return;
+
     setSubmitError('');
     setStage('creating');
 
     try {
       const turnstileToken = await getTurnstileToken();
-      if (!turnstileToken) throw new Error('Não foi possível concluir a verificação de segurança. Tente novamente.');
+      if (!turnstileToken) {
+        throw new Error('Não foi possível concluir a verificação de segurança. Tente novamente.');
+      }
 
       const result = await apiRequest('/workshop/start', {
         method: 'POST',
@@ -244,7 +243,16 @@ export default function Workshop() {
   }, [cupom, email, getTurnstileToken, nome, stage]);
 
   useEffect(() => {
-    if (stage !== 'checkout' || !publicKey || !checkoutAmount || !registrationId) return undefined;
+    if (
+      stage !== 'checkout' ||
+      paymentMethod !== 'card' ||
+      !publicKey ||
+      !checkoutAmount ||
+      !registrationId
+    ) {
+      return undefined;
+    }
+
     let cancelled = false;
     setBrickReady(false);
     setPaymentError('');
@@ -254,51 +262,56 @@ export default function Workshop() {
         if (cancelled) return;
         const mp = new MercadoPago(publicKey, {locale: 'pt-BR'});
         const bricksBuilder = mp.bricks();
-        brickController.current = await bricksBuilder.create('payment', 'paymentBrick_container', {
-          initialization: {amount: checkoutAmount},
-          customization: {
-            paymentMethods: {
-              creditCard: 'all',
-              bankTransfer: 'pix',
+
+        brickController.current = await bricksBuilder.create(
+          'cardPayment',
+          'cardPaymentBrick_container',
+          {
+            initialization: {amount: checkoutAmount},
+            callbacks: {
+              onReady: () => {
+                if (!cancelled) setBrickReady(true);
+              },
+              onSubmit: (formData, additionalData) => new Promise(async (resolve, reject) => {
+                try {
+                  setPaymentError('');
+                  const result = await apiRequest('/workshop/pay/card', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                      registrationId,
+                      token: formData.token,
+                      paymentMethodId: formData.payment_method_id,
+                      paymentTypeId: additionalData.paymentTypeId,
+                      installments: formData.installments,
+                      identification: formData.payer?.identification,
+                    }),
+                  });
+
+                  if (result.status === 'paid') {
+                    setStage('paid');
+                    resolve();
+                    return;
+                  }
+
+                  if (result.status === 'pending') {
+                    setStage('pending');
+                    resolve();
+                    return;
+                  }
+
+                  setPaymentError('O pagamento não foi concluído. Revise os dados e tente novamente.');
+                  reject(new Error('Pagamento não concluído'));
+                } catch (error) {
+                  setPaymentError(error.message || 'Não foi possível processar o pagamento. Tente novamente.');
+                  reject(error);
+                }
+              }),
+              onError: () => {
+                if (!cancelled) setPaymentError('Não foi possível carregar o pagamento. Tente novamente.');
+              },
             },
           },
-          callbacks: {
-            onReady: () => {
-              if (!cancelled) setBrickReady(true);
-            },
-            onSubmit: ({selectedPaymentMethod, formData}) => new Promise(async (resolve, reject) => {
-              try {
-                setPaymentError('');
-                const result = await apiRequest('/workshop/pay', {
-                  method: 'POST',
-                  body: JSON.stringify({registrationId, selectedPaymentMethod, formData}),
-                });
-
-                if (result.status === 'paid') {
-                  setStage('paid');
-                  resolve();
-                  return;
-                }
-
-                if (result.status === 'pending') {
-                  setPixData(result.pix || null);
-                  setStage('pending');
-                  resolve();
-                  return;
-                }
-
-                setPaymentError('O pagamento não foi concluído. Revise os dados e tente novamente.');
-                reject(new Error('Pagamento não concluído'));
-              } catch (error) {
-                setPaymentError(error.message || 'Não foi possível processar o pagamento. Tente novamente.');
-                reject(error);
-              }
-            }),
-            onError: () => {
-              if (!cancelled) setPaymentError('Não foi possível carregar o pagamento. Tente novamente.');
-            },
-          },
-        });
+        );
       })
       .catch(() => {
         if (!cancelled) setPaymentError('Não foi possível carregar o pagamento. Tente novamente.');
@@ -313,12 +326,31 @@ export default function Workshop() {
         brickController.current = null;
       }
     };
-  }, [checkoutAmount, publicKey, registrationId, stage]);
+  }, [checkoutAmount, paymentMethod, publicKey, registrationId, stage]);
+
+  const createPix = useCallback(async () => {
+    if (pixLoading) return;
+
+    setPixLoading(true);
+    setPaymentError('');
+    try {
+      const result = await apiRequest('/workshop/pay/pix', {
+        method: 'POST',
+        body: JSON.stringify({registrationId}),
+      });
+      setPixData(result.pix || null);
+      setStage(result.status === 'paid' ? 'paid' : 'pending');
+    } catch (error) {
+      setPaymentError(error.message || 'Não foi possível gerar o Pix. Tente novamente.');
+    } finally {
+      setPixLoading(false);
+    }
+  }, [pixLoading, registrationId]);
 
   useEffect(() => {
     if (stage !== 'pending' || !registrationId) return undefined;
-    let cancelled = false;
 
+    let cancelled = false;
     const checkStatus = async () => {
       try {
         const result = await apiRequest(`/workshop/status?id=${encodeURIComponent(registrationId)}`);
@@ -404,7 +436,11 @@ export default function Workshop() {
                       autoComplete="off"
                       maxLength={80}
                       value={cupom}
-                      onChange={handleCouponChange}
+                      onChange={(event) => {
+                        setCupom(event.target.value);
+                        setCouponStatus('empty');
+                        setCouponMessage('');
+                      }}
                     />
                     <button
                       className={styles.couponButton}
@@ -443,8 +479,43 @@ export default function Workshop() {
               <header className={styles.header}>
                 <h1 id="payment-title" className={styles.title}>Pagamento</h1>
               </header>
-              {!brickReady && !paymentError && <p className={styles.loading} role="status">Carregando pagamento...</p>}
-              <div id="paymentBrick_container" className={styles.paymentBrick} />
+
+              <p className={styles.checkoutAmount}>
+                R$ {Number(checkoutAmount).toFixed(2).replace('.', ',')}
+              </p>
+
+              <div className={styles.paymentMethods} aria-label="Forma de pagamento">
+                <button
+                  type="button"
+                  className={paymentMethod === 'card' ? styles.methodActive : styles.methodButton}
+                  onClick={() => setPaymentMethod('card')}>
+                  Cartão de crédito
+                </button>
+                <button
+                  type="button"
+                  className={paymentMethod === 'pix' ? styles.methodActive : styles.methodButton}
+                  onClick={() => setPaymentMethod('pix')}>
+                  Pix
+                </button>
+              </div>
+
+              {paymentMethod === 'card' ? (
+                <>
+                  {!brickReady && !paymentError && (
+                    <p className={styles.loading} role="status">Carregando pagamento...</p>
+                  )}
+                  <div id="cardPaymentBrick_container" className={styles.paymentBrick} />
+                </>
+              ) : (
+                <button
+                  className={styles.submit}
+                  type="button"
+                  onClick={createPix}
+                  disabled={pixLoading}>
+                  {pixLoading ? 'Gerando Pix...' : 'Gerar Pix'}
+                </button>
+              )}
+
               {paymentError && <div className={styles.error} role="alert">{paymentError}</div>}
             </section>
           ) : null}
@@ -452,6 +523,7 @@ export default function Workshop() {
           {stage === 'pending' ? (
             <section className={styles.pending} aria-labelledby="pending-title">
               <h1 id="pending-title" className={styles.title}>Aguardando pagamento</h1>
+
               {pixData?.qrCodeBase64 ? (
                 <img
                   className={styles.pixQr}
@@ -459,6 +531,7 @@ export default function Workshop() {
                   alt="QR Code para pagamento via Pix"
                 />
               ) : null}
+
               {pixData?.qrCode ? (
                 <div className={styles.pixCopy}>
                   <label htmlFor="pix-code">Pix Copia e Cola</label>
@@ -468,6 +541,7 @@ export default function Workshop() {
                   </button>
                 </div>
               ) : null}
+
               <p className={styles.pendingText} role="status" aria-live="polite">
                 Estamos aguardando a confirmação do pagamento.
               </p>
