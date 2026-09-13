@@ -374,11 +374,37 @@
   }
 
   .layout {
-    gap: var(--linsi-space-48);
+    gap: 0;
+  }
+
+  .copyColumn {
+    display: contents;
+  }
+
+  .logo {
+    order: 1;
+  }
+
+  .subtitle {
+    order: 2;
   }
 
   .mediaColumn {
+    margin-bottom: var(--linsi-space-48);
     max-width: 760px;
+    order: 3;
+  }
+
+  .heroTitle {
+    order: 4;
+  }
+
+  .heroDescription {
+    order: 5;
+  }
+
+  .heroActions {
+    order: 6;
   }
 
   .originLayout {
