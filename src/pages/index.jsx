@@ -76,7 +76,8 @@ export default function Home() {
               <p className={styles.workshopPretitle}>{homeContent.workshop.pretitle}</p>
 
               <h2 id="workshop-title" className={styles.workshopTitle}>
-                {homeContent.workshop.title}
+                <span>Mapeando&nbsp;experiências</span>{' '}
+                <span>com&nbsp;LINSI</span>
               </h2>
 
               <p className={styles.workshopDescription}>
@@ -87,7 +88,10 @@ export default function Home() {
 
               <div className={styles.workshopTags} aria-label="Informações do workshop">
                 {homeContent.workshop.tags.map((tag) => (
-                  <span className={styles.workshopTag} key={tag}>
+                  <span
+                    className={styles.workshopTag}
+                    key={tag}
+                    style={{background: 'transparent'}}>
                     {tag}
                   </span>
                 ))}
