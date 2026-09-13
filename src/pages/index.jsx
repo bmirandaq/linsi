@@ -97,11 +97,10 @@ export default function Home() {
                 ))}
               </div>
 
-              {/* TODO: adicionar URL do checkout */}
-              <button className={styles.workshopAction} type="button">
+              <Link className={styles.workshopAction} to="/workshop">
                 {homeContent.workshop.actionLabel}
                 <MaterialSymbol name="arrow_forward" size={20} />
-              </button>
+              </Link>
             </div>
           </div>
         </section>

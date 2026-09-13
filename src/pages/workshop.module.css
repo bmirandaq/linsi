@@ -1,0 +1,260 @@
+.page {
+  min-height: 100vh;
+  padding: var(--linsi-space-32) var(--linsi-space-24) var(--linsi-space-64);
+}
+
+.shell {
+  margin: 0 auto;
+  max-width: 760px;
+  width: 100%;
+}
+
+.header {
+  margin-bottom: 0;
+}
+
+.title {
+  color: var(--linsi-neutral-darkest);
+  font-family: var(--ifm-heading-font-family);
+  font-size: clamp(1.75rem, 4vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 var(--linsi-space-24);
+}
+
+.form {
+  display: grid;
+  gap: var(--linsi-space-16);
+}
+
+.contactRow {
+  display: grid;
+  gap: var(--linsi-space-16);
+  grid-template-columns: 1fr 1fr;
+}
+
+.field {
+  display: grid;
+  gap: var(--linsi-space-8);
+}
+
+.field label,
+.pixCopy label {
+  color: var(--ifm-font-color-base);
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.optionalLabel {
+  color: var(--linsi-neutral-base);
+}
+
+.field input,
+.pixCopy textarea {
+  --field-focus-shadow: 0 0 0 0 transparent;
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--linsi-border-color);
+  border-radius: var(--linsi-radius-md);
+  box-shadow: var(--field-focus-shadow);
+  color: var(--ifm-font-color-base);
+  font: inherit;
+  outline: none;
+  padding: var(--linsi-space-8) var(--linsi-space-16);
+  transition: border-color var(--linsi-motion-fast) var(--linsi-ease-standard),
+    box-shadow var(--linsi-motion-fast) var(--linsi-ease-standard);
+  width: 100%;
+}
+
+.field input {
+  min-height: 46px;
+}
+
+.field input:focus,
+.pixCopy textarea:focus {
+  --field-focus-shadow: 0 0 0 3px color-mix(in srgb, var(--linsi-focus-color) 18%, transparent);
+  border-color: var(--linsi-focus-color);
+}
+
+.couponRow {
+  display: grid;
+  gap: var(--linsi-space-8);
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.couponButton,
+.submit,
+.methodButton,
+.methodActive {
+  border-radius: var(--linsi-radius-md);
+  cursor: pointer;
+  font-family: var(--ifm-heading-font-family);
+  font-weight: 700;
+  min-height: 46px;
+  padding: 0 var(--linsi-space-16);
+  transition: background-color var(--linsi-motion-fast) var(--linsi-ease-standard),
+    border-color var(--linsi-motion-fast) var(--linsi-ease-standard),
+    color var(--linsi-motion-fast) var(--linsi-ease-standard),
+    transform var(--linsi-motion-fast) var(--linsi-ease-standard);
+}
+
+.couponButton,
+.submit,
+.methodActive {
+  background: var(--linsi-button-background);
+  border: 1px solid var(--linsi-button-background);
+  color: var(--linsi-button-text);
+}
+
+.methodButton {
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--linsi-border-color);
+  color: var(--ifm-font-color-base);
+}
+
+.couponButton:hover,
+.submit:hover,
+.methodActive:hover {
+  background: var(--linsi-button-hover-background);
+  border-color: var(--linsi-button-hover-background);
+  transform: translateY(-1px);
+}
+
+.methodButton:hover {
+  border-color: var(--linsi-focus-color);
+}
+
+.couponButton:disabled,
+.submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
+.couponSuccess,
+.couponError {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.couponSuccess {
+  color: var(--linsi-feedback-success-fg);
+}
+
+.couponError {
+  color: var(--linsi-feedback-error-fg);
+}
+
+.error {
+  background: var(--linsi-feedback-error-bg);
+  border: 1px solid var(--linsi-feedback-error-border);
+  border-radius: var(--linsi-radius-md);
+  color: var(--linsi-feedback-error-fg);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-top: var(--linsi-space-8);
+  padding: var(--linsi-space-16);
+}
+
+.checkoutAmount {
+  color: var(--ifm-font-color-base);
+  font-family: var(--ifm-heading-font-family);
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0 0 var(--linsi-space-24);
+}
+
+.paymentMethods {
+  display: grid;
+  gap: var(--linsi-space-8);
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: var(--linsi-space-24);
+}
+
+.loading,
+.pendingText {
+  color: var(--ifm-font-color-base);
+  line-height: 1.55;
+}
+
+.paymentBrick {
+  min-height: 180px;
+}
+
+.pending {
+  display: grid;
+  gap: var(--linsi-space-16);
+}
+
+.pixQr {
+  background: var(--linsi-pure-white);
+  border-radius: var(--linsi-radius-md);
+  display: block;
+  max-width: 280px;
+  padding: var(--linsi-space-16);
+  width: 100%;
+}
+
+.pixCopy {
+  display: grid;
+  gap: var(--linsi-space-8);
+}
+
+.pixCopy textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.feedback {
+  background: var(--linsi-feedback-success-bg);
+  border: 1px solid var(--linsi-feedback-success-border);
+  border-radius: var(--linsi-radius-md);
+  color: var(--linsi-feedback-success-fg);
+  line-height: 1.55;
+  padding: var(--linsi-space-24);
+}
+
+.feedbackTitle {
+  color: inherit;
+  font-family: var(--ifm-heading-font-family);
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0 0 var(--linsi-space-16);
+}
+
+.feedback p {
+  margin: 0 0 var(--linsi-space-8);
+}
+
+.turnstile {
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  width: 0;
+}
+
+[data-theme='dark'] .title {
+  color: var(--linsi-pure-white);
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: var(--linsi-space-24) var(--linsi-space-16) var(--linsi-space-48);
+  }
+
+  .contactRow,
+  .couponRow,
+  .paymentMethods {
+    grid-template-columns: 1fr;
+  }
+
+  .couponButton,
+  .submit,
+  .methodButton,
+  .methodActive {
+    width: 100%;
+  }
+}
