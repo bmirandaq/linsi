@@ -28,20 +28,31 @@ export default function Home() {
                 width="163"
                 height="96"
               />
-              <Heading as="h1" id="home-title" className={styles.visuallyHidden}>
-                LINSI
-              </Heading>
+
               <p className={styles.subtitle}>{homeContent.subtitle}</p>
-              <div className={styles.positioningCopy}>
-                {homeContent.positioning.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
+
+              <Heading as="h1" id="home-title" className={styles.heroTitle}>
+                {homeContent.title}
+              </Heading>
+
+              <p className={styles.heroDescription}>{homeContent.description}</p>
+
+              <div className={styles.heroActions}>
+                <Link
+                  className={clsx('button', styles.primaryAction)}
+                  to={homeContent.primaryAction.href}>
+                  {homeContent.primaryAction.label}
+                </Link>
+
+                <Link className={styles.workshopAnchor} to="#workshop">
+                  Participar do workshop
+                  <MaterialSymbol
+                    name="arrow_forward"
+                    size={20}
+                    className={styles.workshopAnchorIcon}
+                  />
+                </Link>
               </div>
-              <Link
-                className={clsx('button', styles.primaryAction)}
-                to={homeContent.primaryAction.href}>
-                {homeContent.primaryAction.label}
-              </Link>
             </div>
 
             <div className={styles.mediaColumn} aria-hidden="true">
@@ -52,6 +63,31 @@ export default function Home() {
                 width="600"
                 height="600"
               />
+            </div>
+          </div>
+        </section>
+
+        <section
+          className={styles.workshop}
+          id="workshop"
+          aria-labelledby="workshop-title">
+          <div className={clsx('container', styles.workshopCard)}>
+            <div className={styles.workshopContent}>
+              <Heading as="h2" id="workshop-title" className={styles.workshopTitle}>
+                {homeContent.workshop.title}
+              </Heading>
+
+              <p className={styles.workshopDescription}>
+                {homeContent.workshop.description}
+              </p>
+
+              <p className={styles.workshopMeta}>{homeContent.workshop.meta}</p>
+
+              {/* TODO: adicionar URL do checkout */}
+              <button className={styles.workshopAction} type="button">
+                {homeContent.workshop.actionLabel}
+                <MaterialSymbol name="arrow_forward" size={20} />
+              </button>
             </div>
           </div>
         </section>
@@ -74,38 +110,6 @@ export default function Home() {
                 Talvez você já aplicou o que veio a se tornar a LINSI
               </Heading>
 
-              <div
-                className={styles.stats}
-                aria-label="Números do template na Figma Community">
-                <div className={styles.statCard}>
-                  <MaterialSymbol
-                    name="visibility"
-                    size={26}
-                    className={styles.statIcon}
-                  />
-                  <div className={styles.statContent}>
-                    <p className={styles.statValue}>1.141</p>
-                    <p className={styles.statLabel}>Visualizações</p>
-                  </div>
-                </div>
-
-                <div className={styles.statCard}>
-                  <MaterialSymbol
-                    name="design_services"
-                    size={26}
-                    className={styles.statIcon}
-                  />
-                  <div className={styles.statContent}>
-                    <p className={styles.statValue}>412</p>
-                    <p className={styles.statLabel}>Usos</p>
-                  </div>
-                </div>
-              </div>
-
-              <p className={styles.statsDate}>
-                Estatísticas coletadas em 4 de setembro de 2026
-              </p>
-
               <p className={styles.originText}>
                 Os primeiros passos da LINSI vieram de um template simples que
                 publiquei na Figma Community há mais de um ano. O que mais você
@@ -120,6 +124,22 @@ export default function Home() {
                   className={styles.originLinkArrow}
                 />
               </Link>
+
+              <div
+                className={styles.stats}
+                aria-label="Números do template na Figma Community">
+                <div className={styles.stat}>
+                  <p className={styles.statValue}>1.141</p>
+                  <p className={styles.statLabel}>visualizações</p>
+                </div>
+
+                <div className={styles.stat}>
+                  <p className={styles.statValue}>412</p>
+                  <p className={styles.statLabel}>usos</p>
+                </div>
+              </div>
+
+              <p className={styles.statsDate}>Consulta em 04/09/2026</p>
             </div>
           </div>
         </section>
