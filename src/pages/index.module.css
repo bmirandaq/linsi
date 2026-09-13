@@ -145,6 +145,11 @@
   width: 100%;
 }
 
+[data-theme='dark'] .mediaColumn {
+  background: var(--linsi-pure-white);
+  border-color: var(--linsi-neutral-lighter);
+}
+
 .heroCover {
   display: block;
   height: 100%;
@@ -154,7 +159,7 @@
 
 .workshop {
   background: transparent;
-  padding: 0 0 var(--linsi-space-96);
+  padding: var(--linsi-space-64) 0 var(--linsi-space-96);
   scroll-margin-top: calc(var(--ifm-navbar-height) + var(--linsi-space-24));
 }
 
@@ -171,6 +176,14 @@
 .workshopContent {
   max-width: 780px;
   width: 100%;
+}
+
+.workshopPretitle {
+  color: var(--linsi-neutral-light);
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.5;
+  margin: 0 auto var(--linsi-space-8);
 }
 
 .workshopTitle {
@@ -193,12 +206,32 @@
   max-width: 680px;
 }
 
-.workshopMeta {
-  color: var(--linsi-neutral-light);
-  font-size: 0.9375rem;
+.workshopDate {
+  color: var(--linsi-pure-white);
+  font-size: 1rem;
+  font-weight: 600;
   line-height: 1.6;
-  margin: var(--linsi-space-16) auto var(--linsi-space-32);
+  margin: var(--linsi-space-24) auto 0;
   max-width: 680px;
+}
+
+.workshopTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--linsi-space-8);
+  justify-content: center;
+  margin: var(--linsi-space-16) auto var(--linsi-space-32);
+}
+
+.workshopTag {
+  background: var(--linsi-neutral-darker);
+  border: 1px solid var(--linsi-neutral-dark);
+  border-radius: var(--linsi-radius-sm);
+  color: var(--linsi-neutral-lightest);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  padding: var(--linsi-space-4) var(--linsi-space-16);
 }
 
 .workshopAction {
@@ -235,13 +268,54 @@
   outline: none;
 }
 
+[data-theme='dark'] .workshopCard {
+  background: var(--linsi-neutral-lightest);
+}
+
+[data-theme='dark'] .workshopPretitle {
+  color: var(--linsi-neutral-dark);
+}
+
+[data-theme='dark'] .workshopTitle {
+  color: var(--linsi-neutral-darkest);
+}
+
+[data-theme='dark'] .workshopDescription {
+  color: var(--linsi-neutral-darker);
+}
+
+[data-theme='dark'] .workshopDate {
+  color: var(--linsi-neutral-darkest);
+}
+
+[data-theme='dark'] .workshopTag {
+  background: var(--linsi-neutral-lighter);
+  border-color: var(--linsi-neutral-light);
+  color: var(--linsi-neutral-darker);
+}
+
+[data-theme='dark'] .workshopAction {
+  background: var(--linsi-brand-01-dark);
+  border-color: var(--linsi-brand-01-dark);
+  color: var(--linsi-pure-white);
+}
+
+[data-theme='dark'] .workshopAction:hover {
+  background: var(--linsi-brand-01-darker);
+  border-color: var(--linsi-brand-01-darker);
+}
+
+[data-theme='dark'] .workshopAction:focus-visible {
+  box-shadow: 0 0 0 2px var(--linsi-neutral-lightest), 0 0 0 5px var(--linsi-brand-02-base);
+}
+
 .origin {
   background: var(--linsi-bg-canvas);
   padding: var(--linsi-space-96) 0;
 }
 
 .originLayout {
-  align-items: center;
+  align-items: start;
   display: grid;
   gap: var(--linsi-space-80);
   grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
@@ -320,10 +394,12 @@
   display: flex;
   gap: var(--linsi-space-32);
   margin: var(--linsi-space-32) 0 var(--linsi-space-16);
+  width: fit-content;
 }
 
 .stat {
-  min-width: 150px;
+  min-width: 0;
+  width: fit-content;
 }
 
 .stat + .stat {

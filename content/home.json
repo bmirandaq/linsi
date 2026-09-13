@@ -7,9 +7,14 @@
     "href": "/docs/principios"
   },
   "workshop": {
-    "title": "Workshop: Mapeando experiências com LINSI",
+    "pretitle": "Workshop",
+    "title": "Mapeando experiências com LINSI",
     "description": "Acompanhe na prática um cenário se transformar em um fluxograma completo com aplicação da LINSI. Espaço para dúvidas e trocas",
-    "meta": "Quinta-feira, 1 de outubro às 19h | Duração de 1h30 | Online no YouTube",
+    "dateTime": "Quinta-feira, 1 de outubro às 19h",
+    "tags": [
+      "Duração de 1h30",
+      "Online no YouTube"
+    ],
     "actionLabel": "Tenho interesse"
   }
 }

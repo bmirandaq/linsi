@@ -73,15 +73,25 @@ export default function Home() {
           aria-labelledby="workshop-title">
           <div className={clsx('container', styles.workshopCard)}>
             <div className={styles.workshopContent}>
-              <Heading as="h2" id="workshop-title" className={styles.workshopTitle}>
+              <p className={styles.workshopPretitle}>{homeContent.workshop.pretitle}</p>
+
+              <h2 id="workshop-title" className={styles.workshopTitle}>
                 {homeContent.workshop.title}
-              </Heading>
+              </h2>
 
               <p className={styles.workshopDescription}>
                 {homeContent.workshop.description}
               </p>
 
-              <p className={styles.workshopMeta}>{homeContent.workshop.meta}</p>
+              <p className={styles.workshopDate}>{homeContent.workshop.dateTime}</p>
+
+              <div className={styles.workshopTags} aria-label="Informações do workshop">
+                {homeContent.workshop.tags.map((tag) => (
+                  <span className={styles.workshopTag} key={tag}>
+                    {tag}
+                  </span>
+                ))}
+              </div>
 
               {/* TODO: adicionar URL do checkout */}
               <button className={styles.workshopAction} type="button">
@@ -112,8 +122,9 @@ export default function Home() {
 
               <p className={styles.originText}>
                 Os primeiros passos da LINSI vieram de um template simples que
-                publiquei na Figma Community há mais de um ano. O que mais você
-                pode fazer com ela?
+                publiquei na Figma Community há mais de um ano.
+                <br />
+                O que mais você pode fazer com ela?
               </p>
 
               <Link className={styles.originLink} to="/docs/templates">
