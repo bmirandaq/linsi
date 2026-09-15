@@ -112,6 +112,7 @@ const config = {
   ],
 
   themeConfig: {
+    image: 'img/linsi-social-card.png',
     colorMode: {
       defaultMode: 'light',
       disableSwitch: false,
