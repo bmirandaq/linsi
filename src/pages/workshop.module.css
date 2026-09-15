@@ -215,6 +215,11 @@
   margin: 0 0 var(--linsi-space-24);
 }
 
+.checkoutBody {
+  min-height: 420px;
+  position: relative;
+}
+
 .checkoutAmount {
   color: var(--ifm-font-color-base);
   font-family: var(--ifm-heading-font-family);
@@ -239,6 +244,40 @@
 
 .paymentDynamic {
   min-height: 180px;
+}
+
+.processingOverlay {
+  align-content: center;
+  background: var(--ifm-background-color);
+  display: grid;
+  gap: var(--linsi-space-16);
+  inset: 0;
+  justify-items: center;
+  min-height: 420px;
+  position: absolute;
+  text-align: center;
+  z-index: 10;
+}
+
+.processingOverlay strong {
+  color: var(--ifm-font-color-base);
+  font-family: var(--ifm-heading-font-family);
+}
+
+.processingSpinner {
+  animation: workshop-spin 0.85s linear infinite;
+  border: 3px solid var(--linsi-border-color);
+  border-radius: 50%;
+  border-top-color: var(--linsi-button-background);
+  display: block;
+  height: 36px;
+  width: 36px;
+}
+
+@keyframes workshop-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .processorCard {
@@ -439,6 +478,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--linsi-space-8);
+  margin-bottom: var(--linsi-space-24);
 }
 
 .feedbackSignoff p {
@@ -463,6 +503,12 @@
 [data-theme='dark'] .title,
 [data-theme='dark'] .feedbackTitle {
   color: var(--linsi-pure-white);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .processingSpinner {
+    animation-duration: 1.8s;
+  }
 }
 
 @media (max-width: 700px) {
