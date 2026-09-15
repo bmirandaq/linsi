@@ -15,6 +15,9 @@ const WORKSHOP_DISCOUNTED_PRICE = 90;
 const WORKSHOP_DATE = '8 de outubro de 2026';
 const WORKSHOP_TIME = '19h';
 const WORKSHOP_FORMAT = 'Online · YouTube';
+const MAX_PAYMENT_ATTEMPTS = 3;
+const PAYMENT_LOCK_MS = 4 * 60 * 60 * 1000;
+const PIX_EXPIRATION_TIME = 'P1D';
 const MAX_LENGTHS = {
   apelido: 120,
   email: 254,
@@ -78,7 +81,7 @@ async function verifyTurnstile(token, ip, env, expectedAction = CONTACT_ACTION) 
   try {
     const resp = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: new URLSearchParams({
         secret: env.TURNSTILE_SECRET_KEY,
         response: token,
@@ -89,9 +92,7 @@ async function verifyTurnstile(token, ip, env, expectedAction = CONTACT_ACTION) 
 
     const result = await resp.json();
     const expectedHostname = new URL(allowedOrigin(env)).hostname;
-    return result.success === true &&
-      result.hostname === expectedHostname &&
-      result.action === expectedAction;
+    return result.success === true && result.hostname === expectedHostname && result.action === expectedAction;
   } catch {
     return false;
   }
@@ -152,32 +153,40 @@ function notionRichText(value) {
   let chunk = '';
   for (const character of value) {
     if (chunk.length + character.length > 2000) {
-      chunks.push({ text: { content: chunk } });
+      chunks.push({text: {content: chunk}});
       chunk = '';
     }
     chunk += character;
   }
-  if (chunk) chunks.push({ text: { content: chunk } });
+  if (chunk) chunks.push({text: {content: chunk}});
   return chunks;
 }
 
+function notionHeaders(env) {
+  return {
+    Authorization: `Bearer ${env.NOTION_API_KEY}`,
+    'Notion-Version': '2022-06-28',
+    'Content-Type': 'application/json',
+  };
+}
+
 async function registerNotion(payload, env) {
-  const { motivo, apelido, email, mensagem } = payload;
+  const {motivo, apelido, email, mensagem} = payload;
   const assunto = REASON_LABELS[motivo];
 
   const resp = await fetch('https://api.notion.com/v1/pages', {
     method: 'POST',
     headers: notionHeaders(env),
     body: JSON.stringify({
-      parent: { database_id: env.NOTION_DATABASE_ID },
+      parent: {database_id: env.NOTION_DATABASE_ID},
       properties: {
-        Assunto: { title: [{ text: { content: assunto } }] },
-        Status: { select: { name: 'Novo' } },
-        Motivo: { select: { name: assunto } },
-        Apelido: { rich_text: [{ text: { content: apelido } }] },
-        'E-mail': { email },
-        Mensagem: { rich_text: notionRichText(mensagem) },
-        'Recebido em': { date: { start: new Date().toISOString() } },
+        Assunto: {title: [{text: {content: assunto}}]},
+        Status: {select: {name: 'Novo'}},
+        Motivo: {select: {name: assunto}},
+        Apelido: {rich_text: [{text: {content: apelido}}]},
+        'E-mail': {email},
+        Mensagem: {rich_text: notionRichText(mensagem)},
+        'Recebido em': {date: {start: new Date().toISOString()}},
       },
     }),
   });
@@ -189,7 +198,7 @@ async function registerNotion(payload, env) {
 }
 
 async function sendResend(payload, env) {
-  const { motivo, apelido, email, linkedin, whatsapp, mensagem } = payload;
+  const {motivo, apelido, email, linkedin, whatsapp, mensagem} = payload;
   const assunto = REASON_LABELS[motivo];
 
   const textLines = [
@@ -226,7 +235,7 @@ async function sendResend(payload, env) {
 
 async function handleContact(request, env, cors) {
   const payload = await readJson(request);
-  if (!payload) return json({ error: 'Invalid JSON' }, 400, cors);
+  if (!payload) return json({error: 'Invalid JSON'}, 400, cors);
 
   const motivo = payload?.motivo;
   const apelido = requiredString(payload?.apelido, MAX_LENGTHS.apelido);
@@ -236,17 +245,17 @@ async function handleContact(request, env, cors) {
   const mensagem = requiredString(payload?.mensagem, MAX_LENGTHS.mensagem);
   const turnstileToken = requiredString(payload?.turnstileToken, MAX_LENGTHS.turnstileToken);
 
-  if (!ALLOWED_REASONS.includes(motivo)) return json({ error: 'Motivo inválido' }, 400, cors);
-  if (!apelido) return json({ error: 'Apelido obrigatório' }, 400, cors);
-  if (!validEmail(email)) return json({ error: 'E-mail inválido' }, 400, cors);
-  if (linkedin === null) return json({ error: 'LinkedIn inválido' }, 400, cors);
-  if (whatsapp === null) return json({ error: 'WhatsApp inválido' }, 400, cors);
-  if (!mensagem) return json({ error: 'Mensagem obrigatória' }, 400, cors);
-  if (!turnstileToken) return json({ error: 'Token Turnstile obrigatório' }, 400, cors);
+  if (!ALLOWED_REASONS.includes(motivo)) return json({error: 'Motivo inválido'}, 400, cors);
+  if (!apelido) return json({error: 'Apelido obrigatório'}, 400, cors);
+  if (!validEmail(email)) return json({error: 'E-mail inválido'}, 400, cors);
+  if (linkedin === null) return json({error: 'LinkedIn inválido'}, 400, cors);
+  if (whatsapp === null) return json({error: 'WhatsApp inválido'}, 400, cors);
+  if (!mensagem) return json({error: 'Mensagem obrigatória'}, 400, cors);
+  if (!turnstileToken) return json({error: 'Token Turnstile obrigatório'}, 400, cors);
 
   const ip = request.headers.get('CF-Connecting-IP') || '';
   if (!await verifyTurnstile(turnstileToken, ip, env, CONTACT_ACTION)) {
-    return json({ error: 'Verificação falhou' }, 403, cors);
+    return json({error: 'Verificação falhou'}, 403, cors);
   }
 
   const normalizedPayload = {motivo, apelido, email, linkedin, whatsapp, mensagem};
@@ -255,7 +264,7 @@ async function handleContact(request, env, cors) {
     await registerNotion(normalizedPayload, env);
   } catch (err) {
     console.error('Notion registration failed:', err);
-    return json({ error: 'Erro ao registrar' }, 500, cors);
+    return json({error: 'Erro ao registrar'}, 500, cors);
   }
 
   try {
@@ -264,7 +273,7 @@ async function handleContact(request, env, cors) {
     console.error('Resend notification failed (non-blocking):', err);
   }
 
-  return json({ ok: true }, 200, cors);
+  return json({ok: true}, 200, cors);
 }
 
 function normalizeCoupon(value) {
@@ -287,12 +296,7 @@ function evaluateCoupon(value, env) {
   const coupon = normalizeCoupon(value);
   if (coupon === null) return {status: 'invalid'};
   if (!coupon) {
-    return {
-      status: 'empty',
-      coupon: '',
-      partner: 'Direto',
-      amount: WORKSHOP_BASE_PRICE,
-    };
+    return {status: 'empty', coupon: '', partner: 'Direto', amount: WORKSHOP_BASE_PRICE};
   }
 
   const config = couponConfig(env);
@@ -309,14 +313,6 @@ function evaluateCoupon(value, env) {
     coupon,
     partner: requiredString(rule.partner, 120) || 'Parceria',
     amount: WORKSHOP_DISCOUNTED_PRICE,
-  };
-}
-
-function notionHeaders(env) {
-  return {
-    Authorization: `Bearer ${env.NOTION_API_KEY}`,
-    'Notion-Version': '2022-06-28',
-    'Content-Type': 'application/json',
   };
 }
 
@@ -348,18 +344,7 @@ function notionStatusToWorkshop(value) {
   }[value] || 'started';
 }
 
-async function createWorkshopRegistration({
-  registrationId,
-  nome,
-  email,
-  cargo,
-  empresa,
-  linkedin,
-  whatsapp,
-  coupon,
-  partner,
-  amount,
-}, env) {
+async function createWorkshopRegistration({registrationId, nome, email, cargo, empresa, linkedin, whatsapp, coupon, partner, amount}, env) {
   if (!env.NOTION_API_KEY || !env.WORKSHOP_NOTION_DATABASE_ID) {
     throw new Error('Workshop Notion configuration missing');
   }
@@ -386,6 +371,8 @@ async function createWorkshopRegistration({
         'Pago em': {date: null},
         'Acesso enviado': {checkbox: false},
         'Confirmação enviada': {checkbox: false},
+        'Tentativas de pagamento': {number: 0},
+        'Bloqueado até': {date: null},
       },
     }),
   });
@@ -405,10 +392,7 @@ async function findWorkshopRegistration(registrationId, env) {
     headers: notionHeaders(env),
     body: JSON.stringify({
       page_size: 1,
-      filter: {
-        property: 'Inscrição',
-        title: {equals: registrationId},
-      },
+      filter: {property: 'Inscrição', title: {equals: registrationId}},
     }),
   });
   if (!resp.ok) {
@@ -436,6 +420,8 @@ async function findWorkshopRegistration(registrationId, env) {
     mpOrderId: richTextValue(properties['MP Order ID']),
     paidAt: properties['Pago em']?.date?.start || '',
     confirmationSent: properties['Confirmação enviada']?.checkbox === true,
+    attempts: Number(properties['Tentativas de pagamento']?.number || 0),
+    retryAt: properties['Bloqueado até']?.date?.start || '',
   };
 }
 
@@ -447,6 +433,8 @@ async function updateWorkshopRegistration(pageId, updates, env) {
   }
   if (updates.paidAt !== undefined) properties['Pago em'] = {date: updates.paidAt ? {start: updates.paidAt} : null};
   if (updates.confirmationSent !== undefined) properties['Confirmação enviada'] = {checkbox: updates.confirmationSent};
+  if (updates.attempts !== undefined) properties['Tentativas de pagamento'] = {number: updates.attempts};
+  if (updates.retryAt !== undefined) properties['Bloqueado até'] = {date: updates.retryAt ? {start: updates.retryAt} : null};
 
   const resp = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
     method: 'PATCH',
@@ -488,10 +476,7 @@ async function sendWorkshopConfirmation(registration, env) {
     body: JSON.stringify({
       from: env.CONTACT_FROM_EMAIL || 'LINSI <noreply@beamiranda.com.br>',
       to: [registration.email],
-      template: {
-        id: env.WORKSHOP_CONFIRMATION_TEMPLATE_ID,
-        variables,
-      },
+      template: {id: env.WORKSHOP_CONFIRMATION_TEMPLATE_ID, variables},
     }),
   });
 
@@ -520,9 +505,7 @@ async function mercadoPagoOrder(path, options, env) {
     },
   });
   const data = await resp.json().catch(() => null);
-  if (!resp.ok) {
-    throw new Error(`Mercado Pago error: ${resp.status} ${JSON.stringify(data)}`);
-  }
+  if (!resp.ok) throw new Error(`Mercado Pago error: ${resp.status} ${JSON.stringify(data)}`);
   return data;
 }
 
@@ -534,6 +517,41 @@ function orderPixData(order) {
     qrCodeBase64: method.qr_code_base64 || '',
     ticketUrl: method.ticket_url || '',
   };
+}
+
+function paymentLockActive(registration) {
+  const retryAt = Date.parse(registration.retryAt || '');
+  return Number.isFinite(retryAt) && retryAt > Date.now();
+}
+
+async function clearExpiredPaymentLock(registration, env) {
+  if (!registration?.retryAt) return registration;
+  const retryAt = Date.parse(registration.retryAt);
+  if (!Number.isFinite(retryAt) || retryAt > Date.now()) return registration;
+
+  await updateWorkshopRegistration(registration.pageId, {attempts: 0, retryAt: ''}, env);
+  return {...registration, attempts: 0, retryAt: ''};
+}
+
+async function beginPaymentAttempt(registration, env) {
+  const current = await clearExpiredPaymentLock(registration, env);
+  if (paymentLockActive(current)) return {locked: true, registration: current};
+
+  const attempts = current.attempts + 1;
+  const retryAt = attempts >= MAX_PAYMENT_ATTEMPTS
+    ? new Date(Date.now() + PAYMENT_LOCK_MS).toISOString()
+    : '';
+  await updateWorkshopRegistration(current.pageId, {attempts, retryAt}, env);
+  return {locked: false, registration: {...current, attempts, retryAt}};
+}
+
+function lockedPaymentResponse(registration, cors) {
+  return json({
+    code: 'payment_locked',
+    message: 'Não foi possível confirmar o pagamento.',
+    attempts: registration.attempts,
+    retryAt: registration.retryAt || null,
+  }, 429, cors);
 }
 
 async function applyOrderStatus(order, env) {
@@ -554,9 +572,7 @@ async function applyOrderStatus(order, env) {
   if (status === 'paid' && !registration.confirmationSent) {
     try {
       const sent = await sendWorkshopConfirmation(registration, env);
-      if (sent) {
-        await updateWorkshopRegistration(registration.pageId, {confirmationSent: true}, env);
-      }
+      if (sent) await updateWorkshopRegistration(registration.pageId, {confirmationSent: true}, env);
     } catch (err) {
       console.error('Workshop confirmation email failed:', err);
     }
@@ -575,9 +591,7 @@ async function handleCoupon(request, env, cors) {
   if (!payload) return json({status: 'unavailable'}, 400, cors);
 
   const result = evaluateCoupon(payload.coupon, env);
-  if (result.status === 'valid') {
-    return json({status: 'valid', coupon: result.coupon}, 200, cors);
-  }
+  if (result.status === 'valid') return json({status: 'valid', coupon: result.coupon}, 200, cors);
   if (result.status === 'invalid') return json({status: 'invalid'}, 200, cors);
   return json({status: 'unavailable'}, 200, cors);
 }
@@ -593,15 +607,7 @@ async function handleWorkshopStart(request, env, cors) {
   const linkedin = normalizeLinkedIn(payload.linkedin);
   const whatsapp = normalizeWhatsApp(payload.whatsapp);
   const turnstileToken = requiredString(payload.turnstileToken, MAX_LENGTHS.turnstileToken);
-  if (
-    !nome ||
-    !validEmail(email) ||
-    !cargo ||
-    empresa === null ||
-    linkedin === null ||
-    whatsapp === null ||
-    !turnstileToken
-  ) {
+  if (!nome || !validEmail(email) || !cargo || empresa === null || linkedin === null || whatsapp === null || !turnstileToken) {
     return json({message: 'Confira os campos preenchidos e tente novamente.'}, 400, cors);
   }
 
@@ -618,9 +624,7 @@ async function handleWorkshopStart(request, env, cors) {
     return json({message: 'Não foi possível concluir a verificação de segurança. Tente novamente.'}, 403, cors);
   }
 
-  if (!env.MP_PUBLIC_KEY) {
-    return json({message: 'O pagamento está temporariamente indisponível.'}, 503, cors);
-  }
+  if (!env.MP_PUBLIC_KEY) return json({message: 'O pagamento está temporariamente indisponível.'}, 503, cors);
 
   const registrationId = `WS-${crypto.randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`;
   try {
@@ -645,7 +649,36 @@ async function handleWorkshopStart(request, env, cors) {
     registrationId,
     amount: couponResult.amount || WORKSHOP_BASE_PRICE,
     publicKey: env.MP_PUBLIC_KEY,
+    attempts: 0,
+    retryAt: null,
   }, 200, cors);
+}
+
+async function handlePaymentReset(request, env, cors) {
+  const payload = await readJson(request);
+  const registrationId = requiredString(payload?.registrationId, MAX_LENGTHS.registrationId);
+  if (!registrationId) return json({message: 'Inscrição não encontrada.'}, 404, cors);
+
+  let registration = await findWorkshopRegistration(registrationId, env);
+  if (!registration) return json({message: 'Inscrição não encontrada.'}, 404, cors);
+  if (registration.status === 'paid') {
+    return json({status: 'paid', attempts: registration.attempts, retryAt: null}, 200, cors);
+  }
+
+  registration = await clearExpiredPaymentLock(registration, env);
+  if (paymentLockActive(registration)) return lockedPaymentResponse(registration, cors);
+
+  if (registration.status === 'pending' && registration.mpOrderId) {
+    try {
+      await mercadoPagoOrder(`/v1/orders/${encodeURIComponent(registration.mpOrderId)}/cancel`, {method: 'POST'}, env);
+    } catch (err) {
+      console.error('Mercado Pago pending order cancel failed:', err);
+      return json({message: 'Não foi possível alterar a forma de pagamento.'}, 502, cors);
+    }
+  }
+
+  await updateWorkshopRegistration(registration.pageId, {status: 'started', mpOrderId: ''}, env);
+  return json({status: 'started', attempts: registration.attempts, retryAt: null}, 200, cors);
 }
 
 async function handleCardPayment(request, env, cors) {
@@ -658,24 +691,21 @@ async function handleCardPayment(request, env, cors) {
   const paymentTypeId = requiredString(payload.paymentTypeId, MAX_LENGTHS.paymentTypeId);
   const deviceId = optionalString(payload.deviceId, MAX_LENGTHS.deviceId);
   const installments = Number(payload.installments);
-  if (
-    !registrationId ||
-    !token ||
-    !paymentMethodId ||
-    !paymentTypeId ||
-    deviceId === null ||
-    !Number.isInteger(installments) ||
-    installments < 1 ||
-    installments > 12
-  ) {
+  if (!registrationId || !token || !paymentMethodId || !paymentTypeId || deviceId === null || !Number.isInteger(installments) || installments < 1 || installments > 12) {
     return json({message: 'Não foi possível processar o pagamento.'}, 400, cors);
   }
 
-  const registration = await findWorkshopRegistration(registrationId, env);
+  let registration = await findWorkshopRegistration(registrationId, env);
   if (!registration || !validEmail(registration.email) || ![WORKSHOP_BASE_PRICE, WORKSHOP_DISCOUNTED_PRICE].includes(registration.amount)) {
     return json({message: 'Inscrição não encontrada.'}, 404, cors);
   }
-  if (registration.status === 'paid') return json({status: 'paid'}, 200, cors);
+  if (registration.status === 'paid') {
+    return json({status: 'paid', attempts: registration.attempts, retryAt: null}, 200, cors);
+  }
+
+  const attempt = await beginPaymentAttempt(registration, env);
+  if (attempt.locked) return lockedPaymentResponse(attempt.registration, cors);
+  registration = attempt.registration;
 
   const identification = payload.identification && typeof payload.identification === 'object' ? payload.identification : undefined;
   const orderBody = {
@@ -707,18 +737,28 @@ async function handleCardPayment(request, env, cors) {
     order = await mercadoPagoOrder('/v1/orders', {
       method: 'POST',
       headers: {
-        'X-Idempotency-Key': `${registrationId}-card-${token.slice(0, 24)}`,
+        'X-Idempotency-Key': `${registrationId}-card-${registration.attempts}-${token.slice(0, 20)}`,
         ...(deviceId ? {'X-meli-session-id': deviceId} : {}),
       },
       body: JSON.stringify(orderBody),
     }, env);
   } catch (err) {
     console.error('Mercado Pago card order failed:', err);
-    return json({message: 'Não foi possível processar o pagamento. Revise os dados e tente novamente.'}, 502, cors);
+    if (registration.retryAt) return lockedPaymentResponse(registration, cors);
+    return json({
+      code: 'payment_failed',
+      message: 'Não foi possível confirmar o pagamento.',
+      attempts: registration.attempts,
+      retryAt: null,
+    }, 502, cors);
   }
 
   const updated = await applyOrderStatus(order, env);
-  return json({status: updated?.status || mapOrderStatus(order)}, 200, cors);
+  return json({
+    status: updated?.status || mapOrderStatus(order),
+    attempts: registration.attempts,
+    retryAt: registration.retryAt || null,
+  }, 200, cors);
 }
 
 async function handlePixPayment(request, env, cors) {
@@ -729,18 +769,24 @@ async function handlePixPayment(request, env, cors) {
   const deviceId = optionalString(payload.deviceId, MAX_LENGTHS.deviceId);
   if (!registrationId || deviceId === null) return json({message: 'Inscrição não encontrada.'}, 404, cors);
 
-  const registration = await findWorkshopRegistration(registrationId, env);
+  let registration = await findWorkshopRegistration(registrationId, env);
   if (!registration || !validEmail(registration.email) || ![WORKSHOP_BASE_PRICE, WORKSHOP_DISCOUNTED_PRICE].includes(registration.amount)) {
     return json({message: 'Inscrição não encontrada.'}, 404, cors);
   }
-  if (registration.status === 'paid') return json({status: 'paid'}, 200, cors);
+  if (registration.status === 'paid') {
+    return json({status: 'paid', attempts: registration.attempts, retryAt: null}, 200, cors);
+  }
+
+  const attempt = await beginPaymentAttempt(registration, env);
+  if (attempt.locked) return lockedPaymentResponse(attempt.registration, cors);
+  registration = attempt.registration;
 
   let order;
   try {
     order = await mercadoPagoOrder('/v1/orders', {
       method: 'POST',
       headers: {
-        'X-Idempotency-Key': `${registrationId}-pix`,
+        'X-Idempotency-Key': `${registrationId}-pix-${registration.attempts}`,
         ...(deviceId ? {'X-meli-session-id': deviceId} : {}),
       },
       body: JSON.stringify({
@@ -752,6 +798,7 @@ async function handlePixPayment(request, env, cors) {
         transactions: {
           payments: [{
             amount: registration.amount.toFixed(2),
+            expiration_time: PIX_EXPIRATION_TIME,
             payment_method: {id: 'pix', type: 'bank_transfer'},
           }],
         },
@@ -759,12 +806,20 @@ async function handlePixPayment(request, env, cors) {
     }, env);
   } catch (err) {
     console.error('Mercado Pago Pix order failed:', err);
-    return json({message: 'Não foi possível gerar o Pix. Tente novamente.'}, 502, cors);
+    if (registration.retryAt) return lockedPaymentResponse(registration, cors);
+    return json({
+      code: 'payment_failed',
+      message: 'Não foi possível gerar o Pix.',
+      attempts: registration.attempts,
+      retryAt: null,
+    }, 502, cors);
   }
 
   const updated = await applyOrderStatus(order, env);
   return json({
     status: updated?.status || mapOrderStatus(order),
+    attempts: registration.attempts,
+    retryAt: registration.retryAt || null,
     pix: orderPixData(order),
   }, 200, cors);
 }
@@ -776,6 +831,7 @@ async function handleWorkshopStatus(request, env, cors) {
   let registration;
   try {
     registration = await findWorkshopRegistration(registrationId, env);
+    if (registration) registration = await clearExpiredPaymentLock(registration, env);
   } catch (err) {
     console.error('Workshop status query failed:', err);
     return json({message: 'Não foi possível consultar o pagamento.'}, 500, cors);
@@ -786,15 +842,17 @@ async function handleWorkshopStatus(request, env, cors) {
     try {
       const order = await mercadoPagoOrder(`/v1/orders/${encodeURIComponent(registration.mpOrderId)}`, {method: 'GET'}, env);
       const current = mapOrderStatus(order);
-      if (current !== registration.status) {
-        registration = await applyOrderStatus(order, env) || registration;
-      }
+      if (current !== registration.status) registration = await applyOrderStatus(order, env) || registration;
     } catch (err) {
       console.error('Mercado Pago status refresh failed (non-blocking):', err);
     }
   }
 
-  return json({status: registration.status}, 200, cors);
+  return json({
+    status: registration.status,
+    attempts: registration.attempts,
+    retryAt: paymentLockActive(registration) ? registration.retryAt : null,
+  }, 200, cors);
 }
 
 function hex(bytes) {
@@ -834,9 +892,7 @@ async function handleMercadoPagoWebhook(request, env) {
   if (!body) return json({ok: false}, 400);
 
   const dataId = body?.data?.id || new URL(request.url).searchParams.get('data.id');
-  if (!await validateMercadoPagoSignature(request, dataId, env)) {
-    return json({ok: false}, 401);
-  }
+  if (!await validateMercadoPagoSignature(request, dataId, env)) return json({ok: false}, 401);
 
   try {
     const order = await mercadoPagoOrder(`/v1/orders/${encodeURIComponent(dataId)}`, {method: 'GET'}, env);
@@ -868,6 +924,7 @@ export default {
     if (path === '/' && request.method === 'POST') return handleContact(request, env, cors);
     if (path === '/workshop/coupon' && request.method === 'POST') return handleCoupon(request, env, cors);
     if (path === '/workshop/start' && request.method === 'POST') return handleWorkshopStart(request, env, cors);
+    if (path === '/workshop/payment/reset' && request.method === 'POST') return handlePaymentReset(request, env, cors);
     if (path === '/workshop/pay/card' && request.method === 'POST') return handleCardPayment(request, env, cors);
     if (path === '/workshop/pay/pix' && request.method === 'POST') return handlePixPayment(request, env, cors);
     if (path === '/workshop/status' && request.method === 'GET') return handleWorkshopStatus(request, env, cors);
