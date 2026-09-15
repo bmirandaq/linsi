@@ -1,1 +1,0 @@
-Assets de marca usados apenas no fluxo do Workshop LINSI. Não substituir logos ou símbolo sem alinhamento visual.
