@@ -70,6 +70,34 @@ const config = {
       attributes: {'data-linsi-root-canvas': 'true'},
       innerHTML: rootCanvasInitStyle,
     },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:image:type',
+        content: 'image/png',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:image:width',
+        content: '1200',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:image:height',
+        content: '630',
+      },
+    },
+    {
+      tagName: 'meta',
+      attributes: {
+        property: 'og:image:alt',
+        content: 'LINSI — Sistema de notação visual para fluxogramas de User Experience',
+      },
+    },
   ],
 
   presets: [
@@ -112,7 +140,7 @@ const config = {
   ],
 
   themeConfig: {
-    image: 'img/linsi-social-card-v2.png',
+    image: 'img/linsi-social-card-live.png',
     colorMode: {
       defaultMode: 'light',
       disableSwitch: false,
