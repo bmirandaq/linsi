@@ -112,3 +112,8 @@
 .aa-DetachedFormContainer .aa-DetachedCancelButton {
   flex: 0 0 44px !important;
 }
+
+/* Home logo: keep the light-mode Brand 2 asset pure white in dark mode */
+html[data-theme='dark'] img[src$='/img/linsi-logo.svg'] {
+  filter: brightness(0) invert(1) !important;
+}
