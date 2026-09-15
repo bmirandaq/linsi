@@ -233,13 +233,34 @@
   gap: var(--linsi-space-16);
 }
 
-.pixQr {
+.pixQr,
+.mockQr {
   background: var(--linsi-pure-white);
   border-radius: var(--linsi-radius-md);
   display: block;
   max-width: 280px;
   padding: var(--linsi-space-16);
   width: 100%;
+}
+
+.mockQr {
+  align-items: center;
+  aspect-ratio: 1;
+  border: 1px solid var(--linsi-border-color);
+  color: var(--linsi-neutral-darkest);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--ifm-heading-font-family);
+  justify-content: center;
+  letter-spacing: 0.08em;
+}
+
+.mockQr span {
+  font-size: 0.85rem;
+}
+
+.mockQr strong {
+  font-size: 2rem;
 }
 
 .pixCopy {
@@ -250,6 +271,85 @@
 .pixCopy textarea {
   min-height: 120px;
   resize: vertical;
+}
+
+.mockPayment {
+  background: var(--ifm-background-surface-color);
+  border: 1px dashed var(--linsi-border-color);
+  border-radius: var(--linsi-radius-md);
+  display: grid;
+  gap: var(--linsi-space-16);
+  padding: var(--linsi-space-16);
+}
+
+.mockEyebrow {
+  color: var(--linsi-neutral-base);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.mockCardFields {
+  display: grid;
+  gap: var(--linsi-space-16);
+  grid-template-columns: 1fr 1fr;
+}
+
+.mockField,
+.mockFieldFull {
+  display: grid;
+  gap: var(--linsi-space-8);
+}
+
+.mockFieldFull {
+  grid-column: 1 / -1;
+}
+
+.mockField span {
+  color: var(--ifm-font-color-base);
+  font-size: 0.9rem;
+}
+
+.mockFieldFull span {
+  color: var(--ifm-font-color-base);
+  font-size: 0.9rem;
+}
+
+.mockInput {
+  align-items: center;
+  background: var(--ifm-background-color);
+  border: 1px solid var(--linsi-border-color);
+  border-radius: var(--linsi-radius-md);
+  color: var(--linsi-neutral-base);
+  display: flex;
+  min-height: 46px;
+  padding: var(--linsi-space-8) var(--linsi-space-16);
+}
+
+.mockActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--linsi-space-8);
+}
+
+.mockActions .submit,
+.mockActions .methodButton {
+  width: auto;
+}
+
+.mockReset {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: block;
+  font: inherit;
+  font-weight: 700;
+  margin-top: var(--linsi-space-16);
+  padding: 0;
+  text-decoration: underline;
 }
 
 .feedback {
@@ -294,14 +394,21 @@
 
   .contactRow,
   .couponRow,
-  .paymentMethods {
+  .paymentMethods,
+  .mockCardFields {
     grid-template-columns: 1fr;
+  }
+
+  .mockFieldFull {
+    grid-column: auto;
   }
 
   .couponButton,
   .submit,
   .methodButton,
-  .methodActive {
+  .methodActive,
+  .mockActions .submit,
+  .mockActions .methodButton {
     width: 100%;
   }
 }
