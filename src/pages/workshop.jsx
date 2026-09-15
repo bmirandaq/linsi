@@ -47,22 +47,18 @@ function mockApiRequest(path, options = {}) {
 
   if (path === '/workshop/payment/reset') {
     const attempts = Number(body.attempts || 0);
-    if (attempts >= MAX_PAYMENT_ATTEMPTS) {
-      const retryAt = body.retryAt || new Date(Date.now() + PAYMENT_LOCK_MS).toISOString();
-      return Promise.reject(mockLockedError(attempts, retryAt));
+    if (attempts >= MAX_PAYMENT_ATTEMPTS && body.retryAt) {
+      return Promise.reject(mockLockedError(attempts, body.retryAt));
     }
     return Promise.resolve({status: 'started', attempts, retryAt: null});
   }
 
   if (path === '/workshop/pay/pix') {
-    const attempts = Number(body.attempts || 0) + 1;
-    const retryAt = attempts >= MAX_PAYMENT_ATTEMPTS
-      ? new Date(Date.now() + PAYMENT_LOCK_MS).toISOString()
-      : null;
+    const attempts = Number(body.attempts || 0);
     return Promise.resolve({
       status: 'pending',
       attempts,
-      retryAt,
+      retryAt: null,
       pix: {
         qrCode: '00020126580014BR.GOV.BCB.PIX0136WORKSHOP-LINSI-MOCK-LOCAL5204000053039865406100.005802BR5920BEATRIZ MIRANDA MOCK6006RECIFE62070503***6304ABCD',
         qrCodeBase64: '',
@@ -72,7 +68,7 @@ function mockApiRequest(path, options = {}) {
   }
 
   if (path.startsWith('/workshop/status')) {
-    return Promise.resolve({status: 'pending', attempts: Number(body.attempts || 1), retryAt: null});
+    return Promise.resolve({status: 'pending', attempts: Number(body.attempts || 0), retryAt: null});
   }
 
   return Promise.reject(new Error('Endpoint mock não configurado.'));
@@ -414,15 +410,35 @@ export default function Workshop() {
     }
   }, [applyPaymentMeta, paymentAttempts, registrationId, retryAt]);
 
+  const resetMockCheckout = useCallback(() => {
+    if (!mockMode) return;
+    setPaymentError('');
+    setPixData(null);
+    setCopied(false);
+    setPaymentMethod('card');
+    setPaymentState('idle');
+    setPaymentAttempts(0);
+    setRetryAt(null);
+  }, [mockMode]);
+
   const selectPaymentMethod = useCallback(async (method) => {
     if (paymentLocked) return;
     if (method === paymentMethod && !(method === 'pix' && !pixData)) return;
+
+    if (mockMode) {
+      setPaymentMethod(method);
+      setPaymentError('');
+      setPaymentState('idle');
+      if (method === 'pix') setPixData(null);
+      return;
+    }
+
     const needsReset = paymentState === 'pending' || paymentState === 'failed';
     if (needsReset && !(await resetPayment())) return;
     setPaymentMethod(method);
     setPaymentError('');
     if (method === 'pix') setPixData(null);
-  }, [paymentLocked, paymentMethod, paymentState, pixData, resetPayment]);
+  }, [mockMode, paymentLocked, paymentMethod, paymentState, pixData, resetPayment]);
 
   useEffect(() => {
     if (stage !== 'checkout' || paymentMethod !== 'card' || paymentState !== 'idle' || !publicKey || !checkoutAmount || !registrationId) return undefined;
@@ -566,7 +582,7 @@ export default function Workshop() {
       : null;
     setPaymentAttempts(nextAttempts);
     setRetryAt(nextRetryAt);
-    setPaymentState('pending');
+    setPaymentState(nextRetryAt ? 'locked' : 'pending');
   }, [paymentAttempts]);
 
   const renderCardContent = () => {
@@ -575,6 +591,7 @@ export default function Workshop() {
         <div className={styles.paymentStatus} role="alert">
           <strong>Não foi possível confirmar o pagamento</strong>
           <p>Você pode realizar uma nova tentativa daqui algumas horas</p>
+          {mockMode ? <button className={styles.mockReset} type="button" onClick={resetMockCheckout}>Resetar mock local</button> : null}
         </div>
       );
     }
@@ -616,6 +633,7 @@ export default function Workshop() {
         <div className={styles.paymentStatus} role="alert">
           <strong>Não foi possível confirmar o pagamento</strong>
           <p>Você pode realizar uma nova tentativa daqui algumas horas</p>
+          {mockMode ? <button className={styles.mockReset} type="button" onClick={resetMockCheckout}>Resetar mock local</button> : null}
         </div>
       );
     }
@@ -669,6 +687,7 @@ export default function Workshop() {
           </div>
           <div className={styles.paymentDynamic}>{paymentMethod === 'card' ? renderCardContent() : renderPixContent()}</div>
           <PaymentProcessor />
+          {mockMode && !paymentLocked ? <button className={styles.mockReset} type="button" onClick={resetMockCheckout}>Resetar mock local</button> : null}
         </section> : null}
 
         {stage === 'paid' ? <section className={styles.feedback} role="status" aria-live="polite">
@@ -678,7 +697,7 @@ export default function Workshop() {
           <strong>{email}</strong>
           <div className={styles.feedbackSignoff}><p>Te vejo lá!<br />Bea</p><img src="/img/workshop/bea-symbol.webp" alt="" /></div>
           <button className={styles.methodButton} type="button" onClick={() => { window.location.href = '/docs/principios'; }}>Ir para manual LINSI</button>
-          {mockMode ? <button className={styles.mockReset} type="button" onClick={() => { setPaymentError(''); setPixData(null); setPaymentMethod('card'); setPaymentState('idle'); setPaymentAttempts(0); setRetryAt(null); setStage('form'); }}>Reiniciar mock</button> : null}
+          {mockMode ? <button className={styles.mockReset} type="button" onClick={() => { resetMockCheckout(); setStage('form'); }}>Reiniciar mock</button> : null}
         </section> : null}
       </div></main>
     </Layout>
