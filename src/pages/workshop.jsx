@@ -7,6 +7,7 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAAEjIIV8ZHpYobikz';
 const MOCK_VALID_COUPONS = new Set(['VAGASUX10', 'CROQ10', 'GUIA10']);
 const MAX_PAYMENT_ATTEMPTS = 3;
 const PAYMENT_LOCK_MS = 4 * 60 * 60 * 1000;
+const MOCK_PENDING_PREVIEW_MS = 4000;
 let turnstileScriptPromise;
 let mercadoPagoScriptPromise;
 let mercadoPagoSecurityScriptPromise;
@@ -556,6 +557,15 @@ export default function Workshop() {
     return () => { cancelled = true; window.clearInterval(interval); };
   }, [applyPaymentMeta, paymentState, registrationId, stage]);
 
+  useEffect(() => {
+    if (!mockMode || stage !== 'checkout' || paymentMethod !== 'card' || paymentState !== 'pending') return undefined;
+    const timeout = window.setTimeout(() => {
+      setPaymentState('failed');
+      setPaymentError('Não foi possível confirmar o pagamento.');
+    }, MOCK_PENDING_PREVIEW_MS);
+    return () => window.clearTimeout(timeout);
+  }, [mockMode, paymentMethod, paymentState, stage]);
+
   const copyPix = useCallback(async () => {
     if (!pixData?.qrCode || !navigator.clipboard) return;
     try {
@@ -595,13 +605,7 @@ export default function Workshop() {
         </div>
       );
     }
-    if (paymentState === 'pending') return (
-      <div className={styles.paymentStatus}>
-        <strong>Pagamento em análise</strong>
-        <button className={styles.methodButton} type="button" onClick={() => void resetPayment()}>Trocar cartão</button>
-        {mockMode && <button className={styles.submit} type="button" onClick={() => setStage('paid')}>Simular pagamento confirmado</button>}
-      </div>
-    );
+    if (paymentState === 'pending') return null;
     if (paymentState === 'failed') return (
       <div className={styles.paymentStatus} role="alert">
         <strong>Não foi possível confirmar o pagamento</strong>
@@ -651,8 +655,10 @@ export default function Workshop() {
     );
   };
 
+  const cardProcessing = stage === 'checkout' && paymentMethod === 'card' && paymentState === 'pending';
+
   return (
-    <Layout title="Workshop LINSI" description="Inscrição no Workshop LINSI">
+    <Layout title="Workshop" description="Inscrição no Workshop LINSI">
       <main className={`${styles.page} linsi-page-enter`}><div className={styles.shell}>
         {stage === 'form' || stage === 'creating' ? <>
           <header className={styles.header}><h1 className={styles.title}>Inscrição no Workshop LINSI</h1><WorkshopStepper active="data" /></header>
@@ -678,16 +684,24 @@ export default function Workshop() {
 
         {stage === 'checkout' ? <section aria-labelledby="payment-title" className={styles.checkout}>
           <WorkshopStepper active="payment" />
-          <h1 id="payment-title" className={styles.title}>Valor do workshop</h1>
-          <p className={styles.checkoutAmount}>R$ {Number(checkoutAmount).toFixed(2).replace('.', ',')}</p>
-          <p className={styles.paymentChoiceLabel}>Escolha a melhor opção pra você:</p>
-          <div className={styles.paymentMethods} aria-label="Forma de pagamento">
-            <button type="button" className={paymentMethod === 'card' ? styles.methodActive : styles.methodButton} disabled={paymentLocked} onClick={() => void selectPaymentMethod('card')}>Cartão de crédito</button>
-            <button type="button" className={paymentMethod === 'pix' ? styles.methodActive : styles.methodButton} disabled={paymentLocked || pixLoading} onClick={() => void selectPaymentMethod('pix')}>Pix</button>
+          <div className={styles.checkoutBody} aria-busy={cardProcessing}>
+            <h1 id="payment-title" className={styles.title}>Valor do workshop</h1>
+            <p className={styles.checkoutAmount}>R$ {Number(checkoutAmount).toFixed(2).replace('.', ',')}</p>
+            <p className={styles.paymentChoiceLabel}>Escolha a melhor opção pra você:</p>
+            <div className={styles.paymentMethods} aria-label="Forma de pagamento">
+              <button type="button" className={paymentMethod === 'card' ? styles.methodActive : styles.methodButton} disabled={paymentLocked} onClick={() => void selectPaymentMethod('card')}>Cartão de crédito</button>
+              <button type="button" className={paymentMethod === 'pix' ? styles.methodActive : styles.methodButton} disabled={paymentLocked || pixLoading} onClick={() => void selectPaymentMethod('pix')}>Pix</button>
+            </div>
+            <div className={styles.paymentDynamic}>{paymentMethod === 'card' ? renderCardContent() : renderPixContent()}</div>
+            <PaymentProcessor />
+            {mockMode && !paymentLocked ? <button className={styles.mockReset} type="button" onClick={resetMockCheckout}>Resetar mock local</button> : null}
+            {cardProcessing ? (
+              <div className={styles.processingOverlay} role="status" aria-live="polite">
+                <span className={styles.processingSpinner} aria-hidden="true" />
+                <strong>Processando pagamento...</strong>
+              </div>
+            ) : null}
           </div>
-          <div className={styles.paymentDynamic}>{paymentMethod === 'card' ? renderCardContent() : renderPixContent()}</div>
-          <PaymentProcessor />
-          {mockMode && !paymentLocked ? <button className={styles.mockReset} type="button" onClick={resetMockCheckout}>Resetar mock local</button> : null}
         </section> : null}
 
         {stage === 'paid' ? <section className={styles.feedback} role="status" aria-live="polite">
