@@ -1,5 +1,5 @@
 name = "linsi-form-handler"
-main = "index.js"
+main = "entry.js"
 compatibility_date = "2025-08-31"
 
 [vars]
