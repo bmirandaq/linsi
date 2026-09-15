@@ -8,6 +8,7 @@ const MOCK_VALID_COUPONS = new Set(['VAGASUX10', 'CROQ10', 'GUIA10']);
 const MAX_PAYMENT_ATTEMPTS = 3;
 const PAYMENT_LOCK_MS = 4 * 60 * 60 * 1000;
 const MOCK_PENDING_PREVIEW_MS = 4000;
+const COUPON_DEBOUNCE_MS = 500;
 let turnstileScriptPromise;
 let mercadoPagoScriptPromise;
 let mercadoPagoSecurityScriptPromise;
@@ -312,13 +313,7 @@ export default function Workshop() {
     });
   }, [ensureTurnstileReady]);
 
-  const applyCoupon = useCallback(async () => {
-    const value = cupom.trim();
-    if (!value) {
-      setCouponStatus('empty');
-      setCouponMessage('');
-      return;
-    }
+  const validateCoupon = useCallback(async (value) => {
     setCouponStatus('checking');
     setCouponMessage('');
     try {
@@ -327,7 +322,6 @@ export default function Workshop() {
         body: JSON.stringify({coupon: value}),
       });
       if (result.status === 'valid') {
-        setCupom(result.coupon || value);
         setCouponStatus('valid');
         setCouponMessage('Cupom aplicado');
       } else if (result.status === 'invalid') {
@@ -341,7 +335,31 @@ export default function Workshop() {
       setCouponStatus('unavailable');
       setCouponMessage('Esse cupom não está mais disponível');
     }
-  }, [cupom]);
+  }, []);
+
+  useEffect(() => {
+    if (stage !== 'form') return undefined;
+    const value = cupom.trim();
+    if (!value) {
+      setCouponStatus('empty');
+      setCouponMessage('');
+      return undefined;
+    }
+
+    setCouponStatus('checking');
+    setCouponMessage('');
+    let cancelled = false;
+    const timeout = window.setTimeout(() => {
+      void validateCoupon(value).then(() => {
+        if (cancelled) return;
+      });
+    }, COUPON_DEBOUNCE_MS);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeout);
+    };
+  }, [cupom, stage, validateCoupon]);
 
   const handleContinue = useCallback(async (event) => {
     event.preventDefault();
@@ -675,7 +693,7 @@ export default function Workshop() {
               <div className={styles.field}><label htmlFor="linkedin">LinkedIn <span className={styles.optionalLabel}>(opcional)</span></label><input id="linkedin" name="linkedin" type="text" inputMode="url" autoComplete="url" pattern="(?:https?://)?(?:www[.])?linkedin[.]com/in/[A-Za-z0-9\-]+/?" title="Use um perfil no formato linkedin.com/in/name-user" maxLength={300} value={linkedin} onChange={(event) => setLinkedin(event.target.value)} onBlur={(event) => setLinkedin(normalizeLinkedInForSubmit(event.target.value))} /></div>
               <div className={styles.field}><label htmlFor="whatsapp">WhatsApp <span className={styles.optionalLabel}>(opcional)</span></label><input id="whatsapp" name="whatsapp" type="tel" inputMode="numeric" autoComplete="tel" pattern="[0-9]*" maxLength={32} value={whatsapp} onChange={(event) => setWhatsapp(event.target.value.replace(/\D/g, ''))} /></div>
             </div>
-            <div className={styles.field}><label htmlFor="cupom">Cupom <span className={styles.optionalLabel}>(opcional)</span></label><div className={styles.couponRow}><input id="cupom" name="cupom" type="text" autoComplete="off" maxLength={80} value={cupom} onChange={(event) => { setCupom(event.target.value); setCouponStatus('empty'); setCouponMessage(''); }} /><button className={styles.couponButton} type="button" onClick={applyCoupon} disabled={!cupom.trim() || couponStatus === 'checking'}>{couponStatus === 'checking' ? 'Verificando...' : 'Aplicar'}</button></div>{couponMessage && <p className={couponStatus === 'valid' ? styles.couponSuccess : styles.couponError} role={couponStatus === 'valid' ? 'status' : 'alert'}>{couponMessage}</p>}</div>
+            <div className={styles.field}><label htmlFor="cupom">Cupom <span className={styles.optionalLabel}>(opcional)</span></label><input id="cupom" name="cupom" type="text" autoComplete="off" maxLength={80} value={cupom} onChange={(event) => setCupom(event.target.value)} />{couponMessage && <p className={couponStatus === 'valid' ? styles.couponSuccess : styles.couponError} role={couponStatus === 'valid' ? 'status' : 'alert'}>{couponMessage}</p>}</div>
             {!mockMode && TURNSTILE_SITE_KEY && <div ref={turnstileRef} className={styles.turnstile} />}
             <button className={styles.submit} type="submit" disabled={stage === 'creating'} aria-busy={stage === 'creating'}>{stage === 'creating' ? 'Carregando...' : 'Continuar'}</button>
             {submitError && <div className={styles.error} role="alert">{submitError}</div>}
