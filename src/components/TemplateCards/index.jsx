@@ -7,15 +7,15 @@ const TEMPLATES = [
     id: 'figjam',
     title: 'FigJam',
     actionLabel: 'Acessar template',
-    href: 'https://www.figma.com/community',
+    href: 'https://www.figma.com/community/file/1478860711522210444/linsi-template-fluxograma',
     disabled: false,
   },
   {
     id: 'miro',
     title: 'Miro',
-    actionLabel: 'Em breve',
-    href: '#',
-    disabled: true,
+    actionLabel: 'Acessar template',
+    href: 'https://miro.com/miroverse/',
+    disabled: false,
   },
 ];
 
