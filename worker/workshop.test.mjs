@@ -21,6 +21,7 @@ const env = {
   MP_ACCESS_TOKEN: 'mp-access-token',
   MP_PUBLIC_KEY: 'TEST-public-key',
   RESEND_API_KEY: 'resend-secret',
+  WORKSHOP_CONFIRMATION_TEMPLATE_ID: 'workshop-confirmation-template',
   CONTACT_FROM_EMAIL: 'LINSI <noreply@beamiranda.com.br>',
 };
 
@@ -76,6 +77,10 @@ await withFetch(async (url, options = {}) => {
   const response = await worker.fetch(post('/workshop/start', {
     nome: 'Pessoa Teste',
     email: 'pessoa@example.com',
+    cargo: 'Product Designer',
+    empresa: 'Empresa Teste',
+    linkedin: 'linkedin.com/in/pessoa-teste',
+    whatsapp: '81999999999',
     coupon: 'croq10',
     turnstileToken: 'valid-token',
   }), env);
@@ -86,10 +91,26 @@ await withFetch(async (url, options = {}) => {
   assert.equal(body.publicKey, 'TEST-public-key');
 });
 
+assert.equal(createdRegistration.properties.Nome.rich_text[0].text.content, 'Pessoa Teste');
+assert.equal(createdRegistration.properties['E-mail'].email, 'pessoa@example.com');
+assert.equal(createdRegistration.properties.Cargo.rich_text[0].text.content, 'Product Designer');
+assert.equal(createdRegistration.properties.Empresa.rich_text[0].text.content, 'Empresa Teste');
+assert.equal(createdRegistration.properties.LinkedIn.url, 'https://www.linkedin.com/in/pessoa-teste');
+assert.equal(createdRegistration.properties.WhatsApp.phone_number, '81999999999');
 assert.equal(createdRegistration.properties.Cupom.rich_text[0].text.content, 'CROQ10');
 assert.equal(createdRegistration.properties.Parceiro.rich_text[0].text.content, 'Design Croquete');
 assert.equal(createdRegistration.properties.Valor.number, 90);
 assert.equal(createdRegistration.properties.Status.select.name, 'Inscrição iniciada');
+
+{
+  const response = await worker.fetch(post('/workshop/start', {
+    nome: 'Pessoa Teste',
+    email: 'pessoa@example.com',
+    cargo: '',
+    turnstileToken: 'valid-token',
+  }), env);
+  assert.equal(response.status, 400);
+}
 
 const registrationPage = {
   id: 'page-workshop',
@@ -97,11 +118,16 @@ const registrationPage = {
     'Inscrição': {title: [{plain_text: 'WS-ABC1234567'}]},
     'Nome': {rich_text: [{plain_text: 'Pessoa Teste'}]},
     'E-mail': {email: 'pessoa@example.com'},
+    'Cargo': {rich_text: [{plain_text: 'Product Designer'}]},
+    'Empresa': {rich_text: [{plain_text: 'Empresa Teste'}]},
+    'LinkedIn': {url: 'https://www.linkedin.com/in/pessoa-teste'},
+    'WhatsApp': {phone_number: '81999999999'},
     'Cupom': {rich_text: [{plain_text: 'CROQ10'}]},
     'Parceiro': {rich_text: [{plain_text: 'Design Croquete'}]},
     'Valor': {number: 90},
     'Status': {select: {name: 'Inscrição iniciada'}},
     'MP Order ID': {rich_text: []},
+    'Pago em': {date: null},
     'Confirmação enviada': {checkbox: false},
   },
 };
@@ -109,6 +135,8 @@ const registrationPage = {
 let mercadoPagoBody;
 let notionQueryCount = 0;
 let confirmationEmails = 0;
+let confirmationPayload;
+let confirmationHeaders;
 await withFetch(async (url, options = {}) => {
   const target = String(url);
   if (target === 'https://api.notion.com/v1/databases/workshop-db/query') {
@@ -131,6 +159,8 @@ await withFetch(async (url, options = {}) => {
   }
   if (target === 'https://api.resend.com/emails') {
     confirmationEmails += 1;
+    confirmationPayload = JSON.parse(options.body);
+    confirmationHeaders = options.headers;
     return Response.json({id: 'email-1'});
   }
   throw new Error(`Chamada externa inesperada: ${target}`);
@@ -154,6 +184,20 @@ assert.equal(mercadoPagoBody.transactions.payments[0].amount, '90.00');
 assert.equal(mercadoPagoBody.external_reference, 'WS-ABC1234567');
 assert.equal(mercadoPagoBody.payer.email, 'pessoa@example.com');
 assert.equal(confirmationEmails, 1);
+assert.equal(confirmationHeaders['Idempotency-Key'], 'workshop-confirmation/WS-ABC1234567');
+assert.equal(confirmationPayload.template.id, 'workshop-confirmation-template');
+assert.deepEqual(confirmationPayload.template.variables, {
+  NAME: 'Pessoa Teste',
+  EMAIL: 'pessoa@example.com',
+  REGISTRATION_ID: 'WS-ABC1234567',
+  WORKSHOP_DATE: '8 de outubro de 2026',
+  WORKSHOP_TIME: '19h',
+  AMOUNT: 90,
+  COUPON: 'CROQ10',
+  PARTNER: 'Design Croquete',
+});
+assert.equal('html' in confirmationPayload, false);
+assert.equal('text' in confirmationPayload, false);
 
 let pixOrderBody;
 const pendingRegistrationPage = {
@@ -212,4 +256,4 @@ assert.equal(pixOrderBody.total_amount, '100.00');
 assert.equal(pixOrderBody.transactions.payments[0].amount, '100.00');
 assert.equal(pixOrderBody.transactions.payments[0].payment_method.id, 'pix');
 
-console.log('Workshop tests passed: coupons, server-side pricing, Notion registration, card Orders and Pix Orders.');
+console.log('Workshop tests passed: profile fields, coupons, server-side pricing, Notion, Orders and Resend template contract.');
