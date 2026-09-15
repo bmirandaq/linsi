@@ -5,6 +5,8 @@ import styles from './workshop.module.css';
 const WORKSHOP_API_URL = 'https://linsi-form-handler.bmirandaqux.workers.dev';
 const TURNSTILE_SITE_KEY = '0x4AAAAAAEjIIV8ZHpYobikz';
 const MOCK_VALID_COUPONS = new Set(['VAGASUX10', 'CROQ10', 'GUIA10']);
+const MAX_PAYMENT_ATTEMPTS = 3;
+const PAYMENT_LOCK_MS = 12 * 60 * 60 * 1000;
 let turnstileScriptPromise;
 let mercadoPagoScriptPromise;
 let mercadoPagoSecurityScriptPromise;
@@ -12,6 +14,14 @@ let mercadoPagoSecurityScriptPromise;
 function isWorkshopMockMode() {
   if (typeof window === 'undefined') return false;
   return ['localhost', '127.0.0.1'].includes(window.location.hostname);
+}
+
+function mockLockedError(attempts, retryAt) {
+  const error = new Error('Limite de tentativas atingido. Tente novamente em 12 horas.');
+  error.code = 'payment_locked';
+  error.attempts = attempts;
+  error.retryAt = retryAt;
+  return error;
 }
 
 function mockApiRequest(path, options = {}) {
@@ -36,14 +46,23 @@ function mockApiRequest(path, options = {}) {
   }
 
   if (path === '/workshop/payment/reset') {
-    return Promise.resolve({status: 'started', attempts: body.attempts || 0, retryAt: null});
+    const attempts = Number(body.attempts || 0);
+    if (attempts >= MAX_PAYMENT_ATTEMPTS) {
+      const retryAt = body.retryAt || new Date(Date.now() + PAYMENT_LOCK_MS).toISOString();
+      return Promise.reject(mockLockedError(attempts, retryAt));
+    }
+    return Promise.resolve({status: 'started', attempts, retryAt: null});
   }
 
   if (path === '/workshop/pay/pix') {
+    const attempts = Number(body.attempts || 0) + 1;
+    const retryAt = attempts >= MAX_PAYMENT_ATTEMPTS
+      ? new Date(Date.now() + PAYMENT_LOCK_MS).toISOString()
+      : null;
     return Promise.resolve({
       status: 'pending',
-      attempts: 1,
-      retryAt: null,
+      attempts,
+      retryAt,
       pix: {
         qrCode: '00020126580014BR.GOV.BCB.PIX0136WORKSHOP-LINSI-MOCK-LOCAL5204000053039865406100.005802BR5920BEATRIZ MIRANDA MOCK6006RECIFE62070503***6304ABCD',
         qrCodeBase64: '',
@@ -52,7 +71,10 @@ function mockApiRequest(path, options = {}) {
     });
   }
 
-  if (path.startsWith('/workshop/status')) return Promise.resolve({status: 'pending', attempts: 1, retryAt: null});
+  if (path.startsWith('/workshop/status')) {
+    return Promise.resolve({status: 'pending', attempts: Number(body.attempts || 1), retryAt: null});
+  }
+
   return Promise.reject(new Error('Endpoint mock não configurado.'));
 }
 
@@ -164,12 +186,18 @@ function WorkshopStepper({active}) {
 
 function PaymentProcessor() {
   return (
-    <aside className={styles.processorCard} aria-label="Pagamento processado pelo Mercado Pago">
+    <aside className={styles.processorCard} aria-label="Processado pelo Mercado Pago">
       <span>Processado pelo</span>
-      <picture>
-        <source media="(prefers-color-scheme: dark)" srcSet="/img/workshop/mercado-pago-pluma.webp" />
-        <img className={styles.processorLogo} src="/img/workshop/mercado-pago-color.webp" alt="Mercado Pago" />
-      </picture>
+      <img
+        className={`${styles.processorLogo} ${styles.processorLogoLight}`}
+        src="/img/workshop/mercado-pago-color.webp"
+        alt="Mercado Pago"
+      />
+      <img
+        className={`${styles.processorLogo} ${styles.processorLogoDark}`}
+        src="/img/workshop/mercado-pago-pluma.webp"
+        alt="Mercado Pago"
+      />
     </aside>
   );
 }
@@ -201,6 +229,7 @@ export default function Workshop() {
   const [deviceId, setDeviceId] = useState('');
 
   const mockMode = isWorkshopMockMode();
+  const paymentLocked = paymentState === 'locked' || Boolean(retryAt && Date.parse(retryAt) > Date.now());
   const turnstileRef = useRef(null);
   const turnstileWidgetId = useRef(null);
   const turnstileResolver = useRef(null);
@@ -367,7 +396,8 @@ export default function Workshop() {
     setPaymentError('');
     try {
       const result = await apiRequest('/workshop/payment/reset', {
-        method: 'POST', body: JSON.stringify({registrationId}),
+        method: 'POST',
+        body: JSON.stringify({registrationId, attempts: paymentAttempts, retryAt}),
       });
       applyPaymentMeta(result);
       setPixData(null);
@@ -382,16 +412,17 @@ export default function Workshop() {
       setPaymentError(error.message || 'Não foi possível alterar a forma de pagamento.');
       return false;
     }
-  }, [applyPaymentMeta, registrationId]);
+  }, [applyPaymentMeta, paymentAttempts, registrationId, retryAt]);
 
   const selectPaymentMethod = useCallback(async (method) => {
+    if (paymentLocked) return;
     if (method === paymentMethod && !(method === 'pix' && !pixData)) return;
     const needsReset = paymentState === 'pending' || paymentState === 'failed';
     if (needsReset && !(await resetPayment())) return;
     setPaymentMethod(method);
     setPaymentError('');
     if (method === 'pix') setPixData(null);
-  }, [paymentMethod, paymentState, pixData, resetPayment]);
+  }, [paymentLocked, paymentMethod, paymentState, pixData, resetPayment]);
 
   useEffect(() => {
     if (stage !== 'checkout' || paymentMethod !== 'card' || paymentState !== 'idle' || !publicKey || !checkoutAmount || !registrationId) return undefined;
@@ -425,6 +456,7 @@ export default function Workshop() {
               applyPaymentMeta(result);
               if (result.status === 'paid') setStage('paid');
               else if (result.status === 'pending') setPaymentState('pending');
+              else if (result.retryAt) setPaymentState('locked');
               else setPaymentState('failed');
               resolve();
             } catch (error) {
@@ -439,10 +471,20 @@ export default function Workshop() {
               reject(error);
             }
           }),
-          onError: () => { if (!cancelled) setPaymentError('Não foi possível carregar o pagamento. Tente novamente.'); },
+          onError: () => {
+            if (!cancelled) {
+              setPaymentState('failed');
+              setPaymentError('Não foi possível carregar o pagamento. Tente novamente.');
+            }
+          },
         },
       });
-    }).catch(() => { if (!cancelled) setPaymentError('Não foi possível carregar o pagamento. Tente novamente.'); });
+    }).catch(() => {
+      if (!cancelled) {
+        setPaymentState('failed');
+        setPaymentError('Não foi possível carregar o pagamento. Tente novamente.');
+      }
+    });
 
     return () => {
       cancelled = true;
@@ -454,11 +496,12 @@ export default function Workshop() {
   }, [applyPaymentMeta, checkoutAmount, deviceId, paymentMethod, paymentState, publicKey, registrationId, stage]);
 
   const createPix = useCallback(async () => {
-    if (pixLoading || paymentState === 'locked') return;
+    if (pixLoading || paymentLocked) return;
     setPixLoading(true); setPaymentError(''); setPaymentState('loading');
     try {
       const result = await apiRequest('/workshop/pay/pix', {
-        method: 'POST', body: JSON.stringify({registrationId, deviceId}),
+        method: 'POST',
+        body: JSON.stringify({registrationId, deviceId, attempts: paymentAttempts}),
       });
       applyPaymentMeta(result);
       setPixData(result.pix || null);
@@ -472,7 +515,7 @@ export default function Workshop() {
       }
       setPaymentError(error.message || 'Não foi possível gerar o Pix. Tente novamente.');
     } finally { setPixLoading(false); }
-  }, [applyPaymentMeta, deviceId, paymentState, pixLoading, registrationId]);
+  }, [applyPaymentMeta, deviceId, paymentAttempts, paymentLocked, pixLoading, registrationId]);
 
   useEffect(() => {
     if (stage === 'checkout' && paymentMethod === 'pix' && paymentState === 'idle' && !pixData) void createPix();
@@ -487,7 +530,9 @@ export default function Workshop() {
         if (cancelled) return;
         applyPaymentMeta(result);
         if (result.status === 'paid') setStage('paid');
-        if (result.status === 'failed' || result.status === 'refunded') setPaymentState('failed');
+        if (result.status === 'failed' || result.status === 'refunded') {
+          setPaymentState(result.retryAt ? 'locked' : 'failed');
+        }
       } catch {}
     };
     void checkStatus();
@@ -505,20 +550,36 @@ export default function Workshop() {
 
   const mockFail = useCallback(() => {
     const nextAttempts = paymentAttempts + 1;
+    const nextRetryAt = nextAttempts >= MAX_PAYMENT_ATTEMPTS
+      ? new Date(Date.now() + PAYMENT_LOCK_MS).toISOString()
+      : null;
     setPaymentAttempts(nextAttempts);
-    setPaymentState(nextAttempts >= 3 ? 'locked' : 'failed');
-    if (nextAttempts >= 3) setRetryAt(new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString());
+    setRetryAt(nextRetryAt);
+    setPaymentState(nextRetryAt ? 'locked' : 'failed');
     setPaymentError('Pagamento não concluído.');
   }, [paymentAttempts]);
 
-  const retryText = retryAt ? 'Limite de tentativas atingido. Tente novamente em 12 horas.' : '';
+  const mockPending = useCallback(() => {
+    const nextAttempts = paymentAttempts + 1;
+    const nextRetryAt = nextAttempts >= MAX_PAYMENT_ATTEMPTS
+      ? new Date(Date.now() + PAYMENT_LOCK_MS).toISOString()
+      : null;
+    setPaymentAttempts(nextAttempts);
+    setRetryAt(nextRetryAt);
+    setPaymentState('pending');
+  }, [paymentAttempts]);
+
+  const retryText = paymentLocked ? 'Novas tentativas ficam disponíveis em 12 horas.' : '';
 
   const renderCardContent = () => {
-    if (paymentState === 'locked') return <div className={styles.paymentStatus} role="alert"><strong>Novas tentativas temporariamente bloqueadas</strong><p>{retryText}</p></div>;
+    if (paymentState === 'locked') {
+      return <div className={styles.paymentStatus} role="alert"><strong>Novas tentativas temporariamente bloqueadas</strong><p>Limite de tentativas atingido. Tente novamente em 12 horas.</p></div>;
+    }
     if (paymentState === 'pending') return (
       <div className={styles.paymentStatus}>
         <strong>Pagamento em análise</strong>
-        <button className={styles.methodButton} type="button" onClick={() => void resetPayment()}>Usar outro cartão</button>
+        {retryText && <p>{retryText}</p>}
+        <button className={styles.methodButton} type="button" disabled={paymentLocked} onClick={() => void resetPayment()}>Usar outro cartão</button>
         {mockMode && <button className={styles.submit} type="button" onClick={() => setStage('paid')}>Simular pagamento confirmado</button>}
       </div>
     );
@@ -526,7 +587,7 @@ export default function Workshop() {
       <div className={styles.paymentStatus} role="alert">
         <strong>Pagamento não concluído</strong>
         {paymentError && <p>{paymentError}</p>}
-        <button className={styles.methodButton} type="button" onClick={() => void resetPayment()}>Tentar outro cartão</button>
+        <button className={styles.methodButton} type="button" disabled={paymentLocked} onClick={() => void resetPayment()}>Tentar outro cartão</button>
       </div>
     );
     if (mockMode) return (
@@ -539,7 +600,7 @@ export default function Workshop() {
         </div>
         <div className={styles.mockActions}>
           <button className={styles.submit} type="button" onClick={() => setStage('paid')}>Simular pagamento aprovado</button>
-          <button className={styles.methodButton} type="button" onClick={() => { setPaymentAttempts((value) => value + 1); setPaymentState('pending'); }}>Simular pendente</button>
+          <button className={styles.methodButton} type="button" onClick={mockPending}>Simular pendente</button>
           <button className={styles.methodButton} type="button" onClick={mockFail}>Simular recusado</button>
         </div>
       </div>
@@ -548,15 +609,18 @@ export default function Workshop() {
   };
 
   const renderPixContent = () => {
-    if (paymentState === 'locked') return <div className={styles.paymentStatus} role="alert"><strong>Novas tentativas temporariamente bloqueadas</strong><p>{retryText}</p></div>;
+    if (paymentState === 'locked' && !pixData) {
+      return <div className={styles.paymentStatus} role="alert"><strong>Novas tentativas temporariamente bloqueadas</strong><p>Limite de tentativas atingido. Tente novamente em 12 horas.</p></div>;
+    }
     if (paymentState === 'loading') return <p className={styles.loading} role="status">Gerando Pix...</p>;
-    if (paymentState === 'failed') return <div className={styles.paymentStatus} role="alert"><strong>Não foi possível gerar o Pix</strong>{paymentError && <p>{paymentError}</p>}<button className={styles.methodButton} type="button" onClick={() => void resetPayment().then((ok) => ok && createPix())}>Tentar novamente</button></div>;
+    if (paymentState === 'failed') return <div className={styles.paymentStatus} role="alert"><strong>Não foi possível gerar o Pix</strong>{paymentError && <p>{paymentError}</p>}<button className={styles.methodButton} type="button" disabled={paymentLocked} onClick={() => void resetPayment().then((ok) => ok && createPix())}>Tentar novamente</button></div>;
     if (!pixData) return null;
     return (
       <div className={styles.pixArea}>
         {pixData.qrCodeBase64 ? <img className={styles.pixQr} src={`data:image/png;base64,${pixData.qrCodeBase64}`} alt="QR Code para pagamento via Pix" /> : null}
         {mockMode && pixData.qrCode && !pixData.qrCodeBase64 ? <div className={styles.mockQr} aria-label="QR Code Pix simulado"><span>PIX</span><strong>MOCK</strong></div> : null}
         {pixData.qrCode ? <div className={styles.pixCopy}><label htmlFor="pix-code">Pix Copia e Cola</label><textarea id="pix-code" readOnly value={pixData.qrCode} /><button className={styles.couponButton} type="button" onClick={copyPix}>{copied ? 'Copiado' : 'Copiar código'}</button></div> : null}
+        {paymentLocked && <p className={styles.lockNote}>Novas tentativas ficam disponíveis em 12 horas.</p>}
         {mockMode ? <button className={styles.submit} type="button" onClick={() => setStage('paid')}>Simular pagamento confirmado</button> : null}
       </div>
     );
@@ -593,8 +657,8 @@ export default function Workshop() {
           <p className={styles.checkoutAmount}>R$ {Number(checkoutAmount).toFixed(2).replace('.', ',')}</p>
           <p className={styles.paymentChoiceLabel}>Escolha a melhor opção pra você:</p>
           <div className={styles.paymentMethods} aria-label="Forma de pagamento">
-            <button type="button" className={paymentMethod === 'card' ? styles.methodActive : styles.methodButton} disabled={paymentState === 'locked'} onClick={() => void selectPaymentMethod('card')}>Cartão de crédito</button>
-            <button type="button" className={paymentMethod === 'pix' ? styles.methodActive : styles.methodButton} disabled={paymentState === 'locked' || pixLoading} onClick={() => void selectPaymentMethod('pix')}>Pix</button>
+            <button type="button" className={paymentMethod === 'card' ? styles.methodActive : styles.methodButton} disabled={paymentLocked} onClick={() => void selectPaymentMethod('card')}>Cartão de crédito</button>
+            <button type="button" className={paymentMethod === 'pix' ? styles.methodActive : styles.methodButton} disabled={paymentLocked || pixLoading} onClick={() => void selectPaymentMethod('pix')}>Pix</button>
           </div>
           <div className={styles.paymentDynamic}>{paymentMethod === 'card' ? renderCardContent() : renderPixContent()}</div>
           <PaymentProcessor />
