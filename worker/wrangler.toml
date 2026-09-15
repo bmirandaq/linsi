@@ -13,6 +13,7 @@ ALLOWED_ORIGIN = "https://linsi.beamiranda.com.br"
 # Configure via: wrangler secret put CONTACT_FROM_EMAIL
 # Configure via: wrangler secret put WORKSHOP_NOTION_DATABASE_ID
 # Configure via: wrangler secret put WORKSHOP_COUPONS_JSON
+# Configure via: wrangler secret put WORKSHOP_CONFIRMATION_TEMPLATE_ID
 # Configure via: wrangler secret put MP_ACCESS_TOKEN
 # Configure via: wrangler secret put MP_PUBLIC_KEY
 # Configure via: wrangler secret put MP_WEBHOOK_SECRET
