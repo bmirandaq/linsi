@@ -85,6 +85,8 @@ await withFetch(async (url, options = {}) => {
   assert.match(body.registrationId, /^WS-[A-Z0-9]{10}$/);
   assert.equal(body.amount, 90);
   assert.equal(body.publicKey, 'TEST-public-key');
+  assert.equal(body.attempts, 0);
+  assert.equal(body.retryAt, null);
 });
 
 assert.equal(createdRegistration.properties.Nome.rich_text[0].text.content, 'Pessoa Teste');
@@ -97,6 +99,8 @@ assert.equal(createdRegistration.properties.Cupom.rich_text[0].text.content, 'CR
 assert.equal(createdRegistration.properties.Parceiro.rich_text[0].text.content, 'Design Croquete');
 assert.equal(createdRegistration.properties.Valor.number, 90);
 assert.equal(createdRegistration.properties.Status.select.name, 'Inscrição iniciada');
+assert.equal(createdRegistration.properties['Tentativas de pagamento'].number, 0);
+assert.equal(createdRegistration.properties['Bloqueado até'].date, null);
 
 {
   const response = await worker.fetch(post('/workshop/start', {
@@ -108,26 +112,39 @@ assert.equal(createdRegistration.properties.Status.select.name, 'Inscrição ini
   assert.equal(response.status, 400);
 }
 
-const registrationPage = {
-  id: 'page-workshop',
-  properties: {
-    'Inscrição': {title: [{plain_text: 'WS-ABC1234567'}]},
-    'Nome': {rich_text: [{plain_text: 'Pessoa Teste'}]},
-    'E-mail': {email: 'pessoa@example.com'},
-    'Cargo': {rich_text: [{plain_text: 'Product Designer'}]},
-    'Empresa': {rich_text: [{plain_text: 'Empresa Teste'}]},
-    'LinkedIn': {url: 'https://www.linkedin.com/in/pessoa-teste'},
-    'WhatsApp': {phone_number: '81999999999'},
-    'Cupom': {rich_text: [{plain_text: 'CROQ10'}]},
-    'Parceiro': {rich_text: [{plain_text: 'Design Croquete'}]},
-    'Valor': {number: 90},
-    'Status': {select: {name: 'Inscrição iniciada'}},
-    'MP Order ID': {rich_text: []},
-    'Pago em': {date: null},
-    'Confirmação enviada': {checkbox: false},
-  },
-};
+function makeRegistrationPage({
+  amount = 90,
+  status = 'Inscrição iniciada',
+  attempts = 0,
+  retryAt = null,
+  orderId = '',
+  coupon = 'CROQ10',
+  partner = 'Design Croquete',
+} = {}) {
+  return {
+    id: 'page-workshop',
+    properties: {
+      'Inscrição': {title: [{plain_text: 'WS-ABC1234567'}]},
+      'Nome': {rich_text: [{plain_text: 'Pessoa Teste'}]},
+      'E-mail': {email: 'pessoa@example.com'},
+      'Cargo': {rich_text: [{plain_text: 'Product Designer'}]},
+      'Empresa': {rich_text: [{plain_text: 'Empresa Teste'}]},
+      'LinkedIn': {url: 'https://www.linkedin.com/in/pessoa-teste'},
+      'WhatsApp': {phone_number: '81999999999'},
+      'Cupom': {rich_text: coupon ? [{plain_text: coupon}] : []},
+      'Parceiro': {rich_text: [{plain_text: partner}]},
+      'Valor': {number: amount},
+      'Status': {select: {name: status}},
+      'MP Order ID': {rich_text: orderId ? [{plain_text: orderId}] : []},
+      'Pago em': {date: null},
+      'Confirmação enviada': {checkbox: false},
+      'Tentativas de pagamento': {number: attempts},
+      'Bloqueado até': {date: retryAt ? {start: retryAt} : null},
+    },
+  };
+}
 
+const registrationPage = makeRegistrationPage();
 let mercadoPagoBody;
 let mercadoPagoHeaders;
 let notionQueryCount = 0;
@@ -170,7 +187,10 @@ await withFetch(async (url, options = {}) => {
     amount: 1,
   }), env);
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), {status: 'paid'});
+  const body = await response.json();
+  assert.equal(body.status, 'paid');
+  assert.equal(body.attempts, 1);
+  assert.equal(body.retryAt, null);
 });
 
 assert.ok(notionQueryCount >= 2);
@@ -196,17 +216,7 @@ assert.equal('text' in confirmationPayload, false);
 
 let pixOrderBody;
 let pixOrderHeaders;
-const pendingRegistrationPage = {
-  ...registrationPage,
-  properties: {
-    ...registrationPage.properties,
-    'Cupom': {rich_text: []},
-    'Parceiro': {rich_text: [{plain_text: 'Direto'}]},
-    'Valor': {number: 100},
-    'Status': {select: {name: 'Inscrição iniciada'}},
-  },
-};
-
+const pendingRegistrationPage = makeRegistrationPage({amount: 100, coupon: '', partner: 'Direto'});
 await withFetch(async (url, options = {}) => {
   const target = String(url);
   if (target === 'https://api.notion.com/v1/databases/workshop-db/query') return Response.json({results: [pendingRegistrationPage]});
@@ -238,6 +248,8 @@ await withFetch(async (url, options = {}) => {
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.equal(body.status, 'pending');
+  assert.equal(body.attempts, 1);
+  assert.equal(body.retryAt, null);
   assert.equal(body.pix.qrCode, '000201PIXTEST');
   assert.equal(body.pix.qrCodeBase64, 'BASE64PIX');
 });
@@ -245,6 +257,33 @@ await withFetch(async (url, options = {}) => {
 assert.equal(pixOrderBody.total_amount, '100.00');
 assert.equal(pixOrderBody.transactions.payments[0].amount, '100.00');
 assert.equal(pixOrderBody.transactions.payments[0].payment_method.id, 'pix');
+assert.equal(pixOrderBody.transactions.payments[0].expiration_time, 'P1D');
 assert.equal(pixOrderHeaders['X-meli-session-id'], 'device-session-pix');
 
-console.log('Workshop tests passed: profile fields, coupons, server-side pricing, Notion, Mercado Pago security headers, Orders and Resend template contract.');
+const thirdAttemptPage = makeRegistrationPage({attempts: 2});
+const beforeThirdAttempt = Date.now();
+await withFetch(async (url) => {
+  const target = String(url);
+  if (target === 'https://api.notion.com/v1/databases/workshop-db/query') return Response.json({results: [thirdAttemptPage]});
+  if (target === 'https://api.notion.com/v1/pages/page-workshop') return Response.json({id: 'page-workshop'});
+  if (target === 'https://api.mercadopago.com/v1/orders') return Response.json({message: 'rejected'}, {status: 500});
+  throw new Error(`Chamada externa inesperada: ${target}`);
+}, async () => {
+  const response = await worker.fetch(post('/workshop/pay/card', {
+    registrationId: 'WS-ABC1234567',
+    token: 'third-attempt-token',
+    paymentMethodId: 'visa',
+    paymentTypeId: 'credit_card',
+    installments: 1,
+  }), env);
+  assert.equal(response.status, 429);
+  const body = await response.json();
+  assert.equal(body.code, 'payment_locked');
+  assert.equal(body.message, 'Não foi possível confirmar o pagamento.');
+  assert.equal(body.attempts, 3);
+  const lockDuration = Date.parse(body.retryAt) - beforeThirdAttempt;
+  assert.ok(lockDuration >= (4 * 60 * 60 * 1000) - 5000);
+  assert.ok(lockDuration <= (4 * 60 * 60 * 1000) + 5000);
+});
+
+console.log('Workshop tests passed: profile fields, coupons, server-side pricing, Notion, 24h Pix expiry, four-hour retry lock, Orders and Resend template contract.');
