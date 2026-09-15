@@ -7,6 +7,7 @@ const TURNSTILE_SITE_KEY = '0x4AAAAAAEjIIV8ZHpYobikz';
 const MOCK_VALID_COUPONS = new Set(['VAGASUX10', 'CROQ10', 'GUIA10']);
 let turnstileScriptPromise;
 let mercadoPagoScriptPromise;
+let mercadoPagoSecurityScriptPromise;
 
 function isWorkshopMockMode() {
   if (typeof window === 'undefined') return false;
@@ -98,6 +99,30 @@ function loadMercadoPago() {
   return mercadoPagoScriptPromise;
 }
 
+function loadMercadoPagoSecurity() {
+  if (mercadoPagoSecurityScriptPromise) return mercadoPagoSecurityScriptPromise;
+  if (window.linsiMercadoPagoDeviceId || window.MP_DEVICE_SESSION_ID) {
+    return Promise.resolve(window.linsiMercadoPagoDeviceId || window.MP_DEVICE_SESSION_ID);
+  }
+
+  mercadoPagoSecurityScriptPromise = new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = 'https://www.mercadopago.com/v2/security.js';
+    script.async = true;
+    script.setAttribute('view', 'checkout');
+    script.setAttribute('output', 'linsiMercadoPagoDeviceId');
+    script.onload = () => resolve(window.linsiMercadoPagoDeviceId || window.MP_DEVICE_SESSION_ID || '');
+    script.onerror = () => {
+      script.remove();
+      mercadoPagoSecurityScriptPromise = null;
+      resolve('');
+    };
+    document.head.appendChild(script);
+  });
+
+  return mercadoPagoSecurityScriptPromise;
+}
+
 function normalizeLinkedInForSubmit(value) {
   const trimmed = value.trim();
   if (!trimmed) return '';
@@ -134,6 +159,27 @@ function WorkshopStepper({active}) {
   );
 }
 
+function PaymentSecurity() {
+  return (
+    <aside className={styles.securityPanel} aria-label="Segurança do pagamento">
+      <div className={styles.securityTitle}>
+        <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+          <path d="M12 2 4.5 5v5.5c0 5.1 3.1 9.7 7.5 11.5 4.4-1.8 7.5-6.4 7.5-11.5V5L12 2Zm0 2.2 5.5 2.2v4.1c0 4.1-2.3 7.9-5.5 9.5-3.2-1.6-5.5-5.4-5.5-9.5V6.4L12 4.2Zm-1 4.3v2H9.5v4h5v-4H13v-2h-2Zm0 4h2v2h-2v-2Z" fill="currentColor" />
+        </svg>
+        <strong>Pagamento processado pelo Mercado Pago</strong>
+      </div>
+      <p>
+        Os dados do cartão são enviados diretamente aos campos seguros do Mercado Pago e não passam pelos servidores da LINSI.
+      </p>
+      <ul className={styles.securityBadges} aria-label="Proteções do Mercado Pago">
+        <li>PCI DSS</li>
+        <li>Proteção antifraude</li>
+        <li>3DS 2.0 quando necessário</li>
+      </ul>
+    </aside>
+  );
+}
+
 export default function Workshop() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
@@ -155,6 +201,7 @@ export default function Workshop() {
   const [pixLoading, setPixLoading] = useState(false);
   const [pixData, setPixData] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [deviceId, setDeviceId] = useState('');
 
   const mockMode = isWorkshopMockMode();
   const turnstileRef = useRef(null);
@@ -185,6 +232,13 @@ export default function Workshop() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (mockMode || !['checkout', 'pending'].includes(stage)) return;
+    void loadMercadoPagoSecurity().then((value) => {
+      if (mountedRef.current && value) setDeviceId(value);
+    });
+  }, [mockMode, stage]);
 
   const ensureTurnstileReady = useCallback(() => {
     if (isWorkshopMockMode()) return Promise.resolve('mock');
@@ -381,6 +435,7 @@ export default function Workshop() {
                       paymentTypeId: additionalData.paymentTypeId,
                       installments: formData.installments,
                       identification: formData.payer?.identification,
+                      deviceId,
                     }),
                   });
 
@@ -423,7 +478,7 @@ export default function Workshop() {
         brickController.current = null;
       }
     };
-  }, [checkoutAmount, paymentMethod, publicKey, registrationId, stage]);
+  }, [checkoutAmount, deviceId, paymentMethod, publicKey, registrationId, stage]);
 
   const createPix = useCallback(async () => {
     if (pixLoading) return;
@@ -433,7 +488,7 @@ export default function Workshop() {
     try {
       const result = await apiRequest('/workshop/pay/pix', {
         method: 'POST',
-        body: JSON.stringify({registrationId}),
+        body: JSON.stringify({registrationId, deviceId}),
       });
       setPixData(result.pix || null);
       setStage(result.status === 'paid' ? 'paid' : 'pending');
@@ -442,7 +497,7 @@ export default function Workshop() {
     } finally {
       setPixLoading(false);
     }
-  }, [pixLoading, registrationId]);
+  }, [deviceId, pixLoading, registrationId]);
 
   useEffect(() => {
     if (stage !== 'pending' || !registrationId || isWorkshopMockMode()) return undefined;
@@ -657,6 +712,9 @@ export default function Workshop() {
                 R$ {Number(checkoutAmount).toFixed(2).replace('.', ',')}
               </p>
 
+              <PaymentSecurity />
+
+              <p className={styles.paymentChoiceLabel}>Escolha a melhor opção pra você:</p>
               <div className={styles.paymentMethods} aria-label="Forma de pagamento">
                 <button
                   type="button"
@@ -670,9 +728,11 @@ export default function Workshop() {
                 <button
                   type="button"
                   className={paymentMethod === 'pix' ? styles.methodActive : styles.methodButton}
+                  disabled={pixLoading}
                   onClick={() => {
                     setPaymentMethod('pix');
                     setPaymentError('');
+                    void createPix();
                   }}>
                   Pix
                 </button>
@@ -723,14 +783,12 @@ export default function Workshop() {
                     <div id="cardPaymentBrick_container" className={styles.paymentBrick} />
                   </>
                 )
-              ) : (
-                <button
-                  className={styles.submit}
-                  type="button"
-                  onClick={createPix}
-                  disabled={pixLoading}>
-                  {pixLoading ? 'Gerando Pix...' : 'Gerar Pix'}
+              ) : paymentError ? (
+                <button className={styles.methodButton} type="button" onClick={() => void createPix()}>
+                  Tentar gerar Pix novamente
                 </button>
+              ) : (
+                <p className={styles.loading} role="status">Gerando Pix...</p>
               )}
 
               {paymentError && <div className={styles.error} role="alert">{paymentError}</div>}
@@ -768,8 +826,10 @@ export default function Workshop() {
               ) : null}
 
               <p className={styles.pendingText} role="status" aria-live="polite">
-                Estamos aguardando a confirmação do pagamento.
+                Aguardando a confirmação do pagamento.
               </p>
+
+              <PaymentSecurity />
 
               {mockMode ? (
                 <div className={styles.mockActions}>
@@ -781,6 +841,7 @@ export default function Workshop() {
                     type="button"
                     onClick={() => {
                       setPixData(null);
+                      setPaymentMethod('card');
                       setPaymentError('');
                       setStage('checkout');
                     }}>
@@ -806,6 +867,7 @@ export default function Workshop() {
                   onClick={() => {
                     setPaymentError('');
                     setPixData(null);
+                    setPaymentMethod('card');
                     setStage('form');
                   }}>
                   Reiniciar mock
