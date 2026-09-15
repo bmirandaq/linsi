@@ -40,7 +40,7 @@ const rootCanvasInitStyle = `
 const config = {
   title: 'LINSI – Linguagem Simplificada de Fluxogramas de UX',
   tagline: 'Linguagem Simplificada de Fluxogramas de UX',
-  favicon: 'img/favicon.png',
+  favicon: 'img/favicon.svg',
 
   url: process.env.SITE_URL ?? 'http://localhost:3000',
   baseUrl: process.env.BASE_URL ?? '/',
