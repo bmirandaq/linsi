@@ -36,7 +36,7 @@
   display: inline-block;
   font-size: 0.9rem;
   line-height: 1.4;
-  padding-bottom: 6px;
+  padding-bottom: var(--linsi-space-8);
   position: relative;
 }
 
