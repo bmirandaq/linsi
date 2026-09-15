@@ -4,8 +4,55 @@ import styles from './workshop.module.css';
 
 const WORKSHOP_API_URL = 'https://linsi-form-handler.bmirandaqux.workers.dev';
 const TURNSTILE_SITE_KEY = '0x4AAAAAAEjIIV8ZHpYobikz';
+const MOCK_VALID_COUPONS = new Set(['VAGASUX10', 'CROQ10', 'GUIA10']);
 let turnstileScriptPromise;
 let mercadoPagoScriptPromise;
+
+function isWorkshopMockMode() {
+  if (typeof window === 'undefined') return false;
+  return ['localhost', '127.0.0.1'].includes(window.location.hostname);
+}
+
+function mockApiRequest(path, options = {}) {
+  const body = options.body ? JSON.parse(options.body) : {};
+
+  if (path === '/workshop/coupon') {
+    const coupon = String(body.coupon || '').trim().toUpperCase();
+    if (MOCK_VALID_COUPONS.has(coupon)) {
+      return Promise.resolve({status: 'valid', coupon});
+    }
+    if (coupon === 'EXPIRADO' || coupon === 'INDISPONIVEL') {
+      return Promise.resolve({status: 'unavailable'});
+    }
+    return Promise.resolve({status: 'invalid'});
+  }
+
+  if (path === '/workshop/start') {
+    const coupon = String(body.coupon || '').trim().toUpperCase();
+    return Promise.resolve({
+      registrationId: 'WS-MOCKLOCAL1',
+      amount: MOCK_VALID_COUPONS.has(coupon) ? 90 : 100,
+      publicKey: 'MOCK_PUBLIC_KEY',
+    });
+  }
+
+  if (path === '/workshop/pay/pix') {
+    return Promise.resolve({
+      status: 'pending',
+      pix: {
+        qrCode: '00020126580014BR.GOV.BCB.PIX0136WORKSHOP-LINSI-MOCK-LOCAL5204000053039865406100.005802BR5920BEATRIZ MIRANDA MOCK6006RECIFE62070503***6304ABCD',
+        qrCodeBase64: '',
+        ticketUrl: '',
+      },
+    });
+  }
+
+  if (path.startsWith('/workshop/status')) {
+    return Promise.resolve({status: 'pending'});
+  }
+
+  return Promise.reject(new Error('Endpoint mock não configurado.'));
+}
 
 function loadTurnstile() {
   if (turnstileScriptPromise) return turnstileScriptPromise;
@@ -59,6 +106,8 @@ function normalizeLinkedInForSubmit(value) {
 }
 
 async function apiRequest(path, options = {}) {
+  if (isWorkshopMockMode()) return mockApiRequest(path, options);
+
   const response = await fetch(`${WORKSHOP_API_URL}${path}`, {
     ...options,
     headers: {
@@ -107,6 +156,7 @@ export default function Workshop() {
   const [pixData, setPixData] = useState(null);
   const [copied, setCopied] = useState(false);
 
+  const mockMode = isWorkshopMockMode();
   const turnstileRef = useRef(null);
   const turnstileWidgetId = useRef(null);
   const turnstileResolver = useRef(null);
@@ -137,6 +187,7 @@ export default function Workshop() {
   }, []);
 
   const ensureTurnstileReady = useCallback(() => {
+    if (isWorkshopMockMode()) return Promise.resolve('mock');
     if (!TURNSTILE_SITE_KEY || typeof window === 'undefined') return Promise.resolve(null);
     if (turnstileReady.current) return turnstileReady.current;
 
@@ -166,30 +217,34 @@ export default function Workshop() {
     return turnstileReady.current;
   }, []);
 
-  const getTurnstileToken = useCallback(() => new Promise((resolve) => {
-    let settled = false;
-    const finish = (token) => {
-      if (settled) return;
-      settled = true;
-      clearTimeout(timeout);
-      turnstileResolver.current = null;
-      resolve(token);
-    };
-    const timeout = setTimeout(() => finish(null), 30000);
+  const getTurnstileToken = useCallback(() => {
+    if (isWorkshopMockMode()) return Promise.resolve('mock-turnstile-token');
 
-    ensureTurnstileReady().then((widgetId) => {
-      if (settled) return;
-      if (widgetId === null || !window.turnstile) return finish(null);
-      turnstileResolver.current = finish;
-      try {
-        if (turnstileExecuted.current) window.turnstile.reset(widgetId);
-        turnstileExecuted.current = true;
-        window.turnstile.execute(widgetId);
-      } catch {
-        finish(null);
-      }
+    return new Promise((resolve) => {
+      let settled = false;
+      const finish = (token) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeout);
+        turnstileResolver.current = null;
+        resolve(token);
+      };
+      const timeout = setTimeout(() => finish(null), 30000);
+
+      ensureTurnstileReady().then((widgetId) => {
+        if (settled) return;
+        if (widgetId === null || !window.turnstile) return finish(null);
+        turnstileResolver.current = finish;
+        try {
+          if (turnstileExecuted.current) window.turnstile.reset(widgetId);
+          turnstileExecuted.current = true;
+          window.turnstile.execute(widgetId);
+        } catch {
+          finish(null);
+        }
+      });
     });
-  }), [ensureTurnstileReady]);
+  }, [ensureTurnstileReady]);
 
   const applyCoupon = useCallback(async () => {
     const value = cupom.trim();
@@ -289,6 +344,12 @@ export default function Workshop() {
       return undefined;
     }
 
+    if (isWorkshopMockMode()) {
+      setBrickReady(true);
+      setPaymentError('');
+      return undefined;
+    }
+
     let cancelled = false;
     setBrickReady(false);
     setPaymentError('');
@@ -384,7 +445,7 @@ export default function Workshop() {
   }, [pixLoading, registrationId]);
 
   useEffect(() => {
-    if (stage !== 'pending' || !registrationId) return undefined;
+    if (stage !== 'pending' || !registrationId || isWorkshopMockMode()) return undefined;
 
     let cancelled = false;
     const checkStatus = async () => {
@@ -572,7 +633,7 @@ export default function Workshop() {
                   )}
                 </div>
 
-                {TURNSTILE_SITE_KEY && <div ref={turnstileRef} className={styles.turnstile} />}
+                {!mockMode && TURNSTILE_SITE_KEY && <div ref={turnstileRef} className={styles.turnstile} />}
 
                 <button
                   className={styles.submit}
@@ -600,24 +661,68 @@ export default function Workshop() {
                 <button
                   type="button"
                   className={paymentMethod === 'card' ? styles.methodActive : styles.methodButton}
-                  onClick={() => setPaymentMethod('card')}>
+                  onClick={() => {
+                    setPaymentMethod('card');
+                    setPaymentError('');
+                  }}>
                   Cartão de crédito
                 </button>
                 <button
                   type="button"
                   className={paymentMethod === 'pix' ? styles.methodActive : styles.methodButton}
-                  onClick={() => setPaymentMethod('pix')}>
+                  onClick={() => {
+                    setPaymentMethod('pix');
+                    setPaymentError('');
+                  }}>
                   Pix
                 </button>
               </div>
 
               {paymentMethod === 'card' ? (
-                <>
-                  {!brickReady && !paymentError && (
-                    <p className={styles.loading} role="status">Carregando pagamento...</p>
-                  )}
-                  <div id="cardPaymentBrick_container" className={styles.paymentBrick} />
-                </>
+                mockMode ? (
+                  <div className={styles.mockPayment}>
+                    <p className={styles.mockEyebrow}>Mock local · Card Payment Brick</p>
+                    <div className={styles.mockCardFields} aria-hidden="true">
+                      <div className={styles.mockFieldFull}>
+                        <span>Número do cartão</span>
+                        <div className={styles.mockInput}>•••• •••• •••• 4242</div>
+                      </div>
+                      <div className={styles.mockField}>
+                        <span>Validade</span>
+                        <div className={styles.mockInput}>12/30</div>
+                      </div>
+                      <div className={styles.mockField}>
+                        <span>CVV</span>
+                        <div className={styles.mockInput}>•••</div>
+                      </div>
+                      <div className={styles.mockFieldFull}>
+                        <span>Nome no cartão</span>
+                        <div className={styles.mockInput}>BEATRIZ MIRANDA</div>
+                      </div>
+                    </div>
+                    <div className={styles.mockActions}>
+                      <button className={styles.submit} type="button" onClick={() => setStage('paid')}>
+                        Simular pagamento aprovado
+                      </button>
+                      <button className={styles.methodButton} type="button" onClick={() => setStage('pending')}>
+                        Simular pendente
+                      </button>
+                      <button
+                        className={styles.methodButton}
+                        type="button"
+                        onClick={() => setPaymentError('O pagamento não foi concluído. Revise os dados e tente novamente.')}>
+                        Simular recusado
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {!brickReady && !paymentError && (
+                      <p className={styles.loading} role="status">Carregando pagamento...</p>
+                    )}
+                    <div id="cardPaymentBrick_container" className={styles.paymentBrick} />
+                  </>
+                )
               ) : (
                 <button
                   className={styles.submit}
@@ -645,6 +750,13 @@ export default function Workshop() {
                 />
               ) : null}
 
+              {mockMode && pixData?.qrCode && !pixData?.qrCodeBase64 ? (
+                <div className={styles.mockQr} aria-label="QR Code Pix simulado">
+                  <span>PIX</span>
+                  <strong>MOCK</strong>
+                </div>
+              ) : null}
+
               {pixData?.qrCode ? (
                 <div className={styles.pixCopy}>
                   <label htmlFor="pix-code">Pix Copia e Cola</label>
@@ -658,6 +770,25 @@ export default function Workshop() {
               <p className={styles.pendingText} role="status" aria-live="polite">
                 Estamos aguardando a confirmação do pagamento.
               </p>
+
+              {mockMode ? (
+                <div className={styles.mockActions}>
+                  <button className={styles.submit} type="button" onClick={() => setStage('paid')}>
+                    Simular pagamento confirmado
+                  </button>
+                  <button
+                    className={styles.methodButton}
+                    type="button"
+                    onClick={() => {
+                      setPixData(null);
+                      setPaymentError('');
+                      setStage('checkout');
+                    }}>
+                    Voltar ao pagamento
+                  </button>
+                </div>
+              ) : null}
+
               {paymentError && <div className={styles.error} role="alert">{paymentError}</div>}
             </section>
           ) : null}
@@ -668,6 +799,18 @@ export default function Workshop() {
               <p>Seu pagamento foi aprovado e sua vaga no Workshop LINSI está garantida.</p>
               <p>Enviarei as informações de acesso para:</p>
               <strong>{email}</strong>
+              {mockMode ? (
+                <button
+                  className={styles.mockReset}
+                  type="button"
+                  onClick={() => {
+                    setPaymentError('');
+                    setPixData(null);
+                    setStage('form');
+                  }}>
+                  Reiniciar mock
+                </button>
+              ) : null}
             </section>
           ) : null}
         </div>
