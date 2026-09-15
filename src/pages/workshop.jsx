@@ -6,7 +6,7 @@ const WORKSHOP_API_URL = 'https://linsi-form-handler.bmirandaqux.workers.dev';
 const TURNSTILE_SITE_KEY = '0x4AAAAAAEjIIV8ZHpYobikz';
 const MOCK_VALID_COUPONS = new Set(['VAGASUX10', 'CROQ10', 'GUIA10']);
 const MAX_PAYMENT_ATTEMPTS = 3;
-const PAYMENT_LOCK_MS = 12 * 60 * 60 * 1000;
+const PAYMENT_LOCK_MS = 4 * 60 * 60 * 1000;
 let turnstileScriptPromise;
 let mercadoPagoScriptPromise;
 let mercadoPagoSecurityScriptPromise;
@@ -17,7 +17,7 @@ function isWorkshopMockMode() {
 }
 
 function mockLockedError(attempts, retryAt) {
-  const error = new Error('Limite de tentativas atingido. Tente novamente em 12 horas.');
+  const error = new Error('Não foi possível confirmar o pagamento.');
   error.code = 'payment_locked';
   error.attempts = attempts;
   error.retryAt = retryAt;
@@ -556,7 +556,7 @@ export default function Workshop() {
     setPaymentAttempts(nextAttempts);
     setRetryAt(nextRetryAt);
     setPaymentState(nextRetryAt ? 'locked' : 'failed');
-    setPaymentError('Pagamento não concluído.');
+    setPaymentError('Não foi possível confirmar o pagamento.');
   }, [paymentAttempts]);
 
   const mockPending = useCallback(() => {
@@ -569,25 +569,27 @@ export default function Workshop() {
     setPaymentState('pending');
   }, [paymentAttempts]);
 
-  const retryText = paymentLocked ? 'Novas tentativas ficam disponíveis em 12 horas.' : '';
-
   const renderCardContent = () => {
-    if (paymentState === 'locked') {
-      return <div className={styles.paymentStatus} role="alert"><strong>Novas tentativas temporariamente bloqueadas</strong><p>Limite de tentativas atingido. Tente novamente em 12 horas.</p></div>;
+    if (paymentLocked) {
+      return (
+        <div className={styles.paymentStatus} role="alert">
+          <strong>Não foi possível confirmar o pagamento</strong>
+          <p>Você pode realizar uma nova tentativa daqui algumas horas</p>
+        </div>
+      );
     }
     if (paymentState === 'pending') return (
       <div className={styles.paymentStatus}>
         <strong>Pagamento em análise</strong>
-        {retryText && <p>{retryText}</p>}
-        <button className={styles.methodButton} type="button" disabled={paymentLocked} onClick={() => void resetPayment()}>Usar outro cartão</button>
+        <button className={styles.methodButton} type="button" onClick={() => void resetPayment()}>Trocar cartão</button>
         {mockMode && <button className={styles.submit} type="button" onClick={() => setStage('paid')}>Simular pagamento confirmado</button>}
       </div>
     );
     if (paymentState === 'failed') return (
       <div className={styles.paymentStatus} role="alert">
-        <strong>Pagamento não concluído</strong>
-        {paymentError && <p>{paymentError}</p>}
-        <button className={styles.methodButton} type="button" disabled={paymentLocked} onClick={() => void resetPayment()}>Tentar outro cartão</button>
+        <strong>Não foi possível confirmar o pagamento</strong>
+        <p>Você pode tentar de novo</p>
+        <button className={styles.methodButton} type="button" onClick={() => void resetPayment()}>Trocar cartão</button>
       </div>
     );
     if (mockMode) return (
@@ -609,18 +611,23 @@ export default function Workshop() {
   };
 
   const renderPixContent = () => {
-    if (paymentState === 'locked' && !pixData) {
-      return <div className={styles.paymentStatus} role="alert"><strong>Novas tentativas temporariamente bloqueadas</strong><p>Limite de tentativas atingido. Tente novamente em 12 horas.</p></div>;
+    if (paymentLocked && !pixData) {
+      return (
+        <div className={styles.paymentStatus} role="alert">
+          <strong>Não foi possível confirmar o pagamento</strong>
+          <p>Você pode realizar uma nova tentativa daqui algumas horas</p>
+        </div>
+      );
     }
     if (paymentState === 'loading') return <p className={styles.loading} role="status">Gerando Pix...</p>;
-    if (paymentState === 'failed') return <div className={styles.paymentStatus} role="alert"><strong>Não foi possível gerar o Pix</strong>{paymentError && <p>{paymentError}</p>}<button className={styles.methodButton} type="button" disabled={paymentLocked} onClick={() => void resetPayment().then((ok) => ok && createPix())}>Tentar novamente</button></div>;
+    if (paymentState === 'failed') return <div className={styles.paymentStatus} role="alert"><strong>Não foi possível gerar o Pix</strong><p>Você pode tentar de novo</p><button className={styles.methodButton} type="button" onClick={() => void resetPayment().then((ok) => ok && createPix())}>Tentar novamente</button></div>;
     if (!pixData) return null;
     return (
       <div className={styles.pixArea}>
         {pixData.qrCodeBase64 ? <img className={styles.pixQr} src={`data:image/png;base64,${pixData.qrCodeBase64}`} alt="QR Code para pagamento via Pix" /> : null}
         {mockMode && pixData.qrCode && !pixData.qrCodeBase64 ? <div className={styles.mockQr} aria-label="QR Code Pix simulado"><span>PIX</span><strong>MOCK</strong></div> : null}
         {pixData.qrCode ? <div className={styles.pixCopy}><label htmlFor="pix-code">Pix Copia e Cola</label><textarea id="pix-code" readOnly value={pixData.qrCode} /><button className={styles.couponButton} type="button" onClick={copyPix}>{copied ? 'Copiado' : 'Copiar código'}</button></div> : null}
-        {paymentLocked && <p className={styles.lockNote}>Novas tentativas ficam disponíveis em 12 horas.</p>}
+        <p className={styles.lockNote}>Válido por 24 horas.</p>
         {mockMode ? <button className={styles.submit} type="button" onClick={() => setStage('paid')}>Simular pagamento confirmado</button> : null}
       </div>
     );
@@ -670,6 +677,7 @@ export default function Workshop() {
           <p>Vou te enviar as informações de acesso para:</p>
           <strong>{email}</strong>
           <div className={styles.feedbackSignoff}><p>Te vejo lá!<br />Bea</p><img src="/img/workshop/bea-symbol.webp" alt="" /></div>
+          <button className={styles.methodButton} type="button" onClick={() => { window.location.href = '/docs/principios'; }}>Ir para manual LINSI</button>
           {mockMode ? <button className={styles.mockReset} type="button" onClick={() => { setPaymentError(''); setPixData(null); setPaymentMethod('card'); setPaymentState('idle'); setPaymentAttempts(0); setRetryAt(null); setStage('form'); }}>Reiniciar mock</button> : null}
         </section> : null}
       </div></main>
