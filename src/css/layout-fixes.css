@@ -94,3 +94,21 @@
   line-height: 1;
   padding: calc(var(--linsi-space-4) * 0.75) calc(var(--linsi-space-8) * 0.75);
 }
+
+/* Search modal: keep the close action aligned beside the input */
+.aa-DetachedFormContainer {
+  align-items: center !important;
+  display: flex !important;
+  flex-direction: row !important;
+  gap: var(--linsi-space-8);
+}
+
+.aa-DetachedFormContainer .aa-Form {
+  flex: 1 1 auto !important;
+  min-width: 0;
+  width: auto !important;
+}
+
+.aa-DetachedFormContainer .aa-DetachedCancelButton {
+  flex: 0 0 44px !important;
+}
