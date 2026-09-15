@@ -12,6 +12,8 @@ const WORKSHOP_ACTION = 'workshop';
 const WORKSHOP_BASE_PRICE = 100;
 const WORKSHOP_DISCOUNT_PERCENT = 10;
 const WORKSHOP_DISCOUNTED_PRICE = 90;
+const WORKSHOP_DATE = '8 de outubro de 2026';
+const WORKSHOP_TIME = '19h';
 const MAX_LENGTHS = {
   apelido: 120,
   email: 254,
@@ -19,6 +21,8 @@ const MAX_LENGTHS = {
   whatsapp: 32,
   mensagem: 5000,
   nome: 120,
+  cargo: 120,
+  empresa: 160,
   coupon: 80,
   registrationId: 64,
   turnstileToken: 2048,
@@ -342,7 +346,18 @@ function notionStatusToWorkshop(value) {
   }[value] || 'started';
 }
 
-async function createWorkshopRegistration({registrationId, nome, email, coupon, partner, amount}, env) {
+async function createWorkshopRegistration({
+  registrationId,
+  nome,
+  email,
+  cargo,
+  empresa,
+  linkedin,
+  whatsapp,
+  coupon,
+  partner,
+  amount,
+}, env) {
   if (!env.NOTION_API_KEY || !env.WORKSHOP_NOTION_DATABASE_ID) {
     throw new Error('Workshop Notion configuration missing');
   }
@@ -356,6 +371,10 @@ async function createWorkshopRegistration({registrationId, nome, email, coupon, 
         'Inscrição': {title: [{text: {content: registrationId}}]},
         'Nome': {rich_text: [{text: {content: nome}}]},
         'E-mail': {email},
+        'Cargo': {rich_text: [{text: {content: cargo}}]},
+        'Empresa': {rich_text: empresa ? [{text: {content: empresa}}] : []},
+        'LinkedIn': {url: linkedin || null},
+        'WhatsApp': {phone_number: whatsapp || null},
         'Cupom': {rich_text: coupon ? [{text: {content: coupon}}] : []},
         'Parceiro': {rich_text: [{text: {content: partner}}]},
         'Valor': {number: amount},
@@ -404,11 +423,16 @@ async function findWorkshopRegistration(registrationId, env) {
     registrationId: titleValue(properties['Inscrição']),
     nome: richTextValue(properties['Nome']),
     email: properties['E-mail']?.email || '',
+    cargo: richTextValue(properties['Cargo']),
+    empresa: richTextValue(properties['Empresa']),
+    linkedin: properties['LinkedIn']?.url || '',
+    whatsapp: properties['WhatsApp']?.phone_number || '',
     coupon: richTextValue(properties['Cupom']),
     partner: richTextValue(properties['Parceiro']),
     amount: Number(properties['Valor']?.number),
     status: notionStatusToWorkshop(properties['Status']?.select?.name),
     mpOrderId: richTextValue(properties['MP Order ID']),
+    paidAt: properties['Pago em']?.date?.start || '',
     confirmationSent: properties['Confirmação enviada']?.checkbox === true,
   };
 }
@@ -434,25 +458,33 @@ async function updateWorkshopRegistration(pageId, updates, env) {
 }
 
 async function sendWorkshopConfirmation(registration, env) {
-  if (!env.RESEND_API_KEY) return false;
+  if (!env.RESEND_API_KEY || !env.WORKSHOP_CONFIRMATION_TEMPLATE_ID) return false;
+
+  const variables = {
+    NAME: registration.nome,
+    EMAIL: registration.email,
+    REGISTRATION_ID: registration.registrationId,
+    WORKSHOP_DATE: WORKSHOP_DATE,
+    WORKSHOP_TIME: WORKSHOP_TIME,
+    AMOUNT: registration.amount,
+    COUPON: registration.coupon || '',
+    PARTNER: registration.partner || 'Direto',
+  };
 
   const resp = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${env.RESEND_API_KEY}`,
       'Content-Type': 'application/json',
+      'Idempotency-Key': `workshop-confirmation/${registration.registrationId}`,
     },
     body: JSON.stringify({
       from: env.CONTACT_FROM_EMAIL || 'LINSI <noreply@beamiranda.com.br>',
       to: [registration.email],
-      subject: 'Inscrição confirmada — Workshop LINSI',
-      text: [
-        `Oi, ${registration.nome}!`,
-        '',
-        'Sua inscrição no Workshop LINSI está confirmada.',
-        '',
-        'O link de acesso ao YouTube será enviado para este e-mail antes do workshop.',
-      ].join('\n'),
+      template: {
+        id: env.WORKSHOP_CONFIRMATION_TEMPLATE_ID,
+        variables,
+      },
     }),
   });
 
@@ -505,7 +537,7 @@ async function applyOrderStatus(order, env) {
   if (!registration) return null;
 
   const status = mapOrderStatus(order);
-  const paidAt = status === 'paid' ? new Date().toISOString() : undefined;
+  const paidAt = status === 'paid' && !registration.paidAt ? new Date().toISOString() : undefined;
   await updateWorkshopRegistration(registration.pageId, {
     status,
     mpOrderId: order.id || registration.mpOrderId,
@@ -523,7 +555,12 @@ async function applyOrderStatus(order, env) {
     }
   }
 
-  return {...registration, status, mpOrderId: order.id || registration.mpOrderId};
+  return {
+    ...registration,
+    status,
+    mpOrderId: order.id || registration.mpOrderId,
+    paidAt: paidAt || registration.paidAt,
+  };
 }
 
 async function handleCoupon(request, env, cors) {
@@ -544,8 +581,20 @@ async function handleWorkshopStart(request, env, cors) {
 
   const nome = requiredString(payload.nome, MAX_LENGTHS.nome);
   const email = requiredString(payload.email, MAX_LENGTHS.email);
+  const cargo = requiredString(payload.cargo, MAX_LENGTHS.cargo);
+  const empresa = optionalString(payload.empresa, MAX_LENGTHS.empresa);
+  const linkedin = normalizeLinkedIn(payload.linkedin);
+  const whatsapp = normalizeWhatsApp(payload.whatsapp);
   const turnstileToken = requiredString(payload.turnstileToken, MAX_LENGTHS.turnstileToken);
-  if (!nome || !validEmail(email) || !turnstileToken) {
+  if (
+    !nome ||
+    !validEmail(email) ||
+    !cargo ||
+    empresa === null ||
+    linkedin === null ||
+    whatsapp === null ||
+    !turnstileToken
+  ) {
     return json({message: 'Confira os campos preenchidos e tente novamente.'}, 400, cors);
   }
 
@@ -572,6 +621,10 @@ async function handleWorkshopStart(request, env, cors) {
       registrationId,
       nome,
       email,
+      cargo,
+      empresa,
+      linkedin,
+      whatsapp,
       coupon: couponResult.coupon || '',
       partner: couponResult.partner || 'Direto',
       amount: couponResult.amount || WORKSHOP_BASE_PRICE,
