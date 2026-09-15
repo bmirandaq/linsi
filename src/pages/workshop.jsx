@@ -51,6 +51,13 @@ function loadMercadoPago() {
   return mercadoPagoScriptPromise;
 }
 
+function normalizeLinkedInForSubmit(value) {
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  const match = /^(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/([A-Za-z0-9-]+)\/?$/i.exec(trimmed);
+  return match ? `https://www.linkedin.com/in/${match[1]}` : trimmed;
+}
+
 async function apiRequest(path, options = {}) {
   const response = await fetch(`${WORKSHOP_API_URL}${path}`, {
     ...options,
@@ -68,9 +75,23 @@ async function apiRequest(path, options = {}) {
   return data;
 }
 
+function WorkshopStepper({active}) {
+  return (
+    <nav className={styles.stepper} aria-label="Etapas da inscrição">
+      <span className={active === 'data' ? styles.stepActive : styles.step}>Seus dados</span>
+      <span className={styles.stepSeparator} aria-hidden="true">·</span>
+      <span className={active === 'payment' ? styles.stepActive : styles.step}>Pagamento</span>
+    </nav>
+  );
+}
+
 export default function Workshop() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
+  const [cargo, setCargo] = useState('');
+  const [empresa, setEmpresa] = useState('');
+  const [linkedin, setLinkedin] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
   const [cupom, setCupom] = useState('');
   const [couponStatus, setCouponStatus] = useState('empty');
   const [couponMessage, setCouponMessage] = useState('');
@@ -206,6 +227,26 @@ export default function Workshop() {
     event.preventDefault();
     if (stage !== 'form') return;
 
+    const formData = new FormData(event.currentTarget);
+    const normalizedLinkedIn = normalizeLinkedInForSubmit(String(formData.get('linkedin') || ''));
+    const normalizedWhatsapp = String(formData.get('whatsapp') || '').replace(/\D/g, '');
+    const payload = {
+      nome: String(formData.get('nome') || '').trim(),
+      email: String(formData.get('email') || '').trim(),
+      cargo: String(formData.get('cargo') || '').trim(),
+      empresa: String(formData.get('empresa') || '').trim(),
+      linkedin: normalizedLinkedIn,
+      whatsapp: normalizedWhatsapp,
+      coupon: String(formData.get('cupom') || '').trim(),
+    };
+
+    setNome(payload.nome);
+    setEmail(payload.email);
+    setCargo(payload.cargo);
+    setEmpresa(payload.empresa);
+    setLinkedin(payload.linkedin);
+    setWhatsapp(payload.whatsapp);
+    setCupom(payload.coupon);
     setSubmitError('');
     setStage('creating');
 
@@ -217,12 +258,7 @@ export default function Workshop() {
 
       const result = await apiRequest('/workshop/start', {
         method: 'POST',
-        body: JSON.stringify({
-          nome: nome.trim(),
-          email: email.trim(),
-          coupon: cupom.trim(),
-          turnstileToken,
-        }),
+        body: JSON.stringify({...payload, turnstileToken}),
       });
 
       setRegistrationId(result.registrationId);
@@ -240,7 +276,7 @@ export default function Workshop() {
       setSubmitError(error.message || 'Não foi possível continuar. Tente novamente.');
       setStage('form');
     }
-  }, [cupom, email, getTurnstileToken, nome, stage]);
+  }, [getTurnstileToken, stage]);
 
   useEffect(() => {
     if (
@@ -379,6 +415,13 @@ export default function Workshop() {
     } catch {}
   }, [pixData]);
 
+  const paymentHeader = (
+    <header className={styles.header}>
+      <h1 className={styles.title}>Inscrição no Workshop LINSI</h1>
+      <WorkshopStepper active="payment" />
+    </header>
+  );
+
   return (
     <Layout title="Workshop LINSI" description="Inscrição no Workshop LINSI">
       <main className={`${styles.page} linsi-page-enter`}>
@@ -387,6 +430,7 @@ export default function Workshop() {
             <>
               <header className={styles.header}>
                 <h1 className={styles.title}>Inscrição no Workshop LINSI</h1>
+                <WorkshopStepper active="data" />
               </header>
 
               <form
@@ -420,6 +464,75 @@ export default function Workshop() {
                       required
                       value={email}
                       onChange={(event) => setEmail(event.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.contactRow}>
+                  <div className={styles.field}>
+                    <label htmlFor="cargo">Cargo</label>
+                    <input
+                      id="cargo"
+                      name="cargo"
+                      type="text"
+                      autoComplete="organization-title"
+                      maxLength={120}
+                      required
+                      value={cargo}
+                      onChange={(event) => setCargo(event.target.value)}
+                    />
+                  </div>
+
+                  <div className={styles.field}>
+                    <label htmlFor="empresa">
+                      Empresa onde trabalha <span className={styles.optionalLabel}>(opcional)</span>
+                    </label>
+                    <input
+                      id="empresa"
+                      name="empresa"
+                      type="text"
+                      autoComplete="organization"
+                      maxLength={160}
+                      value={empresa}
+                      onChange={(event) => setEmpresa(event.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.contactRow}>
+                  <div className={styles.field}>
+                    <label htmlFor="linkedin">
+                      LinkedIn <span className={styles.optionalLabel}>(opcional)</span>
+                    </label>
+                    <input
+                      id="linkedin"
+                      name="linkedin"
+                      type="text"
+                      inputMode="url"
+                      autoComplete="url"
+                      pattern="(?:https?://)?(?:www[.])?linkedin[.]com/in/[A-Za-z0-9\-]+/?"
+                      title="Use um perfil no formato linkedin.com/in/name-user"
+                      maxLength={300}
+                      value={linkedin}
+                      onChange={(event) => setLinkedin(event.target.value)}
+                      onBlur={(event) => setLinkedin(normalizeLinkedInForSubmit(event.target.value))}
+                    />
+                  </div>
+
+                  <div className={styles.field}>
+                    <label htmlFor="whatsapp">
+                      WhatsApp <span className={styles.optionalLabel}>(opcional)</span>
+                    </label>
+                    <input
+                      id="whatsapp"
+                      name="whatsapp"
+                      type="tel"
+                      inputMode="numeric"
+                      autoComplete="tel"
+                      pattern="[0-9]*"
+                      maxLength={32}
+                      value={whatsapp}
+                      onChange={(event) => setWhatsapp(event.target.value.replace(/\D/g, ''))}
                     />
                   </div>
                 </div>
@@ -476,9 +589,8 @@ export default function Workshop() {
 
           {stage === 'checkout' ? (
             <section aria-labelledby="payment-title">
-              <header className={styles.header}>
-                <h1 id="payment-title" className={styles.title}>Pagamento</h1>
-              </header>
+              {paymentHeader}
+              <h2 id="payment-title" className={styles.sectionTitle}>Pagamento</h2>
 
               <p className={styles.checkoutAmount}>
                 R$ {Number(checkoutAmount).toFixed(2).replace('.', ',')}
@@ -522,7 +634,8 @@ export default function Workshop() {
 
           {stage === 'pending' ? (
             <section className={styles.pending} aria-labelledby="pending-title">
-              <h1 id="pending-title" className={styles.title}>Aguardando pagamento</h1>
+              {paymentHeader}
+              <h2 id="pending-title" className={styles.sectionTitle}>Aguardando pagamento</h2>
 
               {pixData?.qrCodeBase64 ? (
                 <img
