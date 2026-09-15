@@ -14,6 +14,7 @@ const WORKSHOP_DISCOUNT_PERCENT = 10;
 const WORKSHOP_DISCOUNTED_PRICE = 90;
 const WORKSHOP_DATE = '8 de outubro de 2026';
 const WORKSHOP_TIME = '19h';
+const WORKSHOP_FORMAT = 'Online · YouTube';
 const MAX_LENGTHS = {
   apelido: 120,
   email: 254,
@@ -29,6 +30,7 @@ const MAX_LENGTHS = {
   paymentToken: 4096,
   paymentMethodId: 64,
   paymentTypeId: 64,
+  deviceId: 256,
 };
 
 function allowedOrigin(env) {
@@ -457,18 +459,23 @@ async function updateWorkshopRegistration(pageId, updates, env) {
   }
 }
 
+function firstName(value) {
+  return String(value || '').trim().split(/\s+/)[0] || '';
+}
+
+function formatBrlAmount(value) {
+  return `R$ ${Number(value).toFixed(2).replace('.', ',')}`;
+}
+
 async function sendWorkshopConfirmation(registration, env) {
   if (!env.RESEND_API_KEY || !env.WORKSHOP_CONFIRMATION_TEMPLATE_ID) return false;
 
   const variables = {
-    NAME: registration.nome,
-    EMAIL: registration.email,
-    REGISTRATION_ID: registration.registrationId,
-    WORKSHOP_DATE: WORKSHOP_DATE,
-    WORKSHOP_TIME: WORKSHOP_TIME,
-    AMOUNT: registration.amount,
-    COUPON: registration.coupon || '',
-    PARTNER: registration.partner || 'Direto',
+    FIRST_NAME: firstName(registration.nome),
+    WORKSHOP_DATE,
+    WORKSHOP_TIME,
+    WORKSHOP_FORMAT,
+    AMOUNT: formatBrlAmount(registration.amount),
   };
 
   const resp = await fetch('https://api.resend.com/emails', {
@@ -649,8 +656,18 @@ async function handleCardPayment(request, env, cors) {
   const token = requiredString(payload.token, MAX_LENGTHS.paymentToken);
   const paymentMethodId = requiredString(payload.paymentMethodId, MAX_LENGTHS.paymentMethodId);
   const paymentTypeId = requiredString(payload.paymentTypeId, MAX_LENGTHS.paymentTypeId);
+  const deviceId = optionalString(payload.deviceId, MAX_LENGTHS.deviceId);
   const installments = Number(payload.installments);
-  if (!registrationId || !token || !paymentMethodId || !paymentTypeId || !Number.isInteger(installments) || installments < 1 || installments > 12) {
+  if (
+    !registrationId ||
+    !token ||
+    !paymentMethodId ||
+    !paymentTypeId ||
+    deviceId === null ||
+    !Number.isInteger(installments) ||
+    installments < 1 ||
+    installments > 12
+  ) {
     return json({message: 'Não foi possível processar o pagamento.'}, 400, cors);
   }
 
@@ -689,7 +706,10 @@ async function handleCardPayment(request, env, cors) {
   try {
     order = await mercadoPagoOrder('/v1/orders', {
       method: 'POST',
-      headers: {'X-Idempotency-Key': `${registrationId}-card-${token.slice(0, 24)}`},
+      headers: {
+        'X-Idempotency-Key': `${registrationId}-card-${token.slice(0, 24)}`,
+        ...(deviceId ? {'X-meli-session-id': deviceId} : {}),
+      },
       body: JSON.stringify(orderBody),
     }, env);
   } catch (err) {
@@ -706,7 +726,8 @@ async function handlePixPayment(request, env, cors) {
   if (!payload) return json({message: 'Não foi possível gerar o Pix.'}, 400, cors);
 
   const registrationId = requiredString(payload.registrationId, MAX_LENGTHS.registrationId);
-  if (!registrationId) return json({message: 'Inscrição não encontrada.'}, 404, cors);
+  const deviceId = optionalString(payload.deviceId, MAX_LENGTHS.deviceId);
+  if (!registrationId || deviceId === null) return json({message: 'Inscrição não encontrada.'}, 404, cors);
 
   const registration = await findWorkshopRegistration(registrationId, env);
   if (!registration || !validEmail(registration.email) || ![WORKSHOP_BASE_PRICE, WORKSHOP_DISCOUNTED_PRICE].includes(registration.amount)) {
@@ -718,7 +739,10 @@ async function handlePixPayment(request, env, cors) {
   try {
     order = await mercadoPagoOrder('/v1/orders', {
       method: 'POST',
-      headers: {'X-Idempotency-Key': `${registrationId}-pix`},
+      headers: {
+        'X-Idempotency-Key': `${registrationId}-pix`,
+        ...(deviceId ? {'X-meli-session-id': deviceId} : {}),
+      },
       body: JSON.stringify({
         type: 'online',
         processing_mode: 'automatic',
