@@ -122,6 +122,16 @@
   border-color: var(--linsi-focus-color);
 }
 
+.field input:-webkit-autofill,
+.field input:-webkit-autofill:hover,
+.field input:-webkit-autofill:focus,
+.field input:autofill {
+  -webkit-text-fill-color: var(--ifm-font-color-base);
+  caret-color: var(--ifm-font-color-base);
+  box-shadow: 0 0 0 1000px var(--ifm-background-surface-color) inset, var(--field-focus-shadow);
+  -webkit-box-shadow: 0 0 0 1000px var(--ifm-background-surface-color) inset, var(--field-focus-shadow);
+}
+
 .couponRow {
   display: grid;
   gap: var(--linsi-space-8);
@@ -171,7 +181,9 @@
 }
 
 .couponButton:disabled,
-.submit:disabled {
+.submit:disabled,
+.methodButton:disabled,
+.methodActive:disabled {
   cursor: not-allowed;
   opacity: 0.55;
   transform: none;
@@ -208,7 +220,68 @@
   font-family: var(--ifm-heading-font-family);
   font-size: 1.5rem;
   font-weight: 800;
-  margin: 0 0 var(--linsi-space-24);
+  margin: 0 0 var(--linsi-space-16);
+}
+
+.securityPanel {
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--linsi-border-color);
+  border-radius: var(--linsi-radius-md);
+  color: var(--ifm-font-color-base);
+  display: grid;
+  gap: var(--linsi-space-8);
+  margin-bottom: var(--linsi-space-24);
+  padding: var(--linsi-space-16);
+}
+
+.securityTitle {
+  align-items: center;
+  display: flex;
+  gap: var(--linsi-space-8);
+}
+
+.securityTitle svg {
+  color: var(--linsi-feedback-success-fg);
+  flex: 0 0 auto;
+  height: 20px;
+  width: 20px;
+}
+
+.securityTitle strong {
+  font-family: var(--ifm-heading-font-family);
+  font-size: 0.95rem;
+}
+
+.securityPanel p {
+  color: var(--linsi-neutral-base);
+  font-size: 0.86rem;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.securityBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--linsi-space-8);
+  list-style: none;
+  margin: var(--linsi-space-8) 0 0;
+  padding: 0;
+}
+
+.securityBadges li {
+  border: 1px solid var(--linsi-border-color);
+  border-radius: var(--linsi-radius-pill);
+  color: var(--ifm-font-color-base);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: var(--linsi-space-4) var(--linsi-space-8);
+}
+
+.paymentChoiceLabel {
+  color: var(--ifm-font-color-base);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 var(--linsi-space-8);
 }
 
 .paymentMethods {
@@ -222,6 +295,10 @@
 .pendingText {
   color: var(--ifm-font-color-base);
   line-height: 1.55;
+}
+
+.loading {
+  margin: 0;
 }
 
 .paymentBrick {
@@ -307,11 +384,7 @@
   grid-column: 1 / -1;
 }
 
-.mockField span {
-  color: var(--ifm-font-color-base);
-  font-size: 0.9rem;
-}
-
+.mockField span,
 .mockFieldFull span {
   color: var(--ifm-font-color-base);
   font-size: 0.9rem;
