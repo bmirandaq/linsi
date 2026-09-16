@@ -71,7 +71,11 @@ try {
     method: 'POST',
     body: JSON.stringify({registrationId, amount: 1, unit_price: 1, coupon: 'FAKE100'}),
   });
-  assert.equal(checkout.response.status, 200, `Preview /workshop/checkout failed (${checkout.response.status}): ${checkout.data?.code || checkout.data?.message || 'unknown'}`);
+  assert.equal(
+    checkout.response.status,
+    200,
+    `Preview /workshop/checkout failed (${checkout.response.status}): ${checkout.data?.code || 'unknown'} ${checkout.data?.providerMessage || checkout.data?.message || ''}`,
+  );
   assert.equal(checkout.data?.status, 'pending');
   assert.ok(checkout.data?.checkoutUrl, 'Checkout Pro must return checkoutUrl.');
   const checkoutUrl = new URL(checkout.data.checkoutUrl);
