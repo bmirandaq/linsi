@@ -71,6 +71,11 @@ jobs:
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
 
+      - name: Validar checkout do Workshop no navegador
+        run: node scripts/test-workshop-checkout.mjs
+        env:
+          SMOKE_BASE_URL: http://127.0.0.1:3000
+
       - name: Validar docs mobile no iPhone 16 Pro Max em todas as fontes
         run: |
           for font in manrope inter opendyslexic georgia; do
