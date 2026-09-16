@@ -104,7 +104,6 @@ jobs:
   preview-integration:
     name: QA real Checkout Pro em Worker preview
     if: github.event_name == 'pull_request' && github.head_ref == 'refactor/workshop-checkout-pro'
-    needs: validate
     runs-on: ubuntu-latest
     steps:
       - name: Baixar branch da PR
@@ -134,16 +133,29 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::CLOUDFLARE_API_TOKEN ausente"; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::CLOUDFLARE_ACCOUNT_ID ausente"; exit 1; }
 
-      - name: Adaptar somente o preview ao Turnstile E2E oficial
+      - name: Adaptar somente o preview ao E2E e diagnóstico seguro
         run: |
           node <<'NODE'
           const fs = require('node:fs');
           const file = 'worker/index.js';
-          const source = fs.readFileSync(file, 'utf8');
-          const before = "const requiredAction = env.TURNSTILE_EXPECTED_ACTION || expectedAction;\n    return result.success === true && result.hostname === expectedHostname && result.action === requiredAction;";
-          const after = "const requiredAction = env.TURNSTILE_EXPECTED_ACTION || expectedAction;\n    const actionMatches = env.TURNSTILE_EXPECTED_ACTION === '__official_e2e_no_action__'\n      ? true\n      : result.action === requiredAction;\n    return result.success === true && result.hostname === expectedHostname && actionMatches;";
-          if (!source.includes(before)) throw new Error('Turnstile preview adapter target not found');
-          fs.writeFileSync(file, source.replace(before, after));
+          let source = fs.readFileSync(file, 'utf8');
+
+          const turnstileBefore = "const requiredAction = env.TURNSTILE_EXPECTED_ACTION || expectedAction;\n    return result.success === true && result.hostname === expectedHostname && result.action === requiredAction;";
+          const turnstileAfter = "const requiredAction = env.TURNSTILE_EXPECTED_ACTION || expectedAction;\n    const actionMatches = env.TURNSTILE_EXPECTED_ACTION === '__official_e2e_no_action__'\n      ? true\n      : result.action === requiredAction;\n    return result.success === true && result.hostname === expectedHostname && actionMatches;";
+          if (!source.includes(turnstileBefore)) throw new Error('Turnstile preview adapter target not found');
+          source = source.replace(turnstileBefore, turnstileAfter);
+
+          const mpBefore = "if (!resp.ok) {\n    const errorCode = typeof data?.code === 'string' ? data.code.slice(0, 80) : '';\n    throw new Error(`Mercado Pago request failed (${resp.status}${errorCode ? `/${errorCode}` : ''})`);\n  }";
+          const mpAfter = "if (!resp.ok) {\n    const errorCode = typeof data?.code === 'string' ? data.code.slice(0, 80) : '';\n    const providerMessage = typeof data?.message === 'string' ? data.message.slice(0, 180) : '';\n    const error = new Error(`Mercado Pago request failed (${resp.status}${errorCode ? `/${errorCode}` : ''})`);\n    error.code = `mp_${resp.status}_${errorCode || 'unknown'}`;\n    error.providerMessage = providerMessage;\n    throw error;\n  }";
+          if (!source.includes(mpBefore)) throw new Error('Mercado Pago diagnostic target not found');
+          source = source.replace(mpBefore, mpAfter);
+
+          const checkoutBefore = "console.error('Mercado Pago Checkout Pro order failed:', err?.message || 'unknown_error');\n    return json({message: 'Não foi possível preparar o pagamento. Tente novamente.'}, 502, cors);";
+          const checkoutAfter = "console.error('Mercado Pago Checkout Pro order failed:', err?.message || 'unknown_error');\n    return json({\n      code: err?.code || 'mp_unknown',\n      providerMessage: err?.providerMessage || '',\n      message: 'Não foi possível preparar o pagamento. Tente novamente.',\n    }, 502, cors);";
+          if (!source.includes(checkoutBefore)) throw new Error('Checkout diagnostic target not found');
+          source = source.replace(checkoutBefore, checkoutAfter);
+
+          fs.writeFileSync(file, source);
           NODE
 
       - name: Criar versão preview do Worker sem deploy
