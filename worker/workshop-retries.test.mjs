@@ -9,6 +9,7 @@ const entryUrl = `data:text/javascript;base64,${Buffer.from(resolvedEntrySource)
 const {default: worker} = await import(entryUrl);
 
 const allowedOrigin = 'https://linsi.beamiranda.com.br';
+const registrationId = 'WS-0123456789ABCDEF0123456789ABCDEF';
 const env = {
   ALLOWED_ORIGIN: allowedOrigin,
   NOTION_API_KEY: 'notion-secret',
@@ -24,70 +25,46 @@ function post(path, payload) {
   });
 }
 
-function baseRegistration() {
-  return {
-    id: 'page-workshop',
-    properties: {
-      'Inscrição': {title: [{plain_text: 'WS-ABC1234567'}]},
-      'Nome': {rich_text: [{plain_text: 'Pessoa Teste'}]},
-      'E-mail': {email: 'pessoa@example.com'},
-      'Cargo': {rich_text: [{plain_text: 'Product Designer'}]},
-      'Empresa': {rich_text: []},
-      'LinkedIn': {url: null},
-      'WhatsApp': {phone_number: null},
-      'Cupom': {rich_text: []},
-      'Parceiro': {rich_text: [{plain_text: 'Direto'}]},
-      'Valor': {number: 100},
-      'Status': {select: {name: 'Inscrição iniciada'}},
-      'MP Order ID': {rich_text: []},
-      'Pago em': {date: null},
-      'Confirmação enviada': {checkbox: false},
-      'Tentativas de pagamento': {number: 0},
-      'Bloqueado até': {date: null},
-    },
-  };
-}
-
 function richText(value) {
   return value ? [{text: {content: value}, plain_text: value}] : [];
 }
 
-function applyPatch(page, properties) {
-  for (const [name, value] of Object.entries(properties || {})) {
-    page.properties[name] = value;
-  }
-}
-
-async function withFetch(mock, callback) {
-  const originalFetch = globalThis.fetch;
-  globalThis.fetch = mock;
-  try {
-    await callback();
-  } finally {
-    globalThis.fetch = originalFetch;
-  }
-}
-
-const page = baseRegistration();
-let createdAttempts = 0;
-let cancelCalls = 0;
-let lastIdempotencyKey = '';
-let lastOrderBody;
-let activeOrder = {
-  id: 'ORD-PIX-1',
-  external_reference: 'WS-ABC1234567',
-  status: 'action_required',
-  status_detail: 'waiting_payment',
-  transactions: {payments: [{payment_method: {
-    id: 'pix',
-    type: 'bank_transfer',
-    qr_code: '000201PIXTEST',
-    qr_code_base64: 'BASE64PIX',
-    ticket_url: 'https://mercadopago.example/pix',
-  }}]},
+const page = {
+  id: 'page-workshop',
+  properties: {
+    'Inscrição': {title: [{plain_text: registrationId}]},
+    'Nome': {rich_text: [{plain_text: 'Pessoa Teste'}]},
+    'E-mail': {email: 'pessoa@example.com'},
+    'Cargo': {rich_text: [{plain_text: 'Product Designer'}]},
+    'Empresa': {rich_text: []},
+    'LinkedIn': {url: null},
+    'WhatsApp': {phone_number: null},
+    'Cupom': {rich_text: []},
+    'Parceiro': {rich_text: [{plain_text: 'Direto'}]},
+    'Valor': {number: 100},
+    'Status': {select: {name: 'Inscrição iniciada'}},
+    'MP Order ID': {rich_text: []},
+    'Pago em': {date: null},
+    'Confirmação enviada': {checkbox: false},
+    'Tentativas de pagamento': {number: 0},
+    'Bloqueado até': {date: null},
+  },
 };
 
-await withFetch(async (url, options = {}) => {
+function applyPatch(properties) {
+  for (const [name, value] of Object.entries(properties || {})) page.properties[name] = value;
+}
+
+const orders = new Map();
+const ordersByIdempotencyKey = new Map();
+const pixKeys = [];
+const cardKeys = [];
+const cancelKeys = [];
+let pixOrdersCreated = 0;
+let cardOrdersCreated = 0;
+
+const originalFetch = globalThis.fetch;
+globalThis.fetch = async (url, options = {}) => {
   const target = String(url);
 
   if (target === 'https://api.notion.com/v1/databases/workshop-db/query') {
@@ -95,117 +72,133 @@ await withFetch(async (url, options = {}) => {
   }
 
   if (target === 'https://api.notion.com/v1/pages/page-workshop') {
-    applyPatch(page, JSON.parse(options.body).properties);
+    applyPatch(JSON.parse(options.body).properties);
     return Response.json({id: 'page-workshop'});
   }
 
   if (target === 'https://api.mercadopago.com/v1/orders' && options.method === 'POST') {
-    createdAttempts += 1;
-    lastIdempotencyKey = options.headers['X-Idempotency-Key'];
-    lastOrderBody = JSON.parse(options.body);
-    activeOrder = {
-      ...activeOrder,
-      id: `ORD-PIX-${createdAttempts}`,
-      transactions: {payments: [{payment_method: {
-        ...activeOrder.transactions.payments[0].payment_method,
-        qr_code: `000201PIXTEST${createdAttempts}`,
-      }}]},
+    const key = options.headers['X-Idempotency-Key'];
+    assert.match(key, /^[a-f0-9]{64}$/);
+    const body = JSON.parse(options.body);
+    const payment = body.transactions.payments[0];
+    const isPix = payment.payment_method.id === 'pix';
+    if (isPix) pixKeys.push(key);
+    else cardKeys.push(key);
+    if (ordersByIdempotencyKey.has(key)) return Response.json(ordersByIdempotencyKey.get(key));
+
+    const sequence = isPix ? ++pixOrdersCreated : ++cardOrdersCreated;
+    const order = {
+      id: `ORD-${isPix ? 'PIX' : 'CARD'}-${sequence}`,
+      external_reference: registrationId,
+      total_amount: '100.00',
+      status: isPix ? 'action_required' : 'failed',
+      status_detail: isPix ? 'waiting_transfer' : 'cc_rejected_other_reason',
+      transactions: {payments: [{
+        amount: '100.00',
+        status: isPix ? 'action_required' : 'failed',
+        payment_method: isPix ? {
+          id: 'pix',
+          type: 'bank_transfer',
+          qr_code: `000201PIXTEST${sequence}`,
+          qr_code_base64: `BASE64PIX${sequence}`,
+        } : {id: 'visa', type: 'credit_card'},
+      }]},
     };
-    return Response.json(activeOrder);
+    assert.equal(body.total_amount, '100.00');
+    if (isPix) {
+      assert.equal(payment.expiration_time, 'P1D');
+      assert.equal('expiration_time' in payment.payment_method, false);
+    } else {
+      assert.equal(key.includes(payment.payment_method.token), false);
+    }
+    orders.set(order.id, order);
+    ordersByIdempotencyKey.set(key, order);
+    return Response.json(order);
   }
 
-  if (target.startsWith('https://api.mercadopago.com/v1/orders/')) {
-    if (target.endsWith('/cancel')) {
-      cancelCalls += 1;
-      assert.equal(options.method, 'POST');
-      assert.ok(options.headers['X-Idempotency-Key']);
-      activeOrder = {...activeOrder, status: 'canceled', status_detail: 'canceled_transaction'};
-      return Response.json(activeOrder);
+  const orderMatch = /^https:\/\/api\.mercadopago\.com\/v1\/orders\/([^/]+)(\/cancel)?$/.exec(target);
+  if (orderMatch) {
+    const orderId = decodeURIComponent(orderMatch[1]);
+    const order = orders.get(orderId);
+    assert.ok(order, `Order ${orderId} deve existir no mock.`);
+    if (orderMatch[2]) {
+      const key = options.headers['X-Idempotency-Key'];
+      assert.match(key, /^[a-f0-9]{64}$/);
+      cancelKeys.push(key);
+      const canceled = {...order, status: 'canceled', status_detail: 'canceled_transaction'};
+      orders.set(orderId, canceled);
+      return Response.json(canceled);
     }
-    return Response.json(activeOrder);
+    return Response.json(order);
   }
 
   throw new Error(`Chamada externa inesperada: ${target}`);
-}, async () => {
-  const firstPix = await worker.fetch(post('/workshop/pay/pix', {
-    registrationId: 'WS-ABC1234567',
-    deviceId: 'device-session-pix',
-  }), env);
-  assert.equal(firstPix.status, 200);
-  const firstBody = await firstPix.json();
-  assert.equal(firstBody.status, 'pending');
-  assert.equal(firstBody.attempts, 1);
-  assert.equal(firstBody.retryAt, null);
-  assert.equal(firstBody.pix.qrCode, '000201PIXTEST1');
-  assert.equal(lastIdempotencyKey, 'WS-ABC1234567-pix-1');
-  assert.equal(lastOrderBody.transactions.payments[0].expiration_time, 'P1D');
-  assert.equal('expiration_time' in lastOrderBody.transactions.payments[0].payment_method, false);
-  assert.equal(page.properties['Tentativas de pagamento'].number, 1);
+};
+
+try {
+  for (let cycle = 0; cycle < 10; cycle += 1) {
+    const attemptsBeforePix = page.properties['Tentativas de pagamento'].number;
+    const pix = await worker.fetch(post('/workshop/pay/pix', {registrationId}), env);
+    assert.equal(pix.status, 200);
+    const pixBody = await pix.json();
+    assert.equal(pixBody.status, 'pending');
+    assert.equal(pixBody.attempts, attemptsBeforePix);
+    assert.equal(page.properties['Tentativas de pagamento'].number, attemptsBeforePix);
+    assert.equal(page.properties['Bloqueado até'].date, null);
+
+    const duplicatePix = await worker.fetch(post('/workshop/pay/pix', {registrationId}), env);
+    assert.equal(duplicatePix.status, 200);
+    assert.equal((await duplicatePix.json()).pix.qrCode, pixBody.pix.qrCode);
+    assert.equal(pixOrdersCreated, cycle + 1, 'Pix pendente deve ser reutilizado.');
+
+    const resetPix = await worker.fetch(post('/workshop/payment/reset', {registrationId}), env);
+    assert.equal(resetPix.status, 200);
+    assert.equal((await resetPix.json()).status, 'started');
+
+    const card = await worker.fetch(post('/workshop/pay/card', {
+      registrationId,
+      token: `card-token-${cycle}`,
+      paymentMethodId: 'visa',
+      paymentTypeId: 'credit_card',
+      installments: 1,
+      identification: {type: 'CPF', number: '123.456.789-01'},
+    }), env);
+    assert.equal(card.status, 200);
+    const cardBody = await card.json();
+    assert.equal(cardBody.status, 'failed');
+    assert.equal(cardBody.attempts, cycle + 1);
+    assert.equal(page.properties['Tentativas de pagamento'].number, cycle + 1);
+    assert.equal(page.properties['Bloqueado até'].date, null);
+
+    const resetCard = await worker.fetch(post('/workshop/payment/reset', {registrationId}), env);
+    assert.equal(resetCard.status, 200);
+    assert.equal((await resetCard.json()).status, 'started');
+  }
+
+  assert.equal(pixOrdersCreated, 10);
+  assert.equal(cardOrdersCreated, 10);
+  assert.equal(cancelKeys.length, 10);
+  assert.equal(new Set(pixKeys).size, 10);
+  assert.equal(page.properties['Tentativas de pagamento'].number, 10);
   assert.equal(page.properties['Bloqueado até'].date, null);
-  assert.equal(page.properties.Status.select.name, 'Aguardando pagamento');
-  assert.equal(page.properties['MP Order ID'].rich_text[0].text.content, 'ORD-PIX-1');
 
-  const reset = await worker.fetch(post('/workshop/payment/reset', {
-    registrationId: 'WS-ABC1234567',
-  }), env);
-  assert.equal(reset.status, 200);
-  assert.deepEqual(await reset.json(), {status: 'started', attempts: 1, retryAt: null});
-  assert.equal(cancelCalls, 1);
-  assert.equal(page.properties.Status.select.name, 'Inscrição iniciada');
-  assert.equal(page.properties['Tentativas de pagamento'].number, 1);
-
-  // Simulate a third attempt in the current four-hour window.
-  page.properties['Tentativas de pagamento'] = {number: 2};
-  page.properties['Bloqueado até'] = {date: null};
-  page.properties.Status = {select: {name: 'Inscrição iniciada'}};
-  page.properties['MP Order ID'] = {rich_text: richText('ORD-PIX-1')};
-  activeOrder = {...activeOrder, status: 'action_required', status_detail: 'waiting_payment'};
-
-  const beforeThirdAttempt = Date.now();
-  const thirdPix = await worker.fetch(post('/workshop/pay/pix', {
-    registrationId: 'WS-ABC1234567',
-  }), env);
-  assert.equal(thirdPix.status, 200);
-  const thirdBody = await thirdPix.json();
-  assert.equal(thirdBody.status, 'pending');
-  assert.equal(thirdBody.attempts, 3);
-  assert.ok(Date.parse(thirdBody.retryAt) > Date.now());
-  const lockDuration = Date.parse(thirdBody.retryAt) - beforeThirdAttempt;
-  assert.ok(lockDuration >= (4 * 60 * 60 * 1000) - 5000);
-  assert.ok(lockDuration <= (4 * 60 * 60 * 1000) + 5000);
-  assert.equal(lastIdempotencyKey, 'WS-ABC1234567-pix-3');
-  assert.equal(lastOrderBody.transactions.payments[0].expiration_time, 'P1D');
-  assert.equal('expiration_time' in lastOrderBody.transactions.payments[0].payment_method, false);
-  assert.equal(page.properties['Tentativas de pagamento'].number, 3);
-  assert.ok(page.properties['Bloqueado até'].date.start);
-
-  let mercadoPagoTouched = false;
-  const originalFetch = globalThis.fetch;
-  globalThis.fetch = async (url, options = {}) => {
-    const target = String(url);
-    if (target === 'https://api.notion.com/v1/databases/workshop-db/query') {
-      return Response.json({results: [page]});
-    }
-    if (target.startsWith('https://api.mercadopago.com/')) mercadoPagoTouched = true;
-    return originalFetch(url, options);
-  };
-  try {
-    const blocked = await worker.fetch(post('/workshop/pay/card', {
-      registrationId: 'WS-ABC1234567',
-      token: 'card-token',
+  const repeatedToken = 'same-card-token';
+  for (let retry = 0; retry < 2; retry += 1) {
+    const response = await worker.fetch(post('/workshop/pay/card', {
+      registrationId,
+      token: repeatedToken,
       paymentMethodId: 'visa',
       paymentTypeId: 'credit_card',
       installments: 1,
     }), env);
-    assert.equal(blocked.status, 429);
-    const blockedBody = await blocked.json();
-    assert.equal(blockedBody.code, 'payment_locked');
-    assert.equal(blockedBody.attempts, 3);
-    assert.ok(blockedBody.retryAt);
-    assert.equal(mercadoPagoTouched, false);
-  } finally {
-    globalThis.fetch = originalFetch;
+    assert.notEqual(response.status, 429);
   }
-});
+  assert.equal(cardKeys.at(-1), cardKeys.at(-2), 'A mesma submissão deve manter a chave idempotente.');
+  assert.equal(cardOrdersCreated, 11, 'Retry com o mesmo token não deve criar nova cobrança no Mercado Pago.');
+  assert.equal(page.properties['Tentativas de pagamento'].number, 12);
+  assert.equal(page.properties['Bloqueado até'].date, null);
+} finally {
+  globalThis.fetch = originalFetch;
+}
 
-console.log('Workshop retry tests passed: Pix reset, P1D expiry, attempt tracking, 3-attempt lock and four-hour block.');
+console.log('Workshop retry tests passed: 10 Card/Pix switches, no lock, Pix reuse, card-only telemetry and deterministic idempotency.');
