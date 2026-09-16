@@ -7,6 +7,7 @@ const productionWorker = 'https://linsi-form-handler.bmirandaqux.workers.dev';
 const previewWorker = (process.env.WORKER_PREVIEW_URL || '').replace(/\/$/, '');
 const artifactDir = 'artifacts/workshop-preview-real';
 const turnstileTestToken = 'XXXX.DUMMY.TOKEN.XXXX';
+const turnstileTestSecret = '1x0000000000000000000000000000000AA';
 
 assert.ok(previewWorker.startsWith('https://'), 'WORKER_PREVIEW_URL must be an HTTPS Worker preview URL.');
 assert.notEqual(previewWorker, productionWorker, 'The real preview QA must never target the production Worker code.');
@@ -25,6 +26,21 @@ async function workerRequest(path, options = {}) {
   return {response, data};
 }
 
+const turnstileProbe = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+  body: new URLSearchParams({secret: turnstileTestSecret, response: turnstileTestToken}),
+});
+const turnstileProbeData = await turnstileProbe.json();
+const sanitizedTurnstileProbe = {
+  success: turnstileProbeData.success,
+  hostname: turnstileProbeData.hostname,
+  action: turnstileProbeData.action,
+  errorCodes: turnstileProbeData['error-codes'] || [],
+};
+console.log('Turnstile official E2E probe:', JSON.stringify(sanitizedTurnstileProbe));
+assert.equal(turnstileProbeData.success, true, 'Cloudflare official E2E Turnstile credentials must validate before testing the Worker.');
+
 const startPayload = {
   nome: `QA Checkout Pro Preview ${Date.now()}`,
   email: 'test@testuser.com',
@@ -42,7 +58,11 @@ try {
     method: 'POST',
     body: JSON.stringify(startPayload),
   });
-  assert.equal(start.response.status, 200, `Preview /workshop/start failed (${start.response.status}).`);
+  assert.equal(
+    start.response.status,
+    200,
+    `Preview /workshop/start failed (${start.response.status}): ${start.data?.code || start.data?.error || start.data?.message || 'unknown'}`,
+  );
   assert.match(start.data?.registrationId || '', /^WS-[A-F0-9]{32}$/);
   assert.equal(start.data?.amount, 100);
   const registrationId = start.data.registrationId;
@@ -51,7 +71,7 @@ try {
     method: 'POST',
     body: JSON.stringify({registrationId, amount: 1, unit_price: 1, coupon: 'FAKE100'}),
   });
-  assert.equal(checkout.response.status, 200, `Preview /workshop/checkout failed (${checkout.response.status}).`);
+  assert.equal(checkout.response.status, 200, `Preview /workshop/checkout failed (${checkout.response.status}): ${checkout.data?.code || checkout.data?.message || 'unknown'}`);
   assert.equal(checkout.data?.status, 'pending');
   assert.ok(checkout.data?.checkoutUrl, 'Checkout Pro must return checkoutUrl.');
   const checkoutUrl = new URL(checkout.data.checkoutUrl);
@@ -62,11 +82,11 @@ try {
     method: 'POST',
     body: JSON.stringify({registrationId}),
   });
-  assert.equal(retry.response.status, 200, `Preview Checkout Pro retry failed (${retry.response.status}).`);
+  assert.equal(retry.response.status, 200, `Preview Checkout Pro retry failed (${retry.response.status}): ${retry.data?.code || retry.data?.message || 'unknown'}`);
   assert.equal(retry.data?.checkoutUrl, checkout.data.checkoutUrl, 'Retry must reuse the live Mercado Pago Order instead of creating another checkout.');
 
   const status = await workerRequest(`/workshop/status?id=${encodeURIComponent(registrationId)}`);
-  assert.equal(status.response.status, 200);
+  assert.equal(status.response.status, 200, `Preview status failed (${status.response.status}).`);
   assert.equal(status.data?.status, 'pending');
 
   const checkoutPage = await browser.newPage({viewport: {width: 1440, height: 1000}});
