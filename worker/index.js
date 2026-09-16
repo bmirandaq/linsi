@@ -15,9 +15,8 @@ const WORKSHOP_DISCOUNTED_PRICE = 90;
 const WORKSHOP_DATE = '8 de outubro de 2026';
 const WORKSHOP_TIME = '19h';
 const WORKSHOP_FORMAT = 'Online · YouTube';
-const MAX_PAYMENT_ATTEMPTS = 3;
-const PAYMENT_LOCK_MS = 4 * 60 * 60 * 1000;
 const PIX_EXPIRATION_TIME = 'P1D';
+const ALLOWED_PAYMENT_TYPES = new Set(['credit_card', 'debit_card']);
 const MAX_LENGTHS = {
   apelido: 120,
   email: 254,
@@ -34,6 +33,8 @@ const MAX_LENGTHS = {
   paymentMethodId: 64,
   paymentTypeId: 64,
   deviceId: 256,
+  identificationType: 16,
+  identificationNumber: 32,
 };
 
 function allowedOrigin(env) {
@@ -421,7 +422,6 @@ async function findWorkshopRegistration(registrationId, env) {
     paidAt: properties['Pago em']?.date?.start || '',
     confirmationSent: properties['Confirmação enviada']?.checkbox === true,
     attempts: Number(properties['Tentativas de pagamento']?.number || 0),
-    retryAt: properties['Bloqueado até']?.date?.start || '',
   };
 }
 
@@ -434,7 +434,6 @@ async function updateWorkshopRegistration(pageId, updates, env) {
   if (updates.paidAt !== undefined) properties['Pago em'] = {date: updates.paidAt ? {start: updates.paidAt} : null};
   if (updates.confirmationSent !== undefined) properties['Confirmação enviada'] = {checkbox: updates.confirmationSent};
   if (updates.attempts !== undefined) properties['Tentativas de pagamento'] = {number: updates.attempts};
-  if (updates.retryAt !== undefined) properties['Bloqueado até'] = {date: updates.retryAt ? {start: updates.retryAt} : null};
 
   const resp = await fetch(`https://api.notion.com/v1/pages/${pageId}`, {
     method: 'PATCH',
@@ -488,7 +487,8 @@ async function sendWorkshopConfirmation(registration, env) {
 }
 
 function mapOrderStatus(order) {
-  if (order?.status === 'processed') return 'paid';
+  if (order?.status === 'processed' && order?.status_detail === 'accredited') return 'paid';
+  if (order?.status === 'processed' && order?.status_detail === 'partially_refunded') return 'refunded';
   if (order?.status === 'refunded') return 'refunded';
   if (['failed', 'canceled', 'expired'].includes(order?.status)) return 'failed';
   return 'pending';
@@ -519,49 +519,74 @@ function orderPixData(order) {
   };
 }
 
-function paymentLockActive(registration) {
-  const retryAt = Date.parse(registration.retryAt || '');
-  return Number.isFinite(retryAt) && retryAt > Date.now();
+function moneyInCents(value) {
+  if (typeof value !== 'string' && typeof value !== 'number') return null;
+  const normalized = String(value);
+  if (!/^\d+(?:\.\d{1,2})?$/.test(normalized)) return null;
+  const cents = Math.round(Number(normalized) * 100);
+  return Number.isSafeInteger(cents) ? cents : null;
 }
 
-async function clearExpiredPaymentLock(registration, env) {
-  if (!registration?.retryAt) return registration;
-  const retryAt = Date.parse(registration.retryAt);
-  if (!Number.isFinite(retryAt) || retryAt > Date.now()) return registration;
-
-  await updateWorkshopRegistration(registration.pageId, {attempts: 0, retryAt: ''}, env);
-  return {...registration, attempts: 0, retryAt: ''};
+function orderAmountInCents(order) {
+  const total = moneyInCents(order?.total_amount);
+  if (total !== null) return total;
+  const payments = order?.transactions?.payments;
+  if (!Array.isArray(payments) || payments.length === 0) return null;
+  let sum = 0;
+  for (const payment of payments) {
+    const amount = moneyInCents(payment?.amount);
+    if (amount === null) return null;
+    sum += amount;
+  }
+  return Number.isSafeInteger(sum) ? sum : null;
 }
 
-async function beginPaymentAttempt(registration, env) {
-  const current = await clearExpiredPaymentLock(registration, env);
-  if (paymentLockActive(current)) return {locked: true, registration: current};
-
-  const attempts = current.attempts + 1;
-  const retryAt = attempts >= MAX_PAYMENT_ATTEMPTS
-    ? new Date(Date.now() + PAYMENT_LOCK_MS).toISOString()
-    : '';
-  await updateWorkshopRegistration(current.pageId, {attempts, retryAt}, env);
-  return {locked: false, registration: {...current, attempts, retryAt}};
+function paymentIntegrityError(reason) {
+  console.error('Workshop payment integrity check failed:', reason);
+  const error = new Error('Payment integrity check failed');
+  error.code = 'payment_integrity_failed';
+  return error;
 }
 
-function lockedPaymentResponse(registration, cors) {
-  return json({
-    code: 'payment_locked',
-    message: 'Não foi possível confirmar o pagamento.',
-    attempts: registration.attempts,
-    retryAt: registration.retryAt || null,
-  }, 429, cors);
+function normalizeIdentification(value) {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value !== 'object' || Array.isArray(value)) return null;
+  const type = requiredString(value.type, MAX_LENGTHS.identificationType)?.toUpperCase();
+  const rawNumber = requiredString(value.number, MAX_LENGTHS.identificationNumber);
+  if (!type || !rawNumber || !/^[\d.\-/]+$/.test(rawNumber)) return null;
+  const number = rawNumber.replace(/\D/g, '');
+  if ((type === 'CPF' && number.length !== 11) || (type === 'CNPJ' && number.length !== 14)) return null;
+  if (!['CPF', 'CNPJ'].includes(type)) return null;
+  return {type, number};
 }
 
-async function applyOrderStatus(order, env) {
+async function sha256Hex(value) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+  return hex(digest);
+}
+
+async function applyOrderStatus(order, env, expectedRegistrationId = '', allowOrderReplacement = false) {
   const registrationId = requiredString(order?.external_reference, MAX_LENGTHS.registrationId);
   if (!registrationId) return null;
+  if (expectedRegistrationId && registrationId !== expectedRegistrationId) {
+    throw paymentIntegrityError('external_reference_mismatch');
+  }
 
   const registration = await findWorkshopRegistration(registrationId, env);
   if (!registration) return null;
 
   const status = mapOrderStatus(order);
+  if (!allowOrderReplacement && registration.mpOrderId && order?.id
+    && registration.mpOrderId !== order.id && status !== 'paid') {
+    return registration;
+  }
+  if (status === 'paid') {
+    const expectedAmount = moneyInCents(registration.amount);
+    const paidAmount = orderAmountInCents(order);
+    if (expectedAmount === null || paidAmount === null || paidAmount !== expectedAmount) {
+      throw paymentIntegrityError('amount_mismatch');
+    }
+  }
   const paidAt = status === 'paid' && !registration.paidAt ? new Date().toISOString() : undefined;
   await updateWorkshopRegistration(registration.pageId, {
     status,
@@ -626,7 +651,7 @@ async function handleWorkshopStart(request, env, cors) {
 
   if (!env.MP_PUBLIC_KEY) return json({message: 'O pagamento está temporariamente indisponível.'}, 503, cors);
 
-  const registrationId = `WS-${crypto.randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`;
+  const registrationId = `WS-${crypto.randomUUID().replace(/-/g, '').toUpperCase()}`;
   try {
     await createWorkshopRegistration({
       registrationId,
@@ -650,7 +675,6 @@ async function handleWorkshopStart(request, env, cors) {
     amount: couponResult.amount || WORKSHOP_BASE_PRICE,
     publicKey: env.MP_PUBLIC_KEY,
     attempts: 0,
-    retryAt: null,
   }, 200, cors);
 }
 
@@ -662,23 +686,32 @@ async function handlePaymentReset(request, env, cors) {
   let registration = await findWorkshopRegistration(registrationId, env);
   if (!registration) return json({message: 'Inscrição não encontrada.'}, 404, cors);
   if (registration.status === 'paid') {
-    return json({status: 'paid', attempts: registration.attempts, retryAt: null}, 200, cors);
+    return json({status: 'paid', attempts: registration.attempts}, 200, cors);
   }
-
-  registration = await clearExpiredPaymentLock(registration, env);
-  if (paymentLockActive(registration)) return lockedPaymentResponse(registration, cors);
 
   if (registration.status === 'pending' && registration.mpOrderId) {
     try {
-      await mercadoPagoOrder(`/v1/orders/${encodeURIComponent(registration.mpOrderId)}/cancel`, {method: 'POST'}, env);
+      const currentOrder = await mercadoPagoOrder(`/v1/orders/${encodeURIComponent(registration.mpOrderId)}`, {method: 'GET'}, env);
+      const current = await applyOrderStatus(currentOrder, env, registrationId);
+      if (current?.status === 'paid') {
+        return json({status: 'paid', attempts: registration.attempts}, 200, cors);
+      }
+      if (current?.status === 'pending') {
+        await mercadoPagoOrder(`/v1/orders/${encodeURIComponent(registration.mpOrderId)}/cancel`, {
+          method: 'POST',
+          headers: {
+            'X-Idempotency-Key': await sha256Hex(`${registrationId}:${registration.mpOrderId}:cancel`),
+          },
+        }, env);
+      }
     } catch (err) {
       console.error('Mercado Pago pending order cancel failed:', err);
       return json({message: 'Não foi possível alterar a forma de pagamento.'}, 502, cors);
     }
   }
 
-  await updateWorkshopRegistration(registration.pageId, {status: 'started', mpOrderId: ''}, env);
-  return json({status: 'started', attempts: registration.attempts, retryAt: null}, 200, cors);
+  await updateWorkshopRegistration(registration.pageId, {status: 'started'}, env);
+  return json({status: 'started', attempts: registration.attempts}, 200, cors);
 }
 
 async function handleCardPayment(request, env, cors) {
@@ -691,7 +724,10 @@ async function handleCardPayment(request, env, cors) {
   const paymentTypeId = requiredString(payload.paymentTypeId, MAX_LENGTHS.paymentTypeId);
   const deviceId = optionalString(payload.deviceId, MAX_LENGTHS.deviceId);
   const installments = Number(payload.installments);
-  if (!registrationId || !token || !paymentMethodId || !paymentTypeId || deviceId === null || !Number.isInteger(installments) || installments < 1 || installments > 12) {
+  const identification = normalizeIdentification(payload.identification);
+  if (!registrationId || !token || !paymentMethodId || !/^[A-Za-z0-9_-]+$/.test(paymentMethodId)
+    || !paymentTypeId || !ALLOWED_PAYMENT_TYPES.has(paymentTypeId) || deviceId === null
+    || identification === null || !Number.isInteger(installments) || installments < 1 || installments > 12) {
     return json({message: 'Não foi possível processar o pagamento.'}, 400, cors);
   }
 
@@ -700,14 +736,28 @@ async function handleCardPayment(request, env, cors) {
     return json({message: 'Inscrição não encontrada.'}, 404, cors);
   }
   if (registration.status === 'paid') {
-    return json({status: 'paid', attempts: registration.attempts, retryAt: null}, 200, cors);
+    return json({status: 'paid', attempts: registration.attempts}, 200, cors);
   }
 
-  const attempt = await beginPaymentAttempt(registration, env);
-  if (attempt.locked) return lockedPaymentResponse(attempt.registration, cors);
-  registration = attempt.registration;
+  if (registration.status === 'pending' && registration.mpOrderId) {
+    try {
+      const currentOrder = await mercadoPagoOrder(`/v1/orders/${encodeURIComponent(registration.mpOrderId)}`, {method: 'GET'}, env);
+      const current = await applyOrderStatus(currentOrder, env, registrationId);
+      if (current?.status === 'paid') return json({status: 'paid', attempts: registration.attempts}, 200, cors);
+      if (current?.status === 'pending') {
+        return json({code: 'payment_pending', message: 'Há um pagamento em processamento.'}, 409, cors);
+      }
+      if (current) registration = current;
+    } catch (err) {
+      console.error('Mercado Pago pending order check failed:', err);
+      return json({message: 'Não foi possível confirmar o pagamento.'}, 502, cors);
+    }
+  }
 
-  const identification = payload.identification && typeof payload.identification === 'object' ? payload.identification : undefined;
+  const attempts = registration.attempts + 1;
+  await updateWorkshopRegistration(registration.pageId, {attempts}, env);
+  registration = {...registration, attempts};
+
   const orderBody = {
     type: 'online',
     processing_mode: 'automatic',
@@ -715,9 +765,7 @@ async function handleCardPayment(request, env, cors) {
     external_reference: registration.registrationId,
     payer: {
       email: registration.email,
-      ...(identification?.type && identification?.number ? {
-        identification: {type: identification.type, number: identification.number},
-      } : {}),
+      ...(identification ? {identification} : {}),
     },
     transactions: {
       payments: [{
@@ -734,30 +782,34 @@ async function handleCardPayment(request, env, cors) {
 
   let order;
   try {
+    const idempotencyKey = await sha256Hex(`${registrationId}:${token}`);
     order = await mercadoPagoOrder('/v1/orders', {
       method: 'POST',
       headers: {
-        'X-Idempotency-Key': `${registrationId}-card-${registration.attempts}-${token.slice(0, 20)}`,
+        'X-Idempotency-Key': idempotencyKey,
         ...(deviceId ? {'X-meli-session-id': deviceId} : {}),
       },
       body: JSON.stringify(orderBody),
     }, env);
   } catch (err) {
     console.error('Mercado Pago card order failed:', err);
-    if (registration.retryAt) return lockedPaymentResponse(registration, cors);
     return json({
       code: 'payment_failed',
       message: 'Não foi possível confirmar o pagamento.',
       attempts: registration.attempts,
-      retryAt: null,
     }, 502, cors);
   }
 
-  const updated = await applyOrderStatus(order, env);
+  let updated;
+  try {
+    updated = await applyOrderStatus(order, env, registrationId, true);
+  } catch (err) {
+    return json({code: err.code || 'payment_failed', message: 'Não foi possível confirmar o pagamento.'}, 502, cors);
+  }
+  if (!updated) return json({code: 'payment_failed', message: 'Não foi possível confirmar o pagamento.'}, 502, cors);
   return json({
-    status: updated?.status || mapOrderStatus(order),
+    status: updated.status,
     attempts: registration.attempts,
-    retryAt: registration.retryAt || null,
   }, 200, cors);
 }
 
@@ -774,19 +826,36 @@ async function handlePixPayment(request, env, cors) {
     return json({message: 'Inscrição não encontrada.'}, 404, cors);
   }
   if (registration.status === 'paid') {
-    return json({status: 'paid', attempts: registration.attempts, retryAt: null}, 200, cors);
+    return json({status: 'paid', attempts: registration.attempts}, 200, cors);
   }
 
-  const attempt = await beginPaymentAttempt(registration, env);
-  if (attempt.locked) return lockedPaymentResponse(attempt.registration, cors);
-  registration = attempt.registration;
+  if (registration.status === 'pending' && registration.mpOrderId) {
+    try {
+      const existingOrder = await mercadoPagoOrder(`/v1/orders/${encodeURIComponent(registration.mpOrderId)}`, {method: 'GET'}, env);
+      const existing = await applyOrderStatus(existingOrder, env, registrationId);
+      if (!existing) return json({message: 'Não foi possível gerar o Pix.'}, 502, cors);
+      if (existing.status === 'paid') return json({status: 'paid', attempts: registration.attempts}, 200, cors);
+      if (existing.status === 'pending') {
+        return json({
+          status: 'pending',
+          attempts: registration.attempts,
+          pix: orderPixData(existingOrder),
+        }, 200, cors);
+      }
+      registration = existing;
+    } catch (err) {
+      console.error('Mercado Pago Pix reuse failed:', err);
+      return json({message: 'Não foi possível gerar o Pix.'}, 502, cors);
+    }
+  }
 
   let order;
   try {
+    const idempotencyKey = await sha256Hex(`${registrationId}:pix:${registration.mpOrderId || 'initial'}`);
     order = await mercadoPagoOrder('/v1/orders', {
       method: 'POST',
       headers: {
-        'X-Idempotency-Key': `${registrationId}-pix-${registration.attempts}`,
+        'X-Idempotency-Key': idempotencyKey,
         ...(deviceId ? {'X-meli-session-id': deviceId} : {}),
       },
       body: JSON.stringify({
@@ -806,20 +875,23 @@ async function handlePixPayment(request, env, cors) {
     }, env);
   } catch (err) {
     console.error('Mercado Pago Pix order failed:', err);
-    if (registration.retryAt) return lockedPaymentResponse(registration, cors);
     return json({
       code: 'payment_failed',
       message: 'Não foi possível gerar o Pix.',
       attempts: registration.attempts,
-      retryAt: null,
     }, 502, cors);
   }
 
-  const updated = await applyOrderStatus(order, env);
+  let updated;
+  try {
+    updated = await applyOrderStatus(order, env, registrationId, true);
+  } catch (err) {
+    return json({code: err.code || 'payment_failed', message: 'Não foi possível gerar o Pix.'}, 502, cors);
+  }
+  if (!updated) return json({message: 'Não foi possível gerar o Pix.'}, 502, cors);
   return json({
-    status: updated?.status || mapOrderStatus(order),
+    status: updated.status,
     attempts: registration.attempts,
-    retryAt: registration.retryAt || null,
     pix: orderPixData(order),
   }, 200, cors);
 }
@@ -831,7 +903,6 @@ async function handleWorkshopStatus(request, env, cors) {
   let registration;
   try {
     registration = await findWorkshopRegistration(registrationId, env);
-    if (registration) registration = await clearExpiredPaymentLock(registration, env);
   } catch (err) {
     console.error('Workshop status query failed:', err);
     return json({message: 'Não foi possível consultar o pagamento.'}, 500, cors);
@@ -842,7 +913,7 @@ async function handleWorkshopStatus(request, env, cors) {
     try {
       const order = await mercadoPagoOrder(`/v1/orders/${encodeURIComponent(registration.mpOrderId)}`, {method: 'GET'}, env);
       const current = mapOrderStatus(order);
-      if (current !== registration.status) registration = await applyOrderStatus(order, env) || registration;
+      if (current !== registration.status) registration = await applyOrderStatus(order, env, registrationId) || registration;
     } catch (err) {
       console.error('Mercado Pago status refresh failed (non-blocking):', err);
     }
@@ -851,7 +922,6 @@ async function handleWorkshopStatus(request, env, cors) {
   return json({
     status: registration.status,
     attempts: registration.attempts,
-    retryAt: paymentLockActive(registration) ? registration.retryAt : null,
   }, 200, cors);
 }
 

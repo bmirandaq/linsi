@@ -66,6 +66,11 @@
   gap: var(--linsi-space-16);
 }
 
+.formArea {
+  min-height: 520px;
+  position: relative;
+}
+
 .contactRow {
   display: grid;
   gap: var(--linsi-space-16);
@@ -246,6 +251,24 @@
   min-height: 180px;
 }
 
+.paymentPane[hidden] {
+  display: none;
+}
+
+.loadingState {
+  align-content: center;
+  display: grid;
+  gap: var(--linsi-space-16);
+  justify-items: center;
+  min-height: 180px;
+  text-align: center;
+}
+
+.loadingState strong {
+  color: var(--ifm-font-color-base);
+  font-family: var(--ifm-heading-font-family);
+}
+
 .processingOverlay {
   align-content: center;
   background: var(--ifm-background-color);
@@ -282,16 +305,12 @@
 
 .processorCard {
   align-items: center;
-  background: var(--ifm-background-surface-color);
-  border: 1px solid var(--linsi-border-color);
-  border-radius: var(--linsi-radius-md);
   color: var(--linsi-neutral-base);
   display: flex;
   font-size: 0.86rem;
   gap: var(--linsi-space-8);
   justify-content: center;
   margin-top: var(--linsi-space-24);
-  padding: var(--linsi-space-8) var(--linsi-space-16);
 }
 
 .processorLogo {
@@ -346,8 +365,10 @@
 .pixQr,
 .mockQr {
   background: var(--linsi-pure-white);
+  border: 1px solid var(--linsi-border-color);
   border-radius: var(--linsi-radius-md);
   display: block;
+  justify-self: center;
   max-width: 280px;
   padding: var(--linsi-space-16);
   width: 100%;
@@ -356,7 +377,6 @@
 .mockQr {
   align-items: center;
   aspect-ratio: 1;
-  border: 1px solid var(--linsi-border-color);
   color: var(--linsi-neutral-darkest);
   display: flex;
   flex-direction: column;

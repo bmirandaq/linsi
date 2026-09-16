@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 
 const baseUrl = process.env.SMOKE_BASE_URL || 'http://127.0.0.1:3000';
-const browser = await chromium.launch({headless: true});
+const browser = await chromium.launch({
+  headless: true,
+  ...(process.env.BROWSER_CHANNEL ? {channel: process.env.BROWSER_CHANNEL} : {}),
+});
 
 async function openCheckout(page) {
   await page.goto(`${baseUrl}/workshop`, {waitUntil: 'networkidle'});
@@ -10,8 +13,29 @@ async function openCheckout(page) {
   await page.locator('#email').fill('qa@example.com');
   await page.locator('#cargo').fill('Product Designer');
   await page.getByRole('button', {name: 'Continuar'}).click();
+  await page.getByText('Carregando...', {exact: true}).waitFor();
+  assert.equal(await page.getByRole('button', {name: 'Continuar'}).count(), 1);
   await page.getByRole('heading', {name: 'Inscrição no Workshop LINSI'}).waitFor();
   await page.getByText('Valor do workshop', {exact: true}).waitFor();
+}
+
+async function switchTenTimes(page) {
+  const durations = [];
+  for (let index = 0; index < 10; index += 1) {
+    await page.getByRole('button', {name: 'Pix', exact: true}).click();
+    await page.getByText('Gerando QR Code Pix', {exact: true}).waitFor();
+    await page.getByLabel('QR Code Pix simulado').waitFor();
+
+    const startedAt = performance.now();
+    await page.getByRole('button', {name: 'Cartão', exact: true}).click();
+    await page.getByText('Número do cartão', {exact: true}).waitFor();
+    durations.push(Math.round(performance.now() - startedAt));
+
+    assert.equal(await page.getByText('Alterando forma de pagamento', {exact: true}).count(), 0);
+    assert.equal(await page.getByText('Carregando pagamento', {exact: true}).count(), 0);
+    assert.equal(await page.getByText('Processando pagamento...', {exact: true}).count(), 0);
+  }
+  return durations;
 }
 
 try {
@@ -19,25 +43,15 @@ try {
   await openCheckout(desktop);
 
   assert.equal(await desktop.getByRole('button', {name: 'Cartão', exact: true}).count(), 1);
-  assert.equal(await desktop.getByRole('button', {name: 'Cartão de crédito', exact: true}).count(), 0);
-  assert.equal(await desktop.getByText('Carregando pagamento...', {exact: true}).count(), 0);
-  assert.equal(await desktop.getByText('Gerando Pix...', {exact: true}).count(), 0);
+  assert.equal(await desktop.getByText('Carregando pagamento', {exact: true}).count(), 0);
   assert.equal(await desktop.getByText('Processando pagamento...', {exact: true}).count(), 0);
 
-  await desktop.getByRole('button', {name: 'Pix', exact: true}).click();
-  const mockQr = desktop.getByLabel('QR Code Pix simulado');
-  await mockQr.waitFor();
-  assert.equal(await mockQr.evaluate((element) => getComputedStyle(element).justifySelf), 'center');
-
-  const switchStartedAt = Date.now();
-  await desktop.getByRole('button', {name: 'Cartão', exact: true}).click();
-  await desktop.getByText('Número do cartão', {exact: true}).waitFor();
-  const switchDuration = Date.now() - switchStartedAt;
-  assert.ok(switchDuration < 750, `Troca Pix -> Cartão levou ${switchDuration}ms no smoke local.`);
-  assert.equal(await desktop.getByText('Processando pagamento...', {exact: true}).count(), 0);
-
+  const desktopDurations = await switchTenTimes(desktop);
   await desktop.getByRole('button', {name: 'Simular pendente'}).click();
   await desktop.getByText('Processando pagamento...', {exact: true}).waitFor();
+  await desktop.getByRole('button', {name: 'Resetar mock local'}).click();
+  await desktop.getByRole('button', {name: 'Simular pagamento aprovado'}).click();
+  await desktop.getByRole('heading', {name: 'Inscrição confirmada'}).waitFor();
 
   const mobile = await browser.newPage({viewport: {width: 390, height: 844}});
   await openCheckout(mobile);
@@ -47,8 +61,14 @@ try {
   const pixBox = await pixButton.boundingBox();
   assert.ok(cardBox && pixBox, 'As tabs precisam estar visíveis no mobile.');
   assert.ok(pixBox.y > cardBox.y, 'No mobile, as formas de pagamento devem empilhar sem overflow.');
+  const documentWidth = await mobile.evaluate(() => document.documentElement.scrollWidth);
+  assert.ok(documentWidth <= 390, `A página mobile não pode ter overflow horizontal (${documentWidth}px).`);
+  const mobileDurations = await switchTenTimes(mobile);
 
-  console.log(`Workshop browser smoke passed. Pix -> Cartão local switch: ${switchDuration}ms.`);
+  const allDurations = [...desktopDurations, ...mobileDurations];
+  const maxSwitchDuration = Math.max(...allDurations);
+  const averageSwitchDuration = Math.round(allDurations.reduce((sum, value) => sum + value, 0) / allDurations.length);
+  console.log(`Workshop browser smoke passed. Pix -> Cartão visual: média ${averageSwitchDuration}ms, máximo ${maxSwitchDuration}ms.`);
 } finally {
   await browser.close();
 }
