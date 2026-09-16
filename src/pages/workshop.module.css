@@ -180,10 +180,10 @@
   background: var(--ifm-background-color);
   display: grid;
   gap: var(--linsi-space-16);
-  inset: 0;
+  inset: var(--ifm-navbar-height) 0 0;
   justify-items: center;
-  min-height: 520px;
-  position: absolute;
+  min-height: 0;
+  position: fixed;
   text-align: center;
   z-index: 10;
 }
