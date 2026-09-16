@@ -146,7 +146,29 @@ jobs:
           source = source.replace(turnstileBefore, turnstileAfter);
 
           const mpBefore = "if (!resp.ok) {\n    const errorCode = typeof data?.code === 'string' ? data.code.slice(0, 80) : '';\n    throw new Error(`Mercado Pago request failed (${resp.status}${errorCode ? `/${errorCode}` : ''})`);\n  }";
-          const mpAfter = "if (!resp.ok) {\n    const errorCode = typeof data?.code === 'string' ? data.code.slice(0, 80) : '';\n    const providerMessage = typeof data?.message === 'string' ? data.message.slice(0, 180) : '';\n    const error = new Error(`Mercado Pago request failed (${resp.status}${errorCode ? `/${errorCode}` : ''})`);\n    error.code = `mp_${resp.status}_${errorCode || 'unknown'}`;\n    error.providerMessage = providerMessage;\n    throw error;\n  }";
+          const mpAfter = `if (!resp.ok) {
+    const errorCode = typeof data?.code === 'string' ? data.code.slice(0, 80) : '';
+    const safeEntry = (entry) => {
+      if (!entry || typeof entry !== 'object') return null;
+      const safe = {};
+      for (const key of ['code', 'message', 'field', 'path', 'type', 'error']) {
+        if (typeof entry[key] === 'string') safe[key] = entry[key].slice(0, 180);
+      }
+      return safe;
+    };
+    const safeDiagnostic = {
+      ...(typeof data?.code === 'string' ? {code: data.code.slice(0, 80)} : {}),
+      ...(typeof data?.error === 'string' ? {error: data.error.slice(0, 120)} : {}),
+      ...(typeof data?.message === 'string' ? {message: data.message.slice(0, 180)} : {}),
+      ...(Array.isArray(data?.details) ? {details: data.details.map(safeEntry).filter(Boolean).slice(0, 8)} : {}),
+      ...(Array.isArray(data?.errors) ? {errors: data.errors.map(safeEntry).filter(Boolean).slice(0, 8)} : {}),
+      ...(Array.isArray(data?.cause) ? {cause: data.cause.map(safeEntry).filter(Boolean).slice(0, 8)} : {}),
+    };
+    const error = new Error(\`Mercado Pago request failed (\${resp.status}\${errorCode ? \`/\${errorCode}\` : ''})\`);
+    error.code = \`mp_\${resp.status}_\${errorCode || 'unknown'}\`;
+    error.providerMessage = JSON.stringify(safeDiagnostic).slice(0, 1600);
+    throw error;
+  }`;
           if (!source.includes(mpBefore)) throw new Error('Mercado Pago diagnostic target not found');
           source = source.replace(mpBefore, mpAfter);
 
