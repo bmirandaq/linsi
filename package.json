@@ -16,6 +16,7 @@
     "audit:dependencies": "node scripts/audit-dependencies.cjs",
     "test:worker": "node worker/index.test.mjs && node worker/workshop.test.mjs && node worker/workshop-retries.test.mjs",
     "test:ui": "node scripts/test-ui-regressions.cjs && node scripts/test-workshop-payment-ui.cjs",
+    "test:workshop:production": "node scripts/test-workshop-production.mjs",
     "test:colors": "node scripts/test-color-tokens.cjs",
     "test:spacing": "node scripts/test-spacing-tokens.cjs",
     "test:icons": "node scripts/audit-material-symbols.cjs",
