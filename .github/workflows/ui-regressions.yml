@@ -27,6 +27,9 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
+      - name: Auditar dependências
+        run: npm run audit:dependencies
+
       - name: Preparar download da Skill
         run: |
           mkdir -p static/downloads/assistente-linsi
@@ -75,6 +78,19 @@ jobs:
         run: node scripts/test-workshop-checkout.mjs
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
+
+      - name: Capturar QA visual do Workshop
+        run: node scripts/capture-workshop-qa.mjs
+        env:
+          SMOKE_BASE_URL: http://127.0.0.1:3000
+
+      - name: Publicar screenshots do Workshop
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workshop-visual-qa
+          path: artifacts/workshop-qa/*.png
+          if-no-files-found: error
 
       - name: Validar docs mobile no iPhone 16 Pro Max em todas as fontes
         run: |
