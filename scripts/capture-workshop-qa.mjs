@@ -57,7 +57,11 @@ async function mockApi(page, {startDelay = 0, checkoutDelay = 0, status = 'pendi
 
 async function screenshot(page, scenario, state) {
   await page.screenshot({
-    path: path.join(outputDir, `${scenario.name}-${state}.png`),
+    path: path.join(outputDir, `${scenario.name}-${state}-viewport.png`),
+    fullPage: false,
+  });
+  await page.screenshot({
+    path: path.join(outputDir, `${scenario.name}-${state}-full.png`),
     fullPage: true,
   });
 }
