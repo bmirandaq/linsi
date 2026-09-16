@@ -100,3 +100,64 @@ jobs:
           done
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
+
+  preview-integration:
+    name: QA real Checkout Pro em Worker preview
+    if: github.event_name == 'pull_request' && github.head_ref == 'refactor/workshop-checkout-pro'
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar branch da PR
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Instalar Chromium
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install chromium
+
+      - name: Verificar credenciais Cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::CLOUDFLARE_API_TOKEN ausente"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::CLOUDFLARE_ACCOUNT_ID ausente"; exit 1; }
+
+      - name: Criar versão preview do Worker sem deploy
+        id: worker-preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -o pipefail
+          npx wrangler@4 versions upload --config worker/wrangler.toml --keep-vars 2>&1 | tee /tmp/wrangler-preview.log
+          PREVIEW_URL=$(grep -Eo 'https://[A-Za-z0-9.-]+\.workers\.dev' /tmp/wrangler-preview.log | tail -n 1)
+          if [ -z "$PREVIEW_URL" ]; then
+            echo "::error::Wrangler não retornou uma Preview URL."
+            exit 1
+          fi
+          echo "url=$PREVIEW_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Testar integração real sem mock de aplicação
+        env:
+          WORKER_PREVIEW_URL: ${{ steps.worker-preview.outputs.url }}
+        run: node scripts/test-workshop-preview-real.mjs
+
+      - name: Publicar evidência do Checkout Pro real
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workshop-checkout-pro-real-preview
+          path: artifacts/workshop-preview-real/*.png
+          if-no-files-found: warn
