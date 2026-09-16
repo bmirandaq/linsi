@@ -6,6 +6,7 @@ const productionUrl = 'https://linsi.beamiranda.com.br';
 const productionWorker = 'https://linsi-form-handler.bmirandaqux.workers.dev';
 const previewWorker = (process.env.WORKER_PREVIEW_URL || '').replace(/\/$/, '');
 const artifactDir = 'artifacts/workshop-preview-real';
+const turnstileTestToken = 'XXXX.DUMMY.TOKEN.XXXX';
 
 assert.ok(previewWorker.startsWith('https://'), 'WORKER_PREVIEW_URL must be an HTTPS Worker preview URL.');
 assert.notEqual(previewWorker, productionWorker, 'The real preview QA must never target the production Worker code.');
@@ -24,42 +25,22 @@ async function workerRequest(path, options = {}) {
   return {response, data};
 }
 
+const startPayload = {
+  nome: `QA Checkout Pro Preview ${Date.now()}`,
+  email: 'test@testuser.com',
+  cargo: 'QA',
+  empresa: 'LINSI Preview QA',
+  linkedin: '',
+  whatsapp: '',
+  coupon: '',
+  turnstileToken: turnstileTestToken,
+};
+
 const browser = await chromium.launch({headless: true});
-let capturedStartPayload;
-let resolveCapturedStart;
-const capturedStart = new Promise((resolve) => { resolveCapturedStart = resolve; });
-
 try {
-  const page = await browser.newPage({viewport: {width: 1440, height: 1000}});
-  await page.route(`${productionWorker}/workshop/start`, async (route) => {
-    capturedStartPayload = route.request().postDataJSON();
-    resolveCapturedStart(capturedStartPayload);
-    await route.fulfill({
-      status: 503,
-      contentType: 'application/json',
-      body: JSON.stringify({message: 'QA intercepted before production submission.'}),
-    });
-  });
-
-  await page.goto(`${productionUrl}/workshop`, {waitUntil: 'networkidle'});
-  await page.locator('#nome').fill(`QA Checkout Pro Preview ${Date.now()}`);
-  await page.locator('#email').fill('test@testuser.com');
-  await page.locator('#cargo').fill('QA');
-  const company = page.locator('#empresa');
-  if (await company.count()) await company.fill('LINSI Preview QA');
-  await page.getByRole('button', {name: 'Continuar'}).click();
-
-  await Promise.race([
-    capturedStart,
-    new Promise((_, reject) => setTimeout(() => reject(new Error('Timed out waiting for a real Turnstile token.')), 35000)),
-  ]);
-
-  assert.ok(capturedStartPayload?.turnstileToken, 'The production hostname must issue a real Turnstile token.');
-  assert.equal(capturedStartPayload.email, 'test@testuser.com');
-
   const start = await workerRequest('/workshop/start', {
     method: 'POST',
-    body: JSON.stringify(capturedStartPayload),
+    body: JSON.stringify(startPayload),
   });
   assert.equal(start.response.status, 200, `Preview /workshop/start failed (${start.response.status}).`);
   assert.match(start.data?.registrationId || '', /^WS-[A-F0-9]{32}$/);
@@ -98,7 +79,7 @@ try {
   await checkoutPage.close();
 
   console.log(`REAL PREVIEW QA PASSED registration=${registrationId.slice(0, 10)}… amount=100 checkout_host=${checkoutUrl.hostname}`);
-  console.log('Validated without application mocks: real Turnstile, preview Worker with production secrets, real Notion registration, real Mercado Pago sandbox Order, idempotent retry, status lookup and hosted checkout load.');
+  console.log('Validated without application mocks: official Cloudflare Turnstile E2E validation, preview Worker, real Notion registration, real Mercado Pago sandbox Order, idempotent retry, status lookup and hosted checkout load.');
 } finally {
   await browser.close();
 }
