@@ -141,7 +141,18 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -o pipefail
-          npx wrangler@4 versions upload --config worker/wrangler.toml --keep-vars 2>&1 | tee /tmp/wrangler-preview.log
+          cat > /tmp/turnstile-preview.env <<'EOF'
+          TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+          EOF
+          npx wrangler@4 versions upload \
+            --config worker/wrangler.toml \
+            --keep-vars \
+            --secrets-file /tmp/turnstile-preview.env \
+            --var ALLOWED_ORIGIN:https://linsi.beamiranda.com.br \
+            --var TURNSTILE_EXPECTED_HOSTNAME:localhost \
+            --var TURNSTILE_EXPECTED_ACTION:test \
+            2>&1 | tee /tmp/wrangler-preview.log
+          rm -f /tmp/turnstile-preview.env
           PREVIEW_URL=$(grep -Eo 'https://[A-Za-z0-9.-]+\.workers\.dev' /tmp/wrangler-preview.log | tail -n 1)
           if [ -z "$PREVIEW_URL" ]; then
             echo "::error::Wrangler não retornou uma Preview URL."
