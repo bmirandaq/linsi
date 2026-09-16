@@ -39,6 +39,6 @@ for (const forbidden of [
 assert.doesNotMatch(css, /\.processorCard|\.paymentBrick|\.pixQr|\.paymentMethods|\.stepper|\.mockPayment/, 'Advanced checkout CSS must be removed.');
 assert.match(css, /\.contactRow\s*\{[\s\S]*?grid-template-columns: 1fr 1fr;/, 'Desktop form must keep two columns.');
 assert.match(css, /@media \(max-width: 700px\)[\s\S]*?\.contactRow\s*\{[\s\S]*?grid-template-columns: 1fr;/, 'Mobile form must stack fields.');
-assert.match(css, /\.processingOverlay\s*\{[\s\S]*?position: absolute;/, 'Preparing payment must use the broad overlay.');
+assert.match(css, /\.processingOverlay\s*\{[\s\S]*?inset: var\(--ifm-navbar-height\) 0 0;[\s\S]*?position: fixed;/, 'Preparing payment must stay centered in the visible viewport below the navbar.');
 
-console.log('Workshop Checkout Pro UI contracts passed: single form, hosted redirect, authoritative return flow and no advanced checkout residue.');
+console.log('Workshop Checkout Pro UI contracts passed: single form, hosted redirect, authoritative return flow, fixed preparing overlay and no advanced checkout residue.');
