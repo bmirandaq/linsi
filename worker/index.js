@@ -698,8 +698,6 @@ async function handleWorkshopCheckout(request, env, cors) {
       title: WORKSHOP_ITEM_TITLE,
       quantity: 1,
       unit_price: amount,
-      total_amount: amount,
-      unit_measure: 'unit',
     }],
     config: {
       notification_url: `${workerOrigin}/webhooks/mercadopago`,
