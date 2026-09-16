@@ -85,8 +85,9 @@ async function verifyTurnstile(token, ip, env, expectedAction = CONTACT_ACTION) 
     if (!resp.ok) return false;
 
     const result = await resp.json();
-    const expectedHostname = new URL(allowedOrigin(env)).hostname;
-    return result.success === true && result.hostname === expectedHostname && result.action === expectedAction;
+    const expectedHostname = env.TURNSTILE_EXPECTED_HOSTNAME || new URL(allowedOrigin(env)).hostname;
+    const requiredAction = env.TURNSTILE_EXPECTED_ACTION || expectedAction;
+    return result.success === true && result.hostname === expectedHostname && result.action === requiredAction;
   } catch {
     return false;
   }
