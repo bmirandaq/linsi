@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {createHmac} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 
 const source = await readFile(new URL('./index.js', import.meta.url), 'utf8');
@@ -20,6 +21,7 @@ const env = {
   WORKSHOP_COUPONS_JSON: couponConfig,
   MP_ACCESS_TOKEN: 'test-value',
   MP_PUBLIC_KEY: 'TEST-public-key',
+  MP_WEBHOOK_SECRET: 'test-webhook-secret',
   RESEND_API_KEY: 'test-value',
   WORKSHOP_CONFIRMATION_TEMPLATE_ID: 'workshop-confirmation-template',
   CONTACT_FROM_EMAIL: 'LINSI <noreply@beamiranda.com.br>',
@@ -46,6 +48,68 @@ async function withFetch(mock, callback) {
     globalThis.fetch = originalFetch;
   }
 }
+
+function webhookRequest({queryDataId, bodyDataId, signature}) {
+  return new Request(
+    `https://linsi-form-handler.example.test/webhooks/mercadopago?data.id=${encodeURIComponent(queryDataId)}&type=order`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-request-id': 'webhook-request-1',
+        'x-signature': `ts=1770000000,v1=${signature}`,
+      },
+      body: JSON.stringify({type: 'order', data: {id: bodyDataId}}),
+    },
+  );
+}
+
+function webhookSignature(dataId) {
+  const manifest = `id:${dataId};request-id:webhook-request-1;ts:1770000000;`;
+  return createHmac('sha256', env.MP_WEBHOOK_SECRET).update(manifest).digest('hex');
+}
+
+const webhookQueryDataId = 'ORDTST01UPPERCASE';
+const differentBodyDataId = 'BODY-ID-MUST-NOT-BE-USED';
+let webhookOrderRequest;
+await withFetch(async (url) => {
+  const target = String(url);
+  if (target === `https://api.mercadopago.com/v1/orders/${webhookQueryDataId}`) {
+    webhookOrderRequest = target;
+    return Response.json({
+      id: webhookQueryDataId,
+      external_reference: 'LINSI-WEBHOOK-TEST-NOT-IN-NOTION',
+      status: 'action_required',
+      status_detail: 'waiting_transfer',
+    });
+  }
+  if (target === 'https://api.notion.com/v1/databases/workshop-db/query') {
+    return Response.json({results: []});
+  }
+  throw new Error(`Chamada externa inesperada: ${target}`);
+}, async () => {
+  const response = await worker.fetch(webhookRequest({
+    queryDataId: webhookQueryDataId,
+    bodyDataId: differentBodyDataId,
+    signature: webhookSignature(webhookQueryDataId),
+  }), env);
+  assert.equal(response.status, 200);
+});
+assert.equal(
+  webhookOrderRequest,
+  `https://api.mercadopago.com/v1/orders/${webhookQueryDataId}`,
+);
+
+await withFetch(async () => {
+  throw new Error('Assinatura incorreta não pode consultar serviços externos.');
+}, async () => {
+  const response = await worker.fetch(webhookRequest({
+    queryDataId: webhookQueryDataId,
+    bodyDataId: differentBodyDataId,
+    signature: webhookSignature(webhookQueryDataId.toLowerCase()),
+  }), env);
+  assert.equal(response.status, 401);
+});
 
 for (const coupon of ['VagasUX10', 'vagasux10', ' CROQ10 ', 'guia10']) {
   const response = await worker.fetch(post('/workshop/coupon', {coupon}), env);

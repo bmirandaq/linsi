@@ -72,6 +72,7 @@ const page = baseRegistration();
 let createdAttempts = 0;
 let cancelCalls = 0;
 let lastIdempotencyKey = '';
+let lastOrderBody;
 let activeOrder = {
   id: 'ORD-PIX-1',
   external_reference: 'WS-ABC1234567',
@@ -101,6 +102,7 @@ await withFetch(async (url, options = {}) => {
   if (target === 'https://api.mercadopago.com/v1/orders' && options.method === 'POST') {
     createdAttempts += 1;
     lastIdempotencyKey = options.headers['X-Idempotency-Key'];
+    lastOrderBody = JSON.parse(options.body);
     activeOrder = {
       ...activeOrder,
       id: `ORD-PIX-${createdAttempts}`,
@@ -136,6 +138,8 @@ await withFetch(async (url, options = {}) => {
   assert.equal(firstBody.retryAt, null);
   assert.equal(firstBody.pix.qrCode, '000201PIXTEST1');
   assert.equal(lastIdempotencyKey, 'WS-ABC1234567-pix-1');
+  assert.equal(lastOrderBody.transactions.payments[0].expiration_time, 'P1D');
+  assert.equal('expiration_time' in lastOrderBody.transactions.payments[0].payment_method, false);
   assert.equal(page.properties['Tentativas de pagamento'].number, 1);
   assert.equal(page.properties['Bloqueado até'].date, null);
   assert.equal(page.properties.Status.select.name, 'Aguardando pagamento');
@@ -150,13 +154,14 @@ await withFetch(async (url, options = {}) => {
   assert.equal(page.properties.Status.select.name, 'Inscrição iniciada');
   assert.equal(page.properties['Tentativas de pagamento'].number, 1);
 
-  // Simulate a third attempt in the current 12-hour window.
+  // Simulate a third attempt in the current four-hour window.
   page.properties['Tentativas de pagamento'] = {number: 2};
   page.properties['Bloqueado até'] = {date: null};
   page.properties.Status = {select: {name: 'Inscrição iniciada'}};
   page.properties['MP Order ID'] = {rich_text: richText('ORD-PIX-1')};
   activeOrder = {...activeOrder, status: 'action_required', status_detail: 'waiting_payment'};
 
+  const beforeThirdAttempt = Date.now();
   const thirdPix = await worker.fetch(post('/workshop/pay/pix', {
     registrationId: 'WS-ABC1234567',
   }), env);
@@ -165,7 +170,12 @@ await withFetch(async (url, options = {}) => {
   assert.equal(thirdBody.status, 'pending');
   assert.equal(thirdBody.attempts, 3);
   assert.ok(Date.parse(thirdBody.retryAt) > Date.now());
+  const lockDuration = Date.parse(thirdBody.retryAt) - beforeThirdAttempt;
+  assert.ok(lockDuration >= (4 * 60 * 60 * 1000) - 5000);
+  assert.ok(lockDuration <= (4 * 60 * 60 * 1000) + 5000);
   assert.equal(lastIdempotencyKey, 'WS-ABC1234567-pix-3');
+  assert.equal(lastOrderBody.transactions.payments[0].expiration_time, 'P1D');
+  assert.equal('expiration_time' in lastOrderBody.transactions.payments[0].payment_method, false);
   assert.equal(page.properties['Tentativas de pagamento'].number, 3);
   assert.ok(page.properties['Bloqueado até'].date.start);
 
@@ -198,4 +208,4 @@ await withFetch(async (url, options = {}) => {
   }
 });
 
-console.log('Workshop retry tests passed: Pix reset, attempt tracking, 3-attempt lock and 12-hour block.');
+console.log('Workshop retry tests passed: Pix reset, P1D expiry, attempt tracking, 3-attempt lock and four-hour block.');

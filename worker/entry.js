@@ -3,7 +3,7 @@ import baseWorker from './index.js';
 const WORKSHOP_BASE_PRICE = 100;
 const WORKSHOP_DISCOUNTED_PRICE = 90;
 const MAX_PAYMENT_ATTEMPTS = 3;
-const PAYMENT_LOCK_MS = 12 * 60 * 60 * 1000;
+const PAYMENT_LOCK_MS = 4 * 60 * 60 * 1000;
 const MAX_LENGTHS = {
   registrationId: 64,
   deviceId: 256,
@@ -178,7 +178,7 @@ async function normalizeExpiredLock(registration, env) {
 function lockedResponse(registration, cors) {
   return json({
     code: 'payment_locked',
-    message: 'Limite de tentativas atingido. Tente novamente em 12 horas.',
+    message: 'Você pode realizar uma nova tentativa daqui algumas horas.',
     attempts: registration.paymentAttempts,
     retryAt: registration.lockedUntil,
   }, 429, cors);
@@ -300,6 +300,7 @@ async function handlePix(request, env, cors) {
         transactions: {
           payments: [{
             amount: registration.amount.toFixed(2),
+            expiration_time: 'P1D',
             payment_method: {id: 'pix', type: 'bank_transfer'},
           }],
         },

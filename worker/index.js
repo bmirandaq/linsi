@@ -866,16 +866,17 @@ function timingSafeEqual(a, b) {
   return diff === 0;
 }
 
-async function validateMercadoPagoSignature(request, dataId, env) {
+async function validateMercadoPagoSignature(request, env) {
   if (!env.MP_WEBHOOK_SECRET) return false;
   const signature = request.headers.get('x-signature') || '';
   const requestId = request.headers.get('x-request-id') || '';
+  const dataId = new URL(request.url).searchParams.get('data.id');
   const parts = Object.fromEntries(signature.split(',').map((part) => part.trim().split('=')));
   const ts = parts.ts;
   const v1 = parts.v1;
   if (!ts || !v1 || !requestId || !dataId) return false;
 
-  const manifest = `id:${String(dataId).toLowerCase()};request-id:${requestId};ts:${ts};`;
+  const manifest = `id:${dataId};request-id:${requestId};ts:${ts};`;
   const key = await crypto.subtle.importKey(
     'raw',
     new TextEncoder().encode(env.MP_WEBHOOK_SECRET),
@@ -891,8 +892,8 @@ async function handleMercadoPagoWebhook(request, env) {
   const body = await readJson(request);
   if (!body) return json({ok: false}, 400);
 
-  const dataId = body?.data?.id || new URL(request.url).searchParams.get('data.id');
-  if (!await validateMercadoPagoSignature(request, dataId, env)) return json({ok: false}, 401);
+  const dataId = new URL(request.url).searchParams.get('data.id');
+  if (!await validateMercadoPagoSignature(request, env)) return json({ok: false}, 401);
 
   try {
     const order = await mercadoPagoOrder(`/v1/orders/${encodeURIComponent(dataId)}`, {method: 'GET'}, env);
