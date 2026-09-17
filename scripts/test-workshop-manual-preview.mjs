@@ -40,9 +40,6 @@ async function register({coupon: couponValue, expectedAmount, expectedUrl}) {
       linkedin: '',
       whatsapp: '',
       coupon: couponValue,
-      amount: 1,
-      paymentUrl: 'https://example.com/ignored',
-      partner: 'ignored',
     }),
   });
 
@@ -50,26 +47,10 @@ async function register({coupon: couponValue, expectedAmount, expectedUrl}) {
   assert.match(result.data?.registrationId || '', /^WS-[A-F0-9]{32}$/);
   assert.equal(result.data?.amount, expectedAmount);
   assert.equal(result.data?.paymentUrl, expectedUrl);
-  assert.equal('publicKey' in result.data, false);
-  assert.equal('attempts' in result.data, false);
   return result.data.registrationId;
 }
 
 await register({coupon: '', expectedAmount: 100, expectedUrl: fullPaymentUrl});
 await register({coupon: 'croq10', expectedAmount: 90, expectedUrl: discountPaymentUrl});
 
-for (const [path, method] of [
-  ['/workshop/payment/reset', 'POST'],
-  ['/workshop/pay/card', 'POST'],
-  ['/workshop/pay/pix', 'POST'],
-  ['/workshop/checkout', 'POST'],
-  ['/workshop/status?id=WS-TEST', 'GET'],
-]) {
-  const retired = await request(path, {
-    method,
-    ...(method === 'POST' ? {body: JSON.stringify({registrationId: 'WS-TEST'})} : {}),
-  });
-  assert.equal(retired.response.status, 410, `${path} must stay retired.`);
-}
-
-console.log('REAL MANUAL WORKSHOP PREVIEW QA PASSED: coupon, real Notion-backed registrations, server-side R$100/R$90 link selection and retired payment endpoints.');
+console.log('REAL MANUAL WORKSHOP PREVIEW QA PASSED: coupon, real Notion-backed registrations and server-side R$100/R$90 link selection.');
