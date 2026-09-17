@@ -7,68 +7,33 @@ const browser = await chromium.launch({
   ...(process.env.BROWSER_CHANNEL ? {channel: process.env.BROWSER_CHANNEL} : {}),
 });
 
-async function openCheckout(page) {
+async function inspect(page, width) {
+  const network = [];
+  page.on('request', (request) => network.push(request.url()));
   await page.goto(`${baseUrl}/workshop`, {waitUntil: 'networkidle'});
-  await page.locator('#nome').fill('Pessoa QA');
-  await page.locator('#email').fill('qa@example.com');
-  await page.locator('#cargo').fill('Product Designer');
-  await page.getByRole('button', {name: 'Continuar'}).click();
-  await page.getByText('Carregando...', {exact: true}).waitFor();
-  assert.equal(await page.getByRole('button', {name: 'Continuar'}).count(), 1);
+
   await page.getByRole('heading', {name: 'Inscrição no Workshop LINSI'}).waitFor();
-  await page.getByText('Valor do workshop', {exact: true}).waitFor();
-}
+  await page.getByRole('button', {name: 'Continuar'}).waitFor();
+  await page.getByText('O pagamento será concluído no ambiente do Mercado Pago.', {exact: true}).waitFor();
 
-async function switchTenTimes(page) {
-  const durations = [];
-  for (let index = 0; index < 10; index += 1) {
-    await page.getByRole('button', {name: 'Pix', exact: true}).click();
-    await page.getByText('Gerando QR Code Pix', {exact: true}).waitFor();
-    await page.getByLabel('QR Code Pix simulado').waitFor();
+  assert.equal(await page.getByRole('button', {name: 'Cartão', exact: true}).count(), 0);
+  assert.equal(await page.getByRole('button', {name: 'Pix', exact: true}).count(), 0);
+  assert.equal(await page.getByText('Processado pelo', {exact: true}).count(), 0);
+  assert.ok(!network.some((url) => url.includes('sdk.mercadopago.com/js/v2')));
+  assert.ok(!network.some((url) => url.includes('mercadopago.com/v2/security.js')));
 
-    const startedAt = performance.now();
-    await page.getByRole('button', {name: 'Cartão', exact: true}).click();
-    await page.getByText('Número do cartão', {exact: true}).waitFor();
-    durations.push(Math.round(performance.now() - startedAt));
-
-    assert.equal(await page.getByText('Alterando forma de pagamento', {exact: true}).count(), 0);
-    assert.equal(await page.getByText('Carregando pagamento', {exact: true}).count(), 0);
-    assert.equal(await page.getByText('Processando pagamento...', {exact: true}).count(), 0);
-  }
-  return durations;
+  const documentWidth = await page.evaluate(() => document.documentElement.scrollWidth);
+  assert.ok(documentWidth <= width, `A página não pode ter overflow horizontal (${documentWidth}px > ${width}px).`);
 }
 
 try {
   const desktop = await browser.newPage({viewport: {width: 1440, height: 1000}});
-  await openCheckout(desktop);
-
-  assert.equal(await desktop.getByRole('button', {name: 'Cartão', exact: true}).count(), 1);
-  assert.equal(await desktop.getByText('Carregando pagamento', {exact: true}).count(), 0);
-  assert.equal(await desktop.getByText('Processando pagamento...', {exact: true}).count(), 0);
-
-  const desktopDurations = await switchTenTimes(desktop);
-  await desktop.getByRole('button', {name: 'Simular pendente'}).click();
-  await desktop.getByText('Processando pagamento...', {exact: true}).waitFor();
-  await desktop.getByRole('button', {name: 'Resetar mock local'}).click();
-  await desktop.getByRole('button', {name: 'Simular pagamento aprovado'}).click();
-  await desktop.getByRole('heading', {name: 'Inscrição confirmada'}).waitFor();
+  await inspect(desktop, 1440);
 
   const mobile = await browser.newPage({viewport: {width: 390, height: 844}});
-  await openCheckout(mobile);
-  const cardButton = mobile.getByRole('button', {name: 'Cartão', exact: true});
-  const pixButton = mobile.getByRole('button', {name: 'Pix', exact: true});
-  const cardBox = await cardButton.boundingBox();
-  const pixBox = await pixButton.boundingBox();
-  assert.ok(cardBox && pixBox, 'As tabs precisam estar visíveis no mobile.');
-  assert.ok(pixBox.y > cardBox.y, 'No mobile, as formas de pagamento devem empilhar sem overflow.');
-  const documentWidth = await mobile.evaluate(() => document.documentElement.scrollWidth);
-  assert.ok(documentWidth <= 390, `A página mobile não pode ter overflow horizontal (${documentWidth}px).`);
-  const mobileDurations = await switchTenTimes(mobile);
+  await inspect(mobile, 390);
 
-  const allDurations = [...desktopDurations, ...mobileDurations];
-  const maxSwitchDuration = Math.max(...allDurations);
-  const averageSwitchDuration = Math.round(allDurations.reduce((sum, value) => sum + value, 0) / allDurations.length);
-  console.log(`Workshop browser smoke passed. Pix -> Cartão visual: média ${averageSwitchDuration}ms, máximo ${maxSwitchDuration}ms.`);
+  console.log('Workshop local browser smoke passed: single registration form, hosted-payment notice, no internal payment UI and no Mercado Pago frontend SDK.');
 } finally {
   await browser.close();
 }
