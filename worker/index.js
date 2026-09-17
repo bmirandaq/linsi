@@ -8,7 +8,6 @@ const REASON_LABELS = Object.freeze({
 });
 const ALLOWED_REASONS = Object.keys(REASON_LABELS);
 const CONTACT_ACTION = 'contact';
-const WORKSHOP_ACTION = 'workshop';
 const WORKSHOP_BASE_PRICE = 100;
 const WORKSHOP_DISCOUNT_PERCENT = 10;
 const WORKSHOP_DISCOUNTED_PRICE = 90;
@@ -387,8 +386,7 @@ async function handleWorkshopStart(request, env, cors) {
   const empresa = optionalString(payload.empresa, MAX_LENGTHS.empresa);
   const linkedin = normalizeLinkedIn(payload.linkedin);
   const whatsapp = normalizeWhatsApp(payload.whatsapp);
-  const turnstileToken = requiredString(payload.turnstileToken, MAX_LENGTHS.turnstileToken);
-  if (!nome || !validEmail(email) || !cargo || empresa === null || linkedin === null || whatsapp === null || !turnstileToken) {
+  if (!nome || !validEmail(email) || !cargo || empresa === null || linkedin === null || whatsapp === null) {
     return json({message: 'Confira os campos preenchidos e tente novamente.'}, 400, cors);
   }
 
@@ -404,11 +402,6 @@ async function handleWorkshopStart(request, env, cors) {
   const selectedPaymentLink = workshopPaymentLink(amount, env);
   if (!selectedPaymentLink) {
     return json({message: 'O pagamento está temporariamente indisponível.'}, 503, cors);
-  }
-
-  const ip = request.headers.get('CF-Connecting-IP') || '';
-  if (!await verifyTurnstile(turnstileToken, ip, env, WORKSHOP_ACTION)) {
-    return json({message: 'Não foi possível concluir a verificação de segurança. Tente novamente.'}, 403, cors);
   }
 
   const registrationId = `WS-${crypto.randomUUID().replace(/-/g, '').toUpperCase()}`;
