@@ -338,7 +338,7 @@ export default function Workshop() {
                   </div>
 
                   {!mockMode && TURNSTILE_SITE_KEY ? <div ref={turnstileRef} className={styles.turnstile} /> : null}
-                  <button className={styles.submit} type="submit" disabled={stage === 'creating'} aria-busy={stage === 'creating'}>Continuar</button>
+                  <button className={styles.submit} type="submit" disabled={stage === 'creating'} aria-busy={stage === 'creating'}>Continuar para pagamento</button>
                   {submitError && <div className={styles.error} role="alert">{submitError}</div>}
                 </form>
 
