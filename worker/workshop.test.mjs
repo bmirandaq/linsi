@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import {createHmac} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 
 const source = await readFile(new URL('./index.js', import.meta.url), 'utf8');
@@ -12,6 +11,8 @@ const couponConfig = JSON.stringify({
   CROQ10: {partner: 'Design Croquete', discount: 10, active: true},
   GUIA10: {partner: 'GUIA', discount: 10, active: true},
 });
+const fullPaymentUrl = 'https://mpago.la/linsi-full-test';
+const discountPaymentUrl = 'https://link.mercadopago.com.br/linsi-discount-test';
 
 const env = {
   ALLOWED_ORIGIN: allowedOrigin,
@@ -19,12 +20,8 @@ const env = {
   NOTION_API_KEY: 'test-value',
   WORKSHOP_NOTION_DATABASE_ID: 'workshop-db',
   WORKSHOP_COUPONS_JSON: couponConfig,
-  MP_ACCESS_TOKEN: 'test-value',
-  MP_PUBLIC_KEY: 'TEST-public-key',
-  MP_WEBHOOK_SECRET: 'test-webhook-secret',
-  RESEND_API_KEY: 'test-value',
-  WORKSHOP_CONFIRMATION_TEMPLATE_ID: 'workshop-confirmation-template',
-  CONTACT_FROM_EMAIL: 'LINSI <noreply@beamiranda.com.br>',
+  WORKSHOP_PAYMENT_LINK_FULL: fullPaymentUrl,
+  WORKSHOP_PAYMENT_LINK_DISCOUNT: discountPaymentUrl,
 };
 
 function post(path, payload) {
@@ -49,68 +46,6 @@ async function withFetch(mock, callback) {
   }
 }
 
-function webhookRequest({queryDataId, bodyDataId, signature}) {
-  return new Request(
-    `https://linsi-form-handler.example.test/webhooks/mercadopago?data.id=${encodeURIComponent(queryDataId)}&type=order`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-request-id': 'webhook-request-1',
-        'x-signature': `ts=1770000000,v1=${signature}`,
-      },
-      body: JSON.stringify({type: 'order', data: {id: bodyDataId}}),
-    },
-  );
-}
-
-function webhookSignature(dataId) {
-  const manifest = `id:${dataId};request-id:webhook-request-1;ts:1770000000;`;
-  return createHmac('sha256', env.MP_WEBHOOK_SECRET).update(manifest).digest('hex');
-}
-
-const webhookQueryDataId = 'ORDTST01UPPERCASE';
-const differentBodyDataId = 'BODY-ID-MUST-NOT-BE-USED';
-let webhookOrderRequest;
-await withFetch(async (url) => {
-  const target = String(url);
-  if (target === `https://api.mercadopago.com/v1/orders/${webhookQueryDataId}`) {
-    webhookOrderRequest = target;
-    return Response.json({
-      id: webhookQueryDataId,
-      external_reference: 'LINSI-WEBHOOK-TEST-NOT-IN-NOTION',
-      status: 'action_required',
-      status_detail: 'waiting_transfer',
-    });
-  }
-  if (target === 'https://api.notion.com/v1/databases/workshop-db/query') {
-    return Response.json({results: []});
-  }
-  throw new Error(`Chamada externa inesperada: ${target}`);
-}, async () => {
-  const response = await worker.fetch(webhookRequest({
-    queryDataId: webhookQueryDataId,
-    bodyDataId: differentBodyDataId,
-    signature: webhookSignature(webhookQueryDataId),
-  }), env);
-  assert.equal(response.status, 200);
-});
-assert.equal(
-  webhookOrderRequest,
-  `https://api.mercadopago.com/v1/orders/${webhookQueryDataId}`,
-);
-
-await withFetch(async () => {
-  throw new Error('Assinatura incorreta não pode consultar serviços externos.');
-}, async () => {
-  const response = await worker.fetch(webhookRequest({
-    queryDataId: webhookQueryDataId,
-    bodyDataId: differentBodyDataId,
-    signature: webhookSignature(webhookQueryDataId.toLowerCase()),
-  }), env);
-  assert.equal(response.status, 401);
-});
-
 for (const coupon of ['VagasUX10', 'vagasux10', ' CROQ10 ', 'guia10']) {
   const response = await worker.fetch(post('/workshop/coupon', {coupon}), env);
   assert.equal(response.status, 200);
@@ -123,377 +58,188 @@ for (const coupon of ['VagasUX10', 'vagasux10', ' CROQ10 ', 'guia10']) {
   assert.deepEqual(await response.json(), {status: 'invalid'});
 }
 
-let createdRegistration;
-await withFetch(async (url, options = {}) => {
-  if (String(url) === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
-    return Response.json({success: true, hostname: 'linsi.beamiranda.com.br', action: 'workshop'});
-  }
-  if (String(url) === 'https://api.notion.com/v1/pages') {
-    createdRegistration = JSON.parse(options.body);
-    return Response.json({id: 'page-workshop'});
-  }
-  throw new Error(`Chamada externa inesperada: ${url}`);
+async function startWorkshop(payload, customEnv = env) {
+  let notionBody;
+  const calls = [];
+  let response;
+
+  await withFetch(async (url, options = {}) => {
+    const target = String(url);
+    calls.push(target);
+    if (target === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
+      return Response.json({success: true, hostname: 'linsi.beamiranda.com.br', action: 'workshop'});
+    }
+    if (target === 'https://api.notion.com/v1/pages') {
+      notionBody = JSON.parse(options.body);
+      return Response.json({id: 'page-workshop'});
+    }
+    throw new Error(`Chamada externa inesperada: ${target}`);
+  }, async () => {
+    response = await worker.fetch(post('/workshop/start', {
+      nome: 'Pessoa Teste',
+      email: 'pessoa@example.com',
+      cargo: 'Product Designer',
+      empresa: 'Empresa Teste',
+      linkedin: 'linkedin.com/in/pessoa-teste',
+      whatsapp: '81999999999',
+      turnstileToken: 'valid-test-value',
+      ...payload,
+    }), customEnv);
+  });
+
+  return {response, notionBody, calls};
+}
+
+{
+  const {response, notionBody, calls} = await startWorkshop({
+    coupon: 'croq10',
+    amount: 1,
+    paymentUrl: 'https://evil.example/roubo',
+    partner: 'Atacante',
+  });
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.match(body.registrationId, /^WS-[A-F0-9]{32}$/);
+  assert.equal(body.amount, 90);
+  assert.equal(body.paymentUrl, discountPaymentUrl);
+  assert.equal('publicKey' in body, false);
+  assert.equal('attempts' in body, false);
+
+  assert.deepEqual(calls, [
+    'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+    'https://api.notion.com/v1/pages',
+  ]);
+  assert.equal(notionBody.properties.Nome.rich_text[0].text.content, 'Pessoa Teste');
+  assert.equal(notionBody.properties['E-mail'].email, 'pessoa@example.com');
+  assert.equal(notionBody.properties.Cargo.rich_text[0].text.content, 'Product Designer');
+  assert.equal(notionBody.properties.Empresa.rich_text[0].text.content, 'Empresa Teste');
+  assert.equal(notionBody.properties.LinkedIn.url, 'https://www.linkedin.com/in/pessoa-teste');
+  assert.equal(notionBody.properties.WhatsApp.phone_number, '81999999999');
+  assert.equal(notionBody.properties.Cupom.rich_text[0].text.content, 'CROQ10');
+  assert.equal(notionBody.properties.Parceiro.rich_text[0].text.content, 'Design Croquete');
+  assert.equal(notionBody.properties.Valor.number, 90);
+  assert.equal(notionBody.properties.Status.select.name, 'Aguardando pagamento');
+  assert.deepEqual(notionBody.properties['MP Order ID'].rich_text, []);
+  assert.equal(notionBody.properties['Pago em'].date, null);
+  assert.equal(notionBody.properties['Tentativas de pagamento'].number, 0);
+  assert.equal(notionBody.properties['Bloqueado até'].date, null);
+}
+
+{
+  const {response, notionBody} = await startWorkshop({coupon: '', amount: 1, paymentUrl: 'https://evil.example'});
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.amount, 100);
+  assert.equal(body.paymentUrl, fullPaymentUrl);
+  assert.deepEqual(notionBody.properties.Cupom.rich_text, []);
+  assert.deepEqual(notionBody.properties.Parceiro.rich_text, []);
+  assert.equal(notionBody.properties.Valor.number, 100);
+  assert.equal(notionBody.properties.Status.select.name, 'Aguardando pagamento');
+}
+
+for (const [coupon, expectedPartner] of [
+  ['VagasUX10', 'Vagas UX'],
+  ['Croq10', 'Design Croquete'],
+  ['GUIA10', 'GUIA'],
+]) {
+  const {response, notionBody} = await startWorkshop({coupon});
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).amount, 90);
+  assert.equal(notionBody.properties.Parceiro.rich_text[0].text.content, expectedPartner);
+}
+
+await withFetch(async () => {
+  throw new Error('Cupom inválido não deve chamar serviços externos.');
 }, async () => {
   const response = await worker.fetch(post('/workshop/start', {
     nome: 'Pessoa Teste',
     email: 'pessoa@example.com',
     cargo: 'Product Designer',
-    empresa: 'Empresa Teste',
-    linkedin: 'linkedin.com/in/pessoa-teste',
-    whatsapp: '81999999999',
-    coupon: 'croq10',
-    turnstileToken: 'valid-test-value',
-  }), env);
-  assert.equal(response.status, 200);
-  const body = await response.json();
-  assert.match(body.registrationId, /^WS-[A-F0-9]{32}$/);
-  assert.equal(body.amount, 90);
-  assert.equal(body.publicKey, 'TEST-public-key');
-  assert.equal(body.attempts, 0);
-  assert.equal('retryAt' in body, false);
-});
-
-assert.equal(createdRegistration.properties.Nome.rich_text[0].text.content, 'Pessoa Teste');
-assert.equal(createdRegistration.properties['E-mail'].email, 'pessoa@example.com');
-assert.equal(createdRegistration.properties.Cargo.rich_text[0].text.content, 'Product Designer');
-assert.equal(createdRegistration.properties.Empresa.rich_text[0].text.content, 'Empresa Teste');
-assert.equal(createdRegistration.properties.LinkedIn.url, 'https://www.linkedin.com/in/pessoa-teste');
-assert.equal(createdRegistration.properties.WhatsApp.phone_number, '81999999999');
-assert.equal(createdRegistration.properties.Cupom.rich_text[0].text.content, 'CROQ10');
-assert.equal(createdRegistration.properties.Parceiro.rich_text[0].text.content, 'Design Croquete');
-assert.equal(createdRegistration.properties.Valor.number, 90);
-assert.equal(createdRegistration.properties.Status.select.name, 'Inscrição iniciada');
-assert.equal(createdRegistration.properties['Tentativas de pagamento'].number, 0);
-assert.equal(createdRegistration.properties['Bloqueado até'].date, null);
-
-{
-  const response = await worker.fetch(post('/workshop/start', {
-    nome: 'Pessoa Teste',
-    email: 'pessoa@example.com',
-    cargo: '',
+    coupon: 'FAKE100',
     turnstileToken: 'valid-test-value',
   }), env);
   assert.equal(response.status, 400);
-}
+  assert.equal((await response.json()).code, 'coupon_invalid');
+});
 
-function makeRegistrationPage({
-  amount = 90,
-  status = 'Inscrição iniciada',
-  attempts = 0,
-  orderId = '',
-  coupon = 'CROQ10',
-  partner = 'Design Croquete',
-} = {}) {
-  return {
-    id: 'page-workshop',
-    properties: {
-      'Inscrição': {title: [{plain_text: 'WS-ABC1234567'}]},
-      'Nome': {rich_text: [{plain_text: 'Pessoa Teste'}]},
-      'E-mail': {email: 'pessoa@example.com'},
-      'Cargo': {rich_text: [{plain_text: 'Product Designer'}]},
-      'Empresa': {rich_text: [{plain_text: 'Empresa Teste'}]},
-      'LinkedIn': {url: 'https://www.linkedin.com/in/pessoa-teste'},
-      'WhatsApp': {phone_number: '81999999999'},
-      'Cupom': {rich_text: coupon ? [{plain_text: coupon}] : []},
-      'Parceiro': {rich_text: [{plain_text: partner}]},
-      'Valor': {number: amount},
-      'Status': {select: {name: status}},
-      'MP Order ID': {rich_text: orderId ? [{plain_text: orderId}] : []},
-      'Pago em': {date: null},
-      'Confirmação enviada': {checkbox: false},
-      'Tentativas de pagamento': {number: attempts},
-      'Bloqueado até': {date: null},
-    },
-  };
-}
-
-for (const invalidCardPayload of [
-  {paymentTypeId: 'ticket'},
-  {paymentTypeId: 'credit_card', installments: 0},
-  {paymentTypeId: 'credit_card', installments: 13},
-  {paymentTypeId: 'credit_card', paymentMethodId: 'visa<script>'},
-  {paymentTypeId: 'credit_card', identification: {type: 'CPF', number: '123'}},
-  {paymentTypeId: 'credit_card', identification: {type: 'PASSPORT', number: '12345678901'}},
-]) {
+for (const key of ['WORKSHOP_PAYMENT_LINK_FULL', 'WORKSHOP_PAYMENT_LINK_DISCOUNT']) {
+  const brokenEnv = {...env};
+  delete brokenEnv[key];
+  const coupon = key.endsWith('DISCOUNT') ? 'CROQ10' : '';
   await withFetch(async () => {
-    throw new Error('Payload de cartão inválido não pode chamar serviços externos.');
+    throw new Error('Configuração de link ausente não deve chamar serviços externos.');
   }, async () => {
-    const response = await worker.fetch(post('/workshop/pay/card', {
-      registrationId: 'WS-ABC1234567',
-      token: 'test-payment-value',
-      paymentMethodId: 'visa',
-      paymentTypeId: 'credit_card',
-      installments: 1,
-      ...invalidCardPayload,
-    }), env);
-    assert.equal(response.status, 400);
+    const response = await worker.fetch(post('/workshop/start', {
+      nome: 'Pessoa Teste',
+      email: 'pessoa@example.com',
+      cargo: 'Product Designer',
+      coupon,
+      turnstileToken: 'valid-test-value',
+    }), brokenEnv);
+    assert.equal(response.status, 503);
+    assert.equal((await response.json()).message, 'O pagamento está temporariamente indisponível.');
   });
 }
 
-const registrationPage = makeRegistrationPage();
-let mercadoPagoBody;
-let mercadoPagoHeaders;
-let notionQueryCount = 0;
-let confirmationEmails = 0;
-let confirmationPayload;
-let confirmationHeaders;
-await withFetch(async (url, options = {}) => {
-  const target = String(url);
-  if (target === 'https://api.notion.com/v1/databases/workshop-db/query') {
-    notionQueryCount += 1;
-    return Response.json({results: [registrationPage]});
-  }
-  if (target === 'https://api.mercadopago.com/v1/orders') {
-    mercadoPagoBody = JSON.parse(options.body);
-    mercadoPagoHeaders = options.headers;
-    return Response.json({
-      id: 'ORD-CARD-1',
-      external_reference: 'WS-ABC1234567',
-      total_amount: '90.00',
-      status: 'processed',
-      status_detail: 'accredited',
-      transactions: {payments: [{status: 'processed', amount: '90.00'}]},
-    });
-  }
-  if (target === 'https://api.notion.com/v1/pages/page-workshop') return Response.json({id: 'page-workshop'});
-  if (target === 'https://api.resend.com/emails') {
-    confirmationEmails += 1;
-    confirmationPayload = JSON.parse(options.body);
-    confirmationHeaders = options.headers;
-    return Response.json({id: 'email-1'});
-  }
-  throw new Error(`Chamada externa inesperada: ${target}`);
+for (const invalidUrl of [
+  'http://mpago.la/inseguro',
+  'https://evil.example/pagamento',
+  'javascript:alert(1)',
+  'https://user:pass@mpago.la/credenciais',
+  'https://mpago.la:8443/porta',
+]) {
+  const brokenEnv = {...env, WORKSHOP_PAYMENT_LINK_FULL: invalidUrl};
+  await withFetch(async () => {
+    throw new Error('Link inválido não deve chamar serviços externos.');
+  }, async () => {
+    const response = await worker.fetch(post('/workshop/start', {
+      nome: 'Pessoa Teste',
+      email: 'pessoa@example.com',
+      cargo: 'Product Designer',
+      coupon: '',
+      turnstileToken: 'valid-test-value',
+    }), brokenEnv);
+    assert.equal(response.status, 503);
+  });
+}
+
+for (const path of [
+  '/workshop/payment/reset',
+  '/workshop/pay/card',
+  '/workshop/pay/pix',
+  '/workshop/checkout',
+]) {
+  await withFetch(async () => {
+    throw new Error('Endpoint aposentado não pode chamar serviços externos.');
+  }, async () => {
+    const response = await worker.fetch(post(path, {registrationId: 'WS-TEST'}), env);
+    assert.equal(response.status, 410, path);
+  });
+}
+
+await withFetch(async () => {
+  throw new Error('Status aposentado não pode chamar serviços externos.');
 }, async () => {
-  const response = await worker.fetch(post('/workshop/pay/card', {
-    registrationId: 'WS-ABC1234567',
-    token: 'test-payment-value',
-    paymentMethodId: 'visa',
-    paymentTypeId: 'credit_card',
-    installments: 1,
-    deviceId: 'device-session-card',
-    amount: 1,
+  const response = await worker.fetch(new Request('https://linsi-form-handler.example.test/workshop/status?id=WS-TEST', {
+    method: 'GET',
+    headers: {Origin: allowedOrigin},
   }), env);
-  assert.equal(response.status, 200);
-  const body = await response.json();
-  assert.equal(body.status, 'paid');
-  assert.equal(body.attempts, 1);
-  assert.equal('retryAt' in body, false);
+  assert.equal(response.status, 410);
 });
 
-assert.ok(notionQueryCount >= 2);
-assert.equal(mercadoPagoBody.total_amount, '90.00');
-assert.equal(mercadoPagoBody.transactions.payments[0].amount, '90.00');
-assert.equal(mercadoPagoBody.external_reference, 'WS-ABC1234567');
-assert.equal(mercadoPagoBody.payer.email, 'pessoa@example.com');
-assert.equal(mercadoPagoHeaders['X-meli-session-id'], 'device-session-card');
-assert.match(mercadoPagoHeaders['X-Idempotency-Key'], /^[a-f0-9]{64}$/);
-assert.doesNotMatch(mercadoPagoHeaders['X-Idempotency-Key'], /test-payment-value/);
-assert.equal(confirmationEmails, 1);
-assert.equal(confirmationHeaders['Idempotency-Key'], 'workshop-confirmation/WS-ABC1234567');
-assert.equal(confirmationPayload.template.id, 'workshop-confirmation-template');
-assert.deepEqual(confirmationPayload.template.variables, {
-  FIRST_NAME: 'Pessoa',
-  WORKSHOP_DATE: '8 de outubro de 2026',
-  WORKSHOP_TIME: '19h',
-  WORKSHOP_FORMAT: 'Online · YouTube',
-  AMOUNT: 'R$ 90,00',
-});
-assert.equal('COUPON' in confirmationPayload.template.variables, false);
-assert.equal('PARTNER' in confirmationPayload.template.variables, false);
-assert.equal('html' in confirmationPayload, false);
-assert.equal('text' in confirmationPayload, false);
-
-let pixOrderBody;
-let pixOrderHeaders;
-const pendingRegistrationPage = makeRegistrationPage({amount: 100, coupon: '', partner: 'Direto'});
-await withFetch(async (url, options = {}) => {
-  const target = String(url);
-  if (target === 'https://api.notion.com/v1/databases/workshop-db/query') return Response.json({results: [pendingRegistrationPage]});
-  if (target === 'https://api.mercadopago.com/v1/orders') {
-    pixOrderBody = JSON.parse(options.body);
-    pixOrderHeaders = options.headers;
-    return Response.json({
-      id: 'ORD-PIX-1',
-      external_reference: 'WS-ABC1234567',
-      total_amount: '100.00',
-      status: 'action_required',
-      status_detail: 'waiting_payment',
-      transactions: {payments: [{amount: '100.00', payment_method: {
-        id: 'pix',
-        type: 'bank_transfer',
-        qr_code: '000201PIXTEST',
-        qr_code_base64: 'BASE64PIX',
-        ticket_url: 'https://mercadopago.example/pix',
-      }}]},
-    });
-  }
-  if (target === 'https://api.notion.com/v1/pages/page-workshop') return Response.json({id: 'page-workshop'});
-  throw new Error(`Chamada externa inesperada: ${target}`);
+await withFetch(async () => {
+  throw new Error('Webhook aposentado não pode chamar serviços externos.');
 }, async () => {
-  const response = await worker.fetch(post('/workshop/pay/pix', {
-    registrationId: 'WS-ABC1234567',
-    deviceId: 'device-session-pix',
-    amount: 1,
+  const response = await worker.fetch(new Request('https://linsi-form-handler.example.test/webhooks/mercadopago', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: '{}',
   }), env);
-  assert.equal(response.status, 200);
-  const body = await response.json();
-  assert.equal(body.status, 'pending');
-  assert.equal(body.attempts, 0);
-  assert.equal('retryAt' in body, false);
-  assert.equal(body.pix.qrCode, '000201PIXTEST');
-  assert.equal(body.pix.qrCodeBase64, 'BASE64PIX');
+  assert.equal(response.status, 410);
 });
 
-assert.equal(pixOrderBody.total_amount, '100.00');
-assert.equal(pixOrderBody.transactions.payments[0].amount, '100.00');
-assert.equal(pixOrderBody.transactions.payments[0].payment_method.id, 'pix');
-assert.equal(pixOrderBody.transactions.payments[0].expiration_time, 'P1D');
-assert.equal(pixOrderHeaders['X-meli-session-id'], 'device-session-pix');
-assert.match(pixOrderHeaders['X-Idempotency-Key'], /^[a-f0-9]{64}$/);
+assert.doesNotMatch(source, /api\.mercadopago\.com/);
+assert.doesNotMatch(source, /MP_ACCESS_TOKEN|MP_PUBLIC_KEY|MP_WEBHOOK_SECRET/);
+assert.doesNotMatch(source, /processing_mode|external_reference|qr_code|payment_method/);
 
-const thirdAttemptPage = makeRegistrationPage({attempts: 2});
-await withFetch(async (url) => {
-  const target = String(url);
-  if (target === 'https://api.notion.com/v1/databases/workshop-db/query') return Response.json({results: [thirdAttemptPage]});
-  if (target === 'https://api.notion.com/v1/pages/page-workshop') return Response.json({id: 'page-workshop'});
-  if (target === 'https://api.mercadopago.com/v1/orders') return Response.json({message: 'rejected'}, {status: 500});
-  throw new Error(`Chamada externa inesperada: ${target}`);
-}, async () => {
-  const response = await worker.fetch(post('/workshop/pay/card', {
-    registrationId: 'WS-ABC1234567',
-    token: 'third-attempt-token',
-    paymentMethodId: 'visa',
-    paymentTypeId: 'credit_card',
-    installments: 1,
-  }), env);
-  assert.equal(response.status, 502);
-  const body = await response.json();
-  assert.equal(body.code, 'payment_failed');
-  assert.equal(body.message, 'Não foi possível confirmar o pagamento.');
-  assert.equal(body.attempts, 3);
-  assert.equal('retryAt' in body, false);
-});
-
-const integrityPage = makeRegistrationPage({amount: 100, coupon: '', partner: 'Direto'});
-let markedPaidWithWrongAmount = false;
-let integrityConfirmationSent = false;
-await withFetch(async (url, options = {}) => {
-  const target = String(url);
-  if (target === 'https://api.notion.com/v1/databases/workshop-db/query') {
-    return Response.json({results: [integrityPage]});
-  }
-  if (target === 'https://api.notion.com/v1/pages/page-workshop') {
-    const properties = JSON.parse(options.body).properties;
-    if (properties.Status?.select?.name === 'Pago') markedPaidWithWrongAmount = true;
-    return Response.json({id: 'page-workshop'});
-  }
-  if (target === 'https://api.mercadopago.com/v1/orders') {
-    return Response.json({
-      id: 'ORD-WRONG-AMOUNT',
-      external_reference: 'WS-ABC1234567',
-      total_amount: '1.00',
-      status: 'processed',
-      status_detail: 'accredited',
-      transactions: {payments: [{amount: '1.00', status: 'processed'}]},
-    });
-  }
-  if (target === 'https://api.resend.com/emails') {
-    integrityConfirmationSent = true;
-    return Response.json({id: 'email-integrity-error'});
-  }
-  throw new Error(`Chamada externa inesperada: ${target}`);
-}, async () => {
-  const response = await worker.fetch(post('/workshop/pay/card', {
-    registrationId: 'WS-ABC1234567',
-    token: 'wrong-amount-token',
-    paymentMethodId: 'visa',
-    paymentTypeId: 'credit_card',
-    installments: 1,
-  }), env);
-  assert.equal(response.status, 502);
-  assert.equal((await response.json()).code, 'payment_integrity_failed');
-});
-assert.equal(markedPaidWithWrongAmount, false);
-assert.equal(integrityConfirmationSent, false);
-
-const staleWebhookPage = makeRegistrationPage({
-  amount: 100,
-  status: 'Aguardando pagamento',
-  orderId: 'ORD-CURRENT',
-  coupon: '',
-  partner: 'Direto',
-});
-let staleWebhookUpdatedNotion = false;
-const staleOrderId = 'ORD-STALE';
-await withFetch(async (url) => {
-  const target = String(url);
-  if (target === `https://api.mercadopago.com/v1/orders/${staleOrderId}`) {
-    return Response.json({
-      id: staleOrderId,
-      external_reference: 'WS-ABC1234567',
-      total_amount: '100.00',
-      status: 'canceled',
-      status_detail: 'canceled_transaction',
-      transactions: {payments: [{amount: '100.00', status: 'canceled'}]},
-    });
-  }
-  if (target === 'https://api.notion.com/v1/databases/workshop-db/query') {
-    return Response.json({results: [staleWebhookPage]});
-  }
-  if (target === 'https://api.notion.com/v1/pages/page-workshop') {
-    staleWebhookUpdatedNotion = true;
-    return Response.json({id: 'page-workshop'});
-  }
-  throw new Error(`Chamada externa inesperada: ${target}`);
-}, async () => {
-  const response = await worker.fetch(webhookRequest({
-    queryDataId: staleOrderId,
-    bodyDataId: staleOrderId,
-    signature: webhookSignature(staleOrderId),
-  }), env);
-  assert.equal(response.status, 200);
-});
-assert.equal(staleWebhookUpdatedNotion, false, 'Webhook antigo não pode sobrescrever a Order atual.');
-
-const partialRefundPage = makeRegistrationPage({amount: 100, coupon: '', partner: 'Direto'});
-let partialRefundConfirmationSent = false;
-await withFetch(async (url, options = {}) => {
-  const target = String(url);
-  if (target === 'https://api.notion.com/v1/databases/workshop-db/query') {
-    return Response.json({results: [partialRefundPage]});
-  }
-  if (target === 'https://api.notion.com/v1/pages/page-workshop') {
-    const properties = JSON.parse(options.body).properties;
-    if (properties.Status?.select?.name) partialRefundPage.properties.Status = properties.Status;
-    return Response.json({id: 'page-workshop'});
-  }
-  if (target === 'https://api.mercadopago.com/v1/orders') {
-    return Response.json({
-      id: 'ORD-PARTIAL-REFUND',
-      external_reference: 'WS-ABC1234567',
-      total_amount: '100.00',
-      status: 'processed',
-      status_detail: 'partially_refunded',
-      transactions: {payments: [{amount: '100.00', status: 'processed', status_detail: 'partially_refunded'}]},
-    });
-  }
-  if (target === 'https://api.resend.com/emails') {
-    partialRefundConfirmationSent = true;
-    return Response.json({id: 'unexpected-email'});
-  }
-  throw new Error(`Chamada externa inesperada: ${target}`);
-}, async () => {
-  const response = await worker.fetch(post('/workshop/pay/card', {
-    registrationId: 'WS-ABC1234567',
-    token: 'partial-refund-token',
-    paymentMethodId: 'visa',
-    paymentTypeId: 'credit_card',
-    installments: 1,
-  }), env);
-  assert.equal(response.status, 200);
-  assert.equal((await response.json()).status, 'refunded');
-});
-assert.equal(partialRefundPage.properties.Status.select.name, 'Reembolsado');
-assert.equal(partialRefundConfirmationSent, false);
-
-console.log('Workshop tests passed: validation, server-side pricing, full registration IDs, idempotency, stale webhook isolation, payment integrity, Orders and Resend contract.');
+console.log('Workshop manual payment tests passed: server-side coupon/value/link selection, Notion pending state, no Mercado Pago API and retired payment endpoints.');
