@@ -29,11 +29,6 @@
   gap: var(--linsi-space-16);
 }
 
-.formArea {
-  min-height: 520px;
-  position: relative;
-}
-
 .contactRow {
   display: grid;
   gap: var(--linsi-space-16);
@@ -148,40 +143,6 @@
   padding: var(--linsi-space-16);
 }
 
-.processingOverlay {
-  align-content: center;
-  background: var(--ifm-background-color);
-  display: grid;
-  gap: var(--linsi-space-16);
-  inset: 0;
-  justify-items: center;
-  min-height: 420px;
-  position: absolute;
-  text-align: center;
-  z-index: 10;
-}
-
-.processingOverlay strong {
-  color: var(--ifm-font-color-base);
-  font-family: var(--ifm-heading-font-family);
-}
-
-.processingSpinner {
-  animation: workshop-spin 0.85s linear infinite;
-  border: 3px solid var(--linsi-border-color);
-  border-radius: 50%;
-  border-top-color: var(--linsi-button-background);
-  display: block;
-  height: 36px;
-  width: 36px;
-}
-
-@keyframes workshop-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .feedback {
   color: var(--ifm-font-color-base);
   display: grid;
@@ -227,24 +188,9 @@
   font-size: 0.9rem;
 }
 
-.turnstile {
-  height: 0;
-  opacity: 0;
-  overflow: hidden;
-  pointer-events: none;
-  position: absolute;
-  width: 0;
-}
-
 [data-theme='dark'] .title,
 [data-theme='dark'] .feedbackTitle {
   color: var(--linsi-pure-white);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .processingSpinner {
-    animation-duration: 1.8s;
-  }
 }
 
 @media (max-width: 700px) {
