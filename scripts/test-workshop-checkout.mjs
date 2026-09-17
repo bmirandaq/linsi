@@ -19,7 +19,7 @@ async function fillForm(page, {coupon = ''} = {}) {
 }
 
 async function submitAndAssert(page, expectedAmount, expectedHref) {
-  await page.getByRole('button', {name: 'Continuar'}).click();
+  await page.getByRole('button', {name: 'Continuar para pagamento'}).click();
   await page.getByText('Registrando inscrição...', {exact: true}).waitFor();
   await page.getByRole('heading', {name: 'Inscrição recebida'}).waitFor();
   await page.getByText(`R$ ${expectedAmount},00`, {exact: true}).waitFor();
@@ -43,6 +43,7 @@ async function submitAndAssert(page, expectedAmount, expectedHref) {
 try {
   const desktop = await browser.newPage({viewport: {width: 1440, height: 1000}});
   await fillForm(desktop);
+  assert.equal(await desktop.getByRole('navigation', {name: 'Etapas da inscrição'}).count(), 0, 'O Workshop não deve exibir stepper.');
   await submitAndAssert(desktop, '100', 'https://mpago.la/linsi-qa-full');
   assert.ok((await desktop.evaluate(() => document.documentElement.scrollWidth)) <= 1440);
 
@@ -58,7 +59,7 @@ try {
   const ctaBox = await mobile.getByRole('link', {name: 'Pagar no Mercado Pago'}).boundingBox();
   assert.ok(ctaBox && ctaBox.width > 340, 'O CTA de pagamento deve ocupar a largura útil no mobile.');
 
-  console.log('Workshop browser smoke passed: manual registration flow, R$100/R$90 links and mobile layout.');
+  console.log('Workshop browser smoke passed: no stepper, manual registration flow, R$100/R$90 links and mobile layout.');
 } finally {
   await browser.close();
 }
