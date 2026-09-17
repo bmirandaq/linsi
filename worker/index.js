@@ -353,13 +353,10 @@ async function createWorkshopRegistration({registrationId, nome, email, cargo, e
         Parceiro: {rich_text: partner ? [{text: {content: partner}}] : []},
         Valor: {number: amount},
         Status: {select: {name: 'Aguardando pagamento'}},
-        'MP Order ID': {rich_text: []},
         'Criado em': {date: {start: new Date().toISOString()}},
         'Pago em': {date: null},
         'Acesso enviado': {checkbox: false},
         'Confirmação enviada': {checkbox: false},
-        'Tentativas de pagamento': {number: 0},
-        'Bloqueado até': {date: null},
       },
     }),
   });
