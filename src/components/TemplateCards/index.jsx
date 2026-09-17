@@ -14,7 +14,7 @@ const TEMPLATES = [
     id: 'miro',
     title: 'Miro',
     actionLabel: 'Acessar template',
-    href: 'https://miro.com/miroverse/',
+    href: 'https://miro.com/templates/linsi-template-fluxograma',
     disabled: false,
   },
 ];
