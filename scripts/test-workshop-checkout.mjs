@@ -19,8 +19,9 @@ async function fillForm(page, {coupon = ''} = {}) {
 }
 
 async function submitAndAssert(page, expectedAmount, expectedHref) {
-  await page.getByRole('button', {name: 'Continuar para pagamento'}).click();
-  await page.getByText('Registrando inscrição...', {exact: true}).waitFor();
+  const submit = page.getByRole('button', {name: 'Continuar para pagamento'});
+  await submit.click();
+  assert.equal(await page.getByText('Registrando inscrição...', {exact: true}).count(), 0, 'O submit não deve abrir uma tela de loading.');
   await page.getByRole('heading', {name: 'Inscrição recebida'}).waitFor();
   await page.getByText(`R$ ${expectedAmount},00`, {exact: true}).waitFor();
 
@@ -59,7 +60,7 @@ try {
   const ctaBox = await mobile.getByRole('link', {name: 'Pagar no Mercado Pago'}).boundingBox();
   assert.ok(ctaBox && ctaBox.width > 340, 'O CTA de pagamento deve ocupar a largura útil no mobile.');
 
-  console.log('Workshop browser smoke passed: no stepper, manual registration flow, R$100/R$90 links and mobile layout.');
+  console.log('Workshop browser smoke passed: direct submit without loading screen, manual registration flow, R$100/R$90 links and mobile layout.');
 } finally {
   await browser.close();
 }

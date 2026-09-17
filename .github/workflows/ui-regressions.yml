@@ -103,7 +103,7 @@ jobs:
 
   preview-integration:
     name: QA real da inscrição manual em Worker preview
-    if: github.event_name == 'pull_request' && github.head_ref == 'refactor/workshop-manual-payment'
+    if: github.event_name == 'pull_request' && contains(github.head_ref, 'workshop')
     runs-on: ubuntu-latest
     steps:
       - name: Baixar branch da PR
@@ -128,9 +128,6 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::CLOUDFLARE_API_TOKEN ausente"; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::CLOUDFLARE_ACCOUNT_ID ausente"; exit 1; }
 
-      - name: Adaptar somente o preview ao Turnstile E2E
-        run: node scripts/patch-worker-preview-manual-qa.cjs
-
       - name: Criar versão preview do Worker sem deploy
         id: worker-preview
         env:
@@ -138,20 +135,13 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         run: |
           set -o pipefail
-          cat > /tmp/turnstile-preview.env <<'EOF'
-          TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
-          EOF
           npx wrangler@4 versions upload \
             --config worker/wrangler.toml \
             --keep-vars \
-            --secrets-file /tmp/turnstile-preview.env \
             --var ALLOWED_ORIGIN:https://linsi.beamiranda.com.br \
-            --var TURNSTILE_EXPECTED_HOSTNAME:example.com \
-            --var TURNSTILE_EXPECTED_ACTION:__official_e2e_no_action__ \
             --var WORKSHOP_PAYMENT_LINK_FULL:https://mpago.la/linsi-manual-qa-full \
             --var WORKSHOP_PAYMENT_LINK_DISCOUNT:https://mpago.la/linsi-manual-qa-discount \
             2>&1 | tee /tmp/wrangler-preview.log
-          rm -f /tmp/turnstile-preview.env
           PREVIEW_URL=$(grep -Eo 'https://[A-Za-z0-9.-]+\.workers\.dev' /tmp/wrangler-preview.log | tail -n 1)
           if [ -z "$PREVIEW_URL" ]; then
             echo "::error::Wrangler não retornou uma Preview URL."

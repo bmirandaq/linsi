@@ -3,21 +3,11 @@ import assert from 'node:assert/strict';
 const previewWorker = (process.env.WORKER_PREVIEW_URL || '').replace(/\/$/, '');
 const productionWorker = 'https://linsi-form-handler.bmirandaqux.workers.dev';
 const allowedOrigin = 'https://linsi.beamiranda.com.br';
-const turnstileTestToken = 'XXXX.DUMMY.TOKEN.XXXX';
-const turnstileTestSecret = '1x0000000000000000000000000000000AA';
 const fullPaymentUrl = 'https://mpago.la/linsi-manual-qa-full';
 const discountPaymentUrl = 'https://mpago.la/linsi-manual-qa-discount';
 
 assert.ok(previewWorker.startsWith('https://'), 'WORKER_PREVIEW_URL must be an HTTPS Worker preview URL.');
 assert.notEqual(previewWorker, productionWorker, 'Preview QA must never target the production Worker.');
-
-const probe = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
-  method: 'POST',
-  headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-  body: new URLSearchParams({secret: turnstileTestSecret, response: turnstileTestToken}),
-});
-const probeData = await probe.json();
-assert.equal(probeData.success, true, 'Official Cloudflare E2E Turnstile credentials must validate.');
 
 async function request(path, options = {}) {
   const response = await fetch(`${previewWorker}${path}`, {
@@ -51,9 +41,8 @@ async function register({coupon: couponValue, expectedAmount, expectedUrl}) {
       whatsapp: '',
       coupon: couponValue,
       amount: 1,
-      paymentUrl: 'https://evil.example/ignored',
+      paymentUrl: 'https://example.com/ignored',
       partner: 'ignored',
-      turnstileToken: turnstileTestToken,
     }),
   });
 
@@ -83,4 +72,4 @@ for (const [path, method] of [
   assert.equal(retired.response.status, 410, `${path} must stay retired.`);
 }
 
-console.log('REAL MANUAL WORKSHOP PREVIEW QA PASSED: Turnstile, coupon, real Notion-backed registrations, server-side R$100/R$90 link selection and retired payment endpoints.');
+console.log('REAL MANUAL WORKSHOP PREVIEW QA PASSED: coupon, real Notion-backed registrations, server-side R$100/R$90 link selection and retired payment endpoints.');

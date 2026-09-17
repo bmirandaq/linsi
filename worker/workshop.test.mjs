@@ -16,7 +16,6 @@ const discountPaymentUrl = 'https://link.mercadopago.com.br/linsi-discount-test'
 
 const env = {
   ALLOWED_ORIGIN: allowedOrigin,
-  TURNSTILE_SECRET_KEY: 'test-value',
   NOTION_API_KEY: 'test-value',
   WORKSHOP_NOTION_DATABASE_ID: 'workshop-db',
   WORKSHOP_COUPONS_JSON: couponConfig,
@@ -66,9 +65,6 @@ async function startWorkshop(payload, customEnv = env) {
   await withFetch(async (url, options = {}) => {
     const target = String(url);
     calls.push(target);
-    if (target === 'https://challenges.cloudflare.com/turnstile/v0/siteverify') {
-      return Response.json({success: true, hostname: 'linsi.beamiranda.com.br', action: 'workshop'});
-    }
     if (target === 'https://api.notion.com/v1/pages') {
       notionBody = JSON.parse(options.body);
       return Response.json({id: 'page-workshop'});
@@ -82,7 +78,6 @@ async function startWorkshop(payload, customEnv = env) {
       empresa: 'Empresa Teste',
       linkedin: 'linkedin.com/in/pessoa-teste',
       whatsapp: '81999999999',
-      turnstileToken: 'valid-test-value',
       ...payload,
     }), customEnv);
   });
@@ -94,8 +89,9 @@ async function startWorkshop(payload, customEnv = env) {
   const {response, notionBody, calls} = await startWorkshop({
     coupon: 'croq10',
     amount: 1,
-    paymentUrl: 'https://evil.example/roubo',
-    partner: 'Atacante',
+    paymentUrl: 'https://example.com/ignored',
+    partner: 'Ignored',
+    turnstileToken: 'ignored-client-value',
   });
   assert.equal(response.status, 200);
   const body = await response.json();
@@ -105,10 +101,7 @@ async function startWorkshop(payload, customEnv = env) {
   assert.equal('publicKey' in body, false);
   assert.equal('attempts' in body, false);
 
-  assert.deepEqual(calls, [
-    'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-    'https://api.notion.com/v1/pages',
-  ]);
+  assert.deepEqual(calls, ['https://api.notion.com/v1/pages']);
   assert.equal(notionBody.properties.Nome.rich_text[0].text.content, 'Pessoa Teste');
   assert.equal(notionBody.properties['E-mail'].email, 'pessoa@example.com');
   assert.equal(notionBody.properties.Cargo.rich_text[0].text.content, 'Product Designer');
@@ -128,7 +121,7 @@ async function startWorkshop(payload, customEnv = env) {
 }
 
 {
-  const {response, notionBody} = await startWorkshop({coupon: '', amount: 1, paymentUrl: 'https://evil.example'});
+  const {response, notionBody} = await startWorkshop({coupon: '', amount: 1, paymentUrl: 'https://example.com/ignored'});
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.equal(body.amount, 100);
@@ -158,7 +151,6 @@ await withFetch(async () => {
     email: 'pessoa@example.com',
     cargo: 'Product Designer',
     coupon: 'FAKE100',
-    turnstileToken: 'valid-test-value',
   }), env);
   assert.equal(response.status, 400);
   assert.equal((await response.json()).code, 'coupon_invalid');
@@ -176,7 +168,6 @@ for (const key of ['WORKSHOP_PAYMENT_LINK_FULL', 'WORKSHOP_PAYMENT_LINK_DISCOUNT
       email: 'pessoa@example.com',
       cargo: 'Product Designer',
       coupon,
-      turnstileToken: 'valid-test-value',
     }), brokenEnv);
     assert.equal(response.status, 503);
     assert.equal((await response.json()).message, 'O pagamento está temporariamente indisponível.');
@@ -185,7 +176,7 @@ for (const key of ['WORKSHOP_PAYMENT_LINK_FULL', 'WORKSHOP_PAYMENT_LINK_DISCOUNT
 
 for (const invalidUrl of [
   'http://mpago.la/inseguro',
-  'https://evil.example/pagamento',
+  'https://example.com/pagamento',
   'javascript:alert(1)',
   'https://user:pass@mpago.la/credenciais',
   'https://mpago.la:8443/porta',
@@ -199,7 +190,6 @@ for (const invalidUrl of [
       email: 'pessoa@example.com',
       cargo: 'Product Designer',
       coupon: '',
-      turnstileToken: 'valid-test-value',
     }), brokenEnv);
     assert.equal(response.status, 503);
   });
@@ -246,4 +236,4 @@ assert.doesNotMatch(source, /processing_mode|external_reference|qr_code|payment_
 assert.doesNotMatch(source, /MP Order ID|Tentativas de pagamento|Bloqueado até/);
 assert.doesNotMatch(source, /Inscrição iniciada|Pagamento não concluído/);
 
-console.log('Workshop manual payment tests passed: simplified Notion schema, server-side coupon/value/link selection, pending state, no Mercado Pago API and retired payment endpoints.');
+console.log('Workshop manual payment tests passed: Notion-only registration, server-side coupon/value/link selection, no Turnstile dependency in the workshop flow and retired payment endpoints.');
