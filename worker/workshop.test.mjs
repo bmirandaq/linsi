@@ -119,10 +119,12 @@ async function startWorkshop(payload, customEnv = env) {
   assert.equal(notionBody.properties.Parceiro.rich_text[0].text.content, 'Design Croquete');
   assert.equal(notionBody.properties.Valor.number, 90);
   assert.equal(notionBody.properties.Status.select.name, 'Aguardando pagamento');
-  assert.deepEqual(notionBody.properties['MP Order ID'].rich_text, []);
   assert.equal(notionBody.properties['Pago em'].date, null);
-  assert.equal(notionBody.properties['Tentativas de pagamento'].number, 0);
-  assert.equal(notionBody.properties['Bloqueado até'].date, null);
+  assert.equal(notionBody.properties['Acesso enviado'].checkbox, false);
+  assert.equal(notionBody.properties['Confirmação enviada'].checkbox, false);
+  assert.equal('MP Order ID' in notionBody.properties, false);
+  assert.equal('Tentativas de pagamento' in notionBody.properties, false);
+  assert.equal('Bloqueado até' in notionBody.properties, false);
 }
 
 {
@@ -241,5 +243,7 @@ await withFetch(async () => {
 assert.doesNotMatch(source, /api\.mercadopago\.com/);
 assert.doesNotMatch(source, /MP_ACCESS_TOKEN|MP_PUBLIC_KEY|MP_WEBHOOK_SECRET/);
 assert.doesNotMatch(source, /processing_mode|external_reference|qr_code|payment_method/);
+assert.doesNotMatch(source, /MP Order ID|Tentativas de pagamento|Bloqueado até/);
+assert.doesNotMatch(source, /Inscrição iniciada|Pagamento não concluído/);
 
-console.log('Workshop manual payment tests passed: server-side coupon/value/link selection, Notion pending state, no Mercado Pago API and retired payment endpoints.');
+console.log('Workshop manual payment tests passed: simplified Notion schema, server-side coupon/value/link selection, pending state, no Mercado Pago API and retired payment endpoints.');
