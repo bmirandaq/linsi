@@ -25,7 +25,11 @@
 }
 
 .subtitle {
-  color: var(--linsi-neutral-base);
+  color: var(--ifm-color-primary);
+  font-family: var(--ifm-heading-font-family);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.35;
   margin: var(--linsi-space-8) 0 0;
 }
 
