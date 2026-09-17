@@ -174,7 +174,7 @@ assert.equal(orderBody.items[0].unit_price, '90.00');
 assert.equal('total_amount' in orderBody.items[0], false);
 assert.equal('unit_measure' in orderBody.items[0], false);
 assert.equal('transactions' in orderBody, false);
-assert.equal(orderBody.config.notification_url, 'https://linsi-form-handler.example.test/webhooks/mercadopago');
+assert.equal('notification_url' in orderBody.config, false);
 assert.match(orderBody.config.online.success_url, /checkout=success/);
 assert.match(orderBody.config.online.failure_url, /checkout=failure/);
 assert.match(orderBody.config.online.pending_url, /checkout=pending/);
@@ -312,4 +312,4 @@ await withFetch(async (url) => {
 });
 assert.equal(oldOrderPatchCount, 0, 'A late webhook from an old order must not replace the current order.');
 
-console.log('Workshop Checkout Pro tests passed: server-side price, manual Orders API, minimal item schema, trusted redirect, idempotent reuse, authoritative paid state, integrity checks and retired advanced endpoints.');
+console.log('Workshop Checkout Pro tests passed: server-side price, manual Orders API, minimal item schema, no unsupported notification property, trusted redirect, idempotent reuse, authoritative paid state, integrity checks and retired advanced endpoints.');
