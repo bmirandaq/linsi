@@ -13,7 +13,8 @@ assert.match(workshop, /href=\{paymentUrl\}/, 'O CTA deve usar a paymentUrl devo
 assert.match(workshop, /A confirmação da vaga será enviada após a conferência do pagamento\./);
 assert.match(workshop, /setAmount\(result\.amount\)/, 'O valor mostrado deve vir do Worker.');
 assert.match(workshop, /setPaymentUrl\(result\.paymentUrl \|\| ''\)/, 'O frontend deve aceitar somente o link devolvido pelo Worker.');
-assert.match(workshop, /aria-busy=\{stage === 'creating'\}>Continuar<\/button>/, 'O CTA deve permanecer Continuar durante o submit.');
+assert.match(workshop, /aria-busy=\{stage === 'creating'\}>Continuar para pagamento<\/button>/, 'O CTA deve explicar que a próxima ação é o pagamento.');
+assert.doesNotMatch(workshop, /Etapas da inscrição|WorkshopStepper|styles\.stepper/, 'O Workshop não deve exibir stepper.');
 
 for (const forbidden of [
   /MercadoPago\(/,
@@ -45,6 +46,6 @@ assert.doesNotMatch(workshop, /MP_PUBLIC_KEY|MP_ACCESS_TOKEN|MP_WEBHOOK_SECRET/)
 assert.match(css, /\.contactRow\s*\{[\s\S]*?grid-template-columns:\s*1fr 1fr;/, 'O desktop deve preservar duas colunas.');
 assert.match(css, /@media \(max-width: 700px\)[\s\S]*?\.contactRow\s*\{[\s\S]*?grid-template-columns:\s*1fr;/, 'O mobile deve empilhar os campos.');
 assert.match(css, /\.paymentLink\s*\{[\s\S]*?justify-self:\s*start;/, 'O CTA externo deve permanecer explícito no desktop.');
-assert.doesNotMatch(css, /processorCard|paymentBrick|pixQr|mockQr|paymentMethods|methodActive/, 'CSS legado de pagamento não deve permanecer.');
+assert.doesNotMatch(css, /processorCard|paymentBrick|pixQr|mockQr|paymentMethods|methodActive|stepper|stepActive|stepSeparator/, 'CSS legado de pagamento/stepper não deve permanecer.');
 
-console.log('Workshop manual payment UI contracts passed: registration-only flow, server-returned amount/link and no embedded Mercado Pago payment integration.');
+console.log('Workshop manual payment UI contracts passed: no stepper, explicit payment CTA, registration-only flow, server-returned amount/link and no embedded Mercado Pago payment integration.');
