@@ -32,7 +32,7 @@ try {
       await prepare(page, theme);
       await page.screenshot({path: `${artifactDir}/${viewport.name}-${theme}-form.png`, fullPage: true});
       await fillRequired(page);
-      await page.getByRole('button', {name: 'Continuar'}).click();
+      await page.getByRole('button', {name: 'Continuar para pagamento'}).click();
       await page.getByText('Registrando inscrição...', {exact: true}).waitFor();
       await page.screenshot({path: `${artifactDir}/${viewport.name}-${theme}-loading.png`, fullPage: true});
       await page.getByRole('heading', {name: 'Inscrição recebida'}).waitFor();
@@ -47,7 +47,7 @@ try {
   await details.getByText('Cupom aplicado', {exact: true}).waitFor();
   await details.screenshot({path: `${artifactDir}/desktop-light-coupon-valid.png`, fullPage: true});
   await fillRequired(details);
-  await details.getByRole('button', {name: 'Continuar'}).click();
+  await details.getByRole('button', {name: 'Continuar para pagamento'}).click();
   await details.getByRole('heading', {name: 'Inscrição recebida'}).waitFor();
   await details.getByText('R$ 90,00', {exact: true}).waitFor();
   await details.screenshot({path: `${artifactDir}/desktop-light-registered-90.png`, fullPage: true});
