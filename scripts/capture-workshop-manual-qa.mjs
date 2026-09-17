@@ -33,8 +33,6 @@ try {
       await page.screenshot({path: `${artifactDir}/${viewport.name}-${theme}-form.png`, fullPage: true});
       await fillRequired(page);
       await page.getByRole('button', {name: 'Continuar para pagamento'}).click();
-      await page.getByText('Registrando inscrição...', {exact: true}).waitFor();
-      await page.screenshot({path: `${artifactDir}/${viewport.name}-${theme}-loading.png`, fullPage: true});
       await page.getByRole('heading', {name: 'Inscrição recebida'}).waitFor();
       await page.screenshot({path: `${artifactDir}/${viewport.name}-${theme}-registered-100.png`, fullPage: true});
       await page.close();
@@ -60,7 +58,7 @@ try {
   await invalid.screenshot({path: `${artifactDir}/desktop-light-coupon-invalid.png`, fullPage: true});
   await invalid.close();
 
-  console.log('Workshop manual visual QA screenshots captured.');
+  console.log('Workshop manual visual QA screenshots captured without loading state.');
 } finally {
   await browser.close();
 }
