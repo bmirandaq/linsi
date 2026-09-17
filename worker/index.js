@@ -686,7 +686,6 @@ async function handleWorkshopCheckout(request, env, cors) {
     }
   }
 
-  const workerOrigin = new URL(request.url).origin;
   const amount = registration.amount.toFixed(2);
   const orderBody = {
     type: 'online',
@@ -700,7 +699,6 @@ async function handleWorkshopCheckout(request, env, cors) {
       unit_price: amount,
     }],
     config: {
-      notification_url: `${workerOrigin}/webhooks/mercadopago`,
       online: {
         success_url: checkoutReturnUrl(env, 'success', registration.registrationId),
         failure_url: checkoutReturnUrl(env, 'failure', registration.registrationId),
