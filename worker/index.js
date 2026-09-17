@@ -426,22 +426,12 @@ async function handleWorkshopStart(request, env, cors) {
   return json({registrationId, amount, paymentUrl: selectedPaymentLink}, 200, cors);
 }
 
-const RETIRED_WORKSHOP_PAYMENT_PATHS = new Set([
-  '/workshop/payment/reset',
-  '/workshop/pay/card',
-  '/workshop/pay/pix',
-  '/workshop/checkout',
-  '/workshop/status',
-]);
 
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname.replace(/\/$/, '') || '/';
 
-    if (path === '/webhooks/mercadopago') {
-      return json({error: 'Endpoint retired'}, 410);
-    }
 
     const origin = request.headers.get('Origin') || '';
     if (!isAllowedOrigin(origin, env)) return json({error: 'Origin not allowed'}, 403, {});
@@ -449,9 +439,6 @@ export default {
 
     if (request.method === 'OPTIONS') return new Response(null, {status: 204, headers: cors});
 
-    if (RETIRED_WORKSHOP_PAYMENT_PATHS.has(path)) {
-      return json({error: 'Endpoint retired'}, 410, cors);
-    }
 
     if (path === '/' && request.method === 'POST') return handleContact(request, env, cors);
     if (path === '/workshop/coupon' && request.method === 'POST') return handleCoupon(request, env, cors);
