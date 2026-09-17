@@ -75,7 +75,7 @@ jobs:
           SMOKE_BASE_URL: http://127.0.0.1:3000
 
       - name: Validar inscrição manual do Workshop no navegador
-        run: node scripts/test-workshop-checkout.mjs
+        run: node scripts/test-workshop-registration.mjs
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
 
