@@ -1,13 +1,11 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import Layout from '@theme/Layout';
 import styles from './workshop.module.css';
 
 const WORKSHOP_API_URL = 'https://linsi-form-handler.bmirandaqux.workers.dev';
-const TURNSTILE_SITE_KEY = '0x4AAAAAAEjIIV8ZHpYobikz';
 const COUPON_DEBOUNCE_MS = 500;
 const MOCK_REQUEST_DELAY_MS = 500;
 const MOCK_VALID_COUPONS = new Set(['VAGASUX10', 'CROQ10', 'GUIA10']);
-let turnstileScriptPromise;
 
 function isWorkshopMockMode() {
   if (typeof window === 'undefined') return false;
@@ -39,30 +37,6 @@ function mockApiRequest(path, options = {}) {
   }
 
   return Promise.reject(new Error('Endpoint mock não configurado.'));
-}
-
-function loadTurnstile() {
-  if (turnstileScriptPromise) return turnstileScriptPromise;
-  if (window.turnstile) return Promise.resolve(window.turnstile);
-
-  turnstileScriptPromise = new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    window.onLinsiWorkshopTurnstileLoad = () => {
-      delete window.onLinsiWorkshopTurnstileLoad;
-      resolve(window.turnstile);
-    };
-    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onLinsiWorkshopTurnstileLoad';
-    script.async = true;
-    script.onerror = () => {
-      script.remove();
-      delete window.onLinsiWorkshopTurnstileLoad;
-      turnstileScriptPromise = null;
-      reject(new Error('Turnstile indisponível'));
-    };
-    document.head.appendChild(script);
-  });
-
-  return turnstileScriptPromise;
 }
 
 function normalizeLinkedInForSubmit(value) {
@@ -110,89 +84,10 @@ export default function Workshop() {
   const [paymentUrl, setPaymentUrl] = useState('');
   const [submitError, setSubmitError] = useState('');
 
-  const mockMode = isWorkshopMockMode();
-  const turnstileRef = useRef(null);
-  const turnstileWidgetId = useRef(null);
-  const turnstileResolver = useRef(null);
-  const turnstileReady = useRef(null);
-  const turnstileExecuted = useRef(false);
-  const mountedRef = useRef(true);
-
   useEffect(() => {
-    mountedRef.current = true;
     const prefilledCoupon = new URLSearchParams(window.location.search).get('cupom');
     if (prefilledCoupon) setCupom(prefilledCoupon.trim());
-
-    return () => {
-      mountedRef.current = false;
-      turnstileResolver.current?.(null);
-      if (turnstileWidgetId.current !== null && window.turnstile) {
-        try { window.turnstile.remove(turnstileWidgetId.current); } catch {}
-      }
-    };
   }, []);
-
-  const ensureTurnstileReady = useCallback(() => {
-    if (isWorkshopMockMode()) return Promise.resolve('mock');
-    if (!TURNSTILE_SITE_KEY || typeof window === 'undefined') return Promise.resolve(null);
-    if (turnstileReady.current) return turnstileReady.current;
-
-    turnstileReady.current = loadTurnstile().then((turnstile) => {
-      if (!mountedRef.current || !turnstileRef.current) return null;
-      if (turnstileWidgetId.current !== null) return turnstileWidgetId.current;
-      turnstileExecuted.current = false;
-      turnstileWidgetId.current = turnstile.render(turnstileRef.current, {
-        sitekey: TURNSTILE_SITE_KEY,
-        size: 'normal',
-        appearance: 'always',
-        execution: 'execute',
-        action: 'workshop',
-        callback: (token) => turnstileResolver.current?.(token),
-        'error-callback': () => turnstileResolver.current?.(null),
-        'timeout-callback': () => turnstileResolver.current?.(null),
-      });
-      return turnstileWidgetId.current;
-    }).catch(() => {
-      turnstileReady.current = null;
-      return null;
-    });
-
-    return turnstileReady.current;
-  }, []);
-
-  useEffect(() => {
-    if (mockMode) return undefined;
-    const timeout = window.setTimeout(() => void ensureTurnstileReady(), 0);
-    return () => window.clearTimeout(timeout);
-  }, [ensureTurnstileReady, mockMode]);
-
-  const getTurnstileToken = useCallback(() => {
-    if (isWorkshopMockMode()) return Promise.resolve('mock-turnstile-token');
-    return new Promise((resolve) => {
-      let settled = false;
-      const finish = (token) => {
-        if (settled) return;
-        settled = true;
-        clearTimeout(timeout);
-        turnstileResolver.current = null;
-        resolve(token);
-      };
-      const timeout = setTimeout(() => finish(null), 30000);
-
-      ensureTurnstileReady().then((widgetId) => {
-        if (settled) return;
-        if (widgetId === null || !window.turnstile) return finish(null);
-        turnstileResolver.current = finish;
-        try {
-          if (turnstileExecuted.current) window.turnstile.reset(widgetId);
-          turnstileExecuted.current = true;
-          window.turnstile.execute(widgetId);
-        } catch {
-          finish(null);
-        }
-      });
-    });
-  }, [ensureTurnstileReady]);
 
   const validateCoupon = useCallback(async (value) => {
     setCouponStatus('checking');
@@ -259,12 +154,9 @@ export default function Workshop() {
     setStage('creating');
 
     try {
-      const turnstileToken = await getTurnstileToken();
-      if (!turnstileToken) throw new Error('Não foi possível concluir a verificação de segurança. Tente novamente.');
-
       const result = await apiRequest('/workshop/start', {
         method: 'POST',
-        body: JSON.stringify({...payload, turnstileToken}),
+        body: JSON.stringify(payload),
       });
       setAmount(result.amount);
       setPaymentUrl(result.paymentUrl || '');
@@ -280,7 +172,7 @@ export default function Workshop() {
       setSubmitError(error.message || 'Não foi possível registrar sua inscrição. Tente novamente.');
       setStage('form');
     }
-  }, [getTurnstileToken, stage]);
+  }, [stage]);
 
   return (
     <Layout title="Workshop" description="Inscrição no Workshop LINSI">
@@ -292,63 +184,53 @@ export default function Workshop() {
                 <h1 className={styles.title}>Inscrição no Workshop LINSI</h1>
               </header>
 
-              <div className={styles.formArea}>
-                <form className={styles.form} onSubmit={handleContinue}>
-                  <div className={styles.contactRow}>
-                    <div className={styles.field}>
-                      <label htmlFor="nome">Nome</label>
-                      <input id="nome" name="nome" type="text" autoComplete="name" maxLength={120} required value={nome} onChange={(event) => setNome(event.target.value)} />
-                    </div>
-                    <div className={styles.field}>
-                      <label htmlFor="email">E-mail</label>
-                      <input id="email" name="email" type="email" autoComplete="email" maxLength={254} required value={email} onChange={(event) => setEmail(event.target.value)} />
-                    </div>
-                  </div>
-
-                  <div className={styles.contactRow}>
-                    <div className={styles.field}>
-                      <label htmlFor="cargo">Cargo</label>
-                      <input id="cargo" name="cargo" type="text" autoComplete="organization-title" maxLength={120} required value={cargo} onChange={(event) => setCargo(event.target.value)} />
-                    </div>
-                    <div className={styles.field}>
-                      <label htmlFor="empresa">Empresa onde trabalha <span className={styles.optionalLabel}>(opcional)</span></label>
-                      <input id="empresa" name="empresa" type="text" autoComplete="organization" maxLength={160} value={empresa} onChange={(event) => setEmpresa(event.target.value)} />
-                    </div>
-                  </div>
-
-                  <div className={styles.contactRow}>
-                    <div className={styles.field}>
-                      <label htmlFor="linkedin">LinkedIn <span className={styles.optionalLabel}>(opcional)</span></label>
-                      <input id="linkedin" name="linkedin" type="text" inputMode="url" autoComplete="url" pattern="(?:https?://)?(?:www[.])?linkedin[.]com/in/[A-Za-z0-9\-]+/?" title="Use um perfil no formato linkedin.com/in/name-user" maxLength={300} value={linkedin} onChange={(event) => setLinkedin(event.target.value)} onBlur={(event) => setLinkedin(normalizeLinkedInForSubmit(event.target.value))} />
-                    </div>
-                    <div className={styles.field}>
-                      <label htmlFor="whatsapp">WhatsApp <span className={styles.optionalLabel}>(opcional)</span></label>
-                      <input id="whatsapp" name="whatsapp" type="tel" inputMode="numeric" autoComplete="tel" pattern="[0-9]*" maxLength={32} value={whatsapp} onChange={(event) => setWhatsapp(event.target.value.replace(/\D/g, ''))} />
-                    </div>
-                  </div>
-
+              <form className={styles.form} onSubmit={handleContinue}>
+                <div className={styles.contactRow}>
                   <div className={styles.field}>
-                    <label htmlFor="cupom">Cupom <span className={styles.optionalLabel}>(opcional)</span></label>
-                    <input id="cupom" name="cupom" type="text" autoComplete="off" maxLength={80} value={cupom} onChange={(event) => setCupom(event.target.value)} />
-                    {couponMessage && (
-                      <p className={couponStatus === 'valid' ? styles.couponSuccess : styles.couponError} role={couponStatus === 'valid' ? 'status' : 'alert'}>
-                        {couponMessage}
-                      </p>
-                    )}
+                    <label htmlFor="nome">Nome</label>
+                    <input id="nome" name="nome" type="text" autoComplete="name" maxLength={120} required value={nome} onChange={(event) => setNome(event.target.value)} />
                   </div>
-
-                  {!mockMode && TURNSTILE_SITE_KEY ? <div ref={turnstileRef} className={styles.turnstile} /> : null}
-                  <button className={styles.submit} type="submit" disabled={stage === 'creating'} aria-busy={stage === 'creating'}>Continuar para pagamento</button>
-                  {submitError && <div className={styles.error} role="alert">{submitError}</div>}
-                </form>
-
-                {stage === 'creating' ? (
-                  <div className={styles.processingOverlay} role="status" aria-live="polite">
-                    <span className={styles.processingSpinner} aria-hidden="true" />
-                    <strong>Registrando inscrição...</strong>
+                  <div className={styles.field}>
+                    <label htmlFor="email">E-mail</label>
+                    <input id="email" name="email" type="email" autoComplete="email" maxLength={254} required value={email} onChange={(event) => setEmail(event.target.value)} />
                   </div>
-                ) : null}
-              </div>
+                </div>
+
+                <div className={styles.contactRow}>
+                  <div className={styles.field}>
+                    <label htmlFor="cargo">Cargo</label>
+                    <input id="cargo" name="cargo" type="text" autoComplete="organization-title" maxLength={120} required value={cargo} onChange={(event) => setCargo(event.target.value)} />
+                  </div>
+                  <div className={styles.field}>
+                    <label htmlFor="empresa">Empresa onde trabalha <span className={styles.optionalLabel}>(opcional)</span></label>
+                    <input id="empresa" name="empresa" type="text" autoComplete="organization" maxLength={160} value={empresa} onChange={(event) => setEmpresa(event.target.value)} />
+                  </div>
+                </div>
+
+                <div className={styles.contactRow}>
+                  <div className={styles.field}>
+                    <label htmlFor="linkedin">LinkedIn <span className={styles.optionalLabel}>(opcional)</span></label>
+                    <input id="linkedin" name="linkedin" type="text" inputMode="url" autoComplete="url" pattern="(?:https?://)?(?:www[.])?linkedin[.]com/in/[A-Za-z0-9\-]+/?" title="Use um perfil no formato linkedin.com/in/name-user" maxLength={300} value={linkedin} onChange={(event) => setLinkedin(event.target.value)} onBlur={(event) => setLinkedin(normalizeLinkedInForSubmit(event.target.value))} />
+                  </div>
+                  <div className={styles.field}>
+                    <label htmlFor="whatsapp">WhatsApp <span className={styles.optionalLabel}>(opcional)</span></label>
+                    <input id="whatsapp" name="whatsapp" type="tel" inputMode="numeric" autoComplete="tel" pattern="[0-9]*" maxLength={32} value={whatsapp} onChange={(event) => setWhatsapp(event.target.value.replace(/\D/g, ''))} />
+                  </div>
+                </div>
+
+                <div className={styles.field}>
+                  <label htmlFor="cupom">Cupom <span className={styles.optionalLabel}>(opcional)</span></label>
+                  <input id="cupom" name="cupom" type="text" autoComplete="off" maxLength={80} value={cupom} onChange={(event) => setCupom(event.target.value)} />
+                  {couponMessage && (
+                    <p className={couponStatus === 'valid' ? styles.couponSuccess : styles.couponError} role={couponStatus === 'valid' ? 'status' : 'alert'}>
+                      {couponMessage}
+                    </p>
+                  )}
+                </div>
+
+                <button className={styles.submit} type="submit" disabled={stage === 'creating'}>Continuar para pagamento</button>
+                {submitError && <div className={styles.error} role="alert">{submitError}</div>}
+              </form>
             </>
           ) : null}
 
