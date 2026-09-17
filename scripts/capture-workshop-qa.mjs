@@ -31,7 +31,7 @@ function installFakeTurnstile(page) {
   });
 }
 
-async function mockApi(page, {startDelay = 0, checkoutDelay = 0, status = 'pending'} = {}) {
+async function mockApi(page, {startDelay = 0, checkoutDelay = 0, status = 'pending', statusDelay = 0} = {}) {
   await page.route('https://linsi-form-handler.bmirandaqux.workers.dev/**', async (route) => {
     const request = route.request();
     const url = new URL(request.url());
@@ -48,6 +48,7 @@ async function mockApi(page, {startDelay = 0, checkoutDelay = 0, status = 'pendi
       return route.fulfill({status: 200, contentType: 'application/json', body: JSON.stringify({status: 'pending', checkoutUrl: 'https://www.mercadopago.com.br/checkout/v1/redirect?order_id=ORD-QA'})});
     }
     if (url.pathname === '/workshop/status') {
+      if (statusDelay) await new Promise(resolve => setTimeout(resolve, statusDelay));
       const response = status === 'paid' ? {status: 'paid', email: 'qa@linsi.test'} : {status};
       return route.fulfill({status: 200, contentType: 'application/json', body: JSON.stringify(response)});
     }
@@ -95,8 +96,12 @@ for (const scenario of scenarios) {
       viewport: {width: scenario.width, height: scenario.height},
       colorScheme: scenario.colorScheme,
     });
-    await mockApi(returnPage, {status: state});
-    await returnPage.goto(`${baseUrl}/workshop?checkout=${state === 'failed' ? 'failure' : state}&registrationId=WS-0123456789ABCDEF0123456789ABCDEF`, {waitUntil: 'networkidle'});
+    await mockApi(returnPage, {status: state, statusDelay: state === 'pending' ? 2500 : 0});
+    await returnPage.goto(`${baseUrl}/workshop?checkout=${state === 'failed' ? 'failure' : state}&registrationId=WS-0123456789ABCDEF0123456789ABCDEF`, {waitUntil: 'domcontentloaded'});
+    if (state === 'pending') {
+      await returnPage.getByText('Confirmando pagamento...', {exact: true}).waitFor();
+      await screenshot(returnPage, scenario, 'confirming');
+    }
     if (state === 'pending') await returnPage.getByRole('heading', {name: 'Pagamento em processamento'}).waitFor();
     if (state === 'failed') await returnPage.getByRole('heading', {name: 'Pagamento não concluído'}).waitFor();
     if (state === 'paid') await returnPage.getByRole('heading', {name: 'Inscrição confirmada'}).waitFor();

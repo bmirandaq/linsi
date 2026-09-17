@@ -40,5 +40,55 @@ const checkoutAfter = "console.error('Mercado Pago Checkout Pro order failed:', 
 if (!source.includes(checkoutBefore)) throw new Error('Checkout diagnostic target not found');
 source = source.replace(checkoutBefore, checkoutAfter);
 
+
+const qaEvidence = `
+async function handleQaEvidence(request, env, cors) {
+  const id = new URL(request.url).searchParams.get('id') || '';
+  if (!/^WS-[A-F0-9]{32}$/.test(id)) return json({error: 'Not found'}, 404, cors);
+  const registration = await findWorkshopRegistration(id, env);
+  if (!registration || !/^QA Checkout Pro E2E [0-9]+$/.test(registration.nome)
+      || registration.empresa !== 'LINSI E2E' || registration.cargo !== 'QA'
+      || registration.email !== 'test@testuser.com') {
+    return json({error: 'Not found'}, 404, cors);
+  }
+  const response = await fetch('https://api.notion.com/v1/pages/' + registration.pageId, {headers: notionHeaders(env)});
+  if (!response.ok) return json({error: 'Notion readback failed'}, 502, cors);
+  const properties = (await response.json()).properties;
+  const order = registration.mpOrderId
+    ? await mercadoPagoOrder('/v1/orders/' + encodeURIComponent(registration.mpOrderId), {method: 'GET'}, env)
+    : null;
+  const seller = await mercadoPagoOrder('/users/me', {method: 'GET'}, env);
+  return json({
+    sandboxCredential: env.MP_ACCESS_TOKEN.startsWith('TEST-') || seller.tags?.includes('test_user') === true,
+    registrationMatches: registration.registrationId === id,
+    nameMatches: /^QA Checkout Pro E2E [0-9]+$/.test(registration.nome),
+    emailMatches: registration.email === 'test@testuser.com',
+    amount: registration.amount,
+    couponEmpty: registration.coupon === '',
+    status: registration.status,
+    notionStatus: properties.Status?.select?.name || '',
+    createdAtPresent: Boolean(properties['Criado em']?.date?.start),
+    paidAtPresent: Boolean(properties['Pago em']?.date?.start),
+    blockedUntilEmpty: !properties['Bloqueado até']?.date,
+    orderSaved: Boolean(registration.mpOrderId),
+    order: order ? {
+      idMatches: order.id === registration.mpOrderId,
+      referenceMatches: order.external_reference === id,
+      amount: orderAmountInCents(order),
+      status: order.status,
+      statusDetail: order.status_detail || '',
+      liveMode: typeof order.live_mode === 'boolean' ? order.live_mode : null,
+      successReturnMatches: order.config?.online?.success_url === checkoutReturnUrl(env, 'success', id),
+      failureReturnMatches: order.config?.online?.failure_url === checkoutReturnUrl(env, 'failure', id),
+    } : null,
+  }, 200, {...cors, 'Cache-Control': 'no-store'});
+}
+`;
+const qaRouteTarget = "    if (path === '/' && request.method === 'POST') return handleContact(request, env, cors);";
+if (!source.includes(qaRouteTarget)) throw new Error('Preview QA route target missing');
+source = source.replace('export default {', qaEvidence + '\nexport default {');
+source = source.replace(qaRouteTarget,
+  "    if (path === '/__qa/workshop-evidence' && request.method === 'GET') return handleQaEvidence(request, env, cors);\n" + qaRouteTarget);
+
 fs.writeFileSync(file, source);
 console.log('Preview-only Worker diagnostics applied.');

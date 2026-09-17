@@ -165,6 +165,9 @@ jobs:
       - name: Testar integração real sem mock de aplicação
         env:
           WORKER_PREVIEW_URL: ${{ steps.worker-preview.outputs.url }}
+          MP_TEST_BUYER_USERNAME: ${{ secrets.MP_TEST_BUYER_USERNAME }}
+          MP_TEST_BUYER_PASSWORD: ${{ secrets.MP_TEST_BUYER_PASSWORD }}
+          MP_TEST_BUYER_CODE: ${{ secrets.MP_TEST_BUYER_CODE }}
         run: node scripts/test-workshop-preview-real.mjs
 
       - name: Publicar evidência do Checkout Pro real
@@ -172,5 +175,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: workshop-checkout-pro-real-preview
-          path: artifacts/workshop-preview-real/*.png
+          path: artifacts/workshop-preview-real/report.json
           if-no-files-found: warn
