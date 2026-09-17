@@ -7,68 +7,59 @@ const browser = await chromium.launch({
   ...(process.env.BROWSER_CHANNEL ? {channel: process.env.BROWSER_CHANNEL} : {}),
 });
 
-async function openCheckout(page) {
+async function fillForm(page, {coupon = ''} = {}) {
   await page.goto(`${baseUrl}/workshop`, {waitUntil: 'networkidle'});
   await page.locator('#nome').fill('Pessoa QA');
   await page.locator('#email').fill('qa@example.com');
   await page.locator('#cargo').fill('Product Designer');
-  await page.getByRole('button', {name: 'Continuar'}).click();
-  await page.getByText('Carregando...', {exact: true}).waitFor();
-  assert.equal(await page.getByRole('button', {name: 'Continuar'}).count(), 1);
-  await page.getByRole('heading', {name: 'Inscrição no Workshop LINSI'}).waitFor();
-  await page.getByText('Valor do workshop', {exact: true}).waitFor();
+  if (coupon) {
+    await page.locator('#cupom').fill(coupon);
+    await page.getByText('Cupom aplicado', {exact: true}).waitFor();
+  }
 }
 
-async function switchTenTimes(page) {
-  const durations = [];
-  for (let index = 0; index < 10; index += 1) {
-    await page.getByRole('button', {name: 'Pix', exact: true}).click();
-    await page.getByText('Gerando QR Code Pix', {exact: true}).waitFor();
-    await page.getByLabel('QR Code Pix simulado').waitFor();
+async function submitAndAssert(page, expectedAmount, expectedHref) {
+  await page.getByRole('button', {name: 'Continuar para pagamento'}).click();
+  await page.getByText('Registrando inscrição...', {exact: true}).waitFor();
+  await page.getByRole('heading', {name: 'Inscrição recebida'}).waitFor();
+  await page.getByText(`R$ ${expectedAmount},00`, {exact: true}).waitFor();
 
-    const startedAt = performance.now();
-    await page.getByRole('button', {name: 'Cartão', exact: true}).click();
-    await page.getByText('Número do cartão', {exact: true}).waitFor();
-    durations.push(Math.round(performance.now() - startedAt));
+  const paymentLink = page.getByRole('link', {name: 'Pagar no Mercado Pago'});
+  assert.equal(await paymentLink.getAttribute('href'), expectedHref);
+  assert.equal(await paymentLink.getAttribute('target'), null);
+  await page.getByText('A confirmação da vaga será enviada após a conferência do pagamento.', {exact: true}).waitFor();
 
-    assert.equal(await page.getByText('Alterando forma de pagamento', {exact: true}).count(), 0);
-    assert.equal(await page.getByText('Carregando pagamento', {exact: true}).count(), 0);
-    assert.equal(await page.getByText('Processando pagamento...', {exact: true}).count(), 0);
+  for (const forbidden of [
+    'Cartão',
+    'Pix',
+    'Processando pagamento...',
+    'Confirmando pagamento...',
+    'Inscrição confirmada',
+  ]) {
+    assert.equal(await page.getByText(forbidden, {exact: true}).count(), 0, `${forbidden} não pode existir no fluxo manual.`);
   }
-  return durations;
 }
 
 try {
   const desktop = await browser.newPage({viewport: {width: 1440, height: 1000}});
-  await openCheckout(desktop);
+  await fillForm(desktop);
+  assert.equal(await desktop.getByRole('navigation', {name: 'Etapas da inscrição'}).count(), 0, 'O Workshop não deve exibir stepper.');
+  await submitAndAssert(desktop, '100', 'https://mpago.la/linsi-qa-full');
+  assert.ok((await desktop.evaluate(() => document.documentElement.scrollWidth)) <= 1440);
 
-  assert.equal(await desktop.getByRole('button', {name: 'Cartão', exact: true}).count(), 1);
-  assert.equal(await desktop.getByText('Carregando pagamento', {exact: true}).count(), 0);
-  assert.equal(await desktop.getByText('Processando pagamento...', {exact: true}).count(), 0);
-
-  const desktopDurations = await switchTenTimes(desktop);
-  await desktop.getByRole('button', {name: 'Simular pendente'}).click();
-  await desktop.getByText('Processando pagamento...', {exact: true}).waitFor();
-  await desktop.getByRole('button', {name: 'Resetar mock local'}).click();
-  await desktop.getByRole('button', {name: 'Simular pagamento aprovado'}).click();
-  await desktop.getByRole('heading', {name: 'Inscrição confirmada'}).waitFor();
+  const discounted = await browser.newPage({viewport: {width: 1440, height: 1000}});
+  await fillForm(discounted, {coupon: 'Croq10'});
+  await submitAndAssert(discounted, '90', 'https://mpago.la/linsi-qa-discount');
 
   const mobile = await browser.newPage({viewport: {width: 390, height: 844}});
-  await openCheckout(mobile);
-  const cardButton = mobile.getByRole('button', {name: 'Cartão', exact: true});
-  const pixButton = mobile.getByRole('button', {name: 'Pix', exact: true});
-  const cardBox = await cardButton.boundingBox();
-  const pixBox = await pixButton.boundingBox();
-  assert.ok(cardBox && pixBox, 'As tabs precisam estar visíveis no mobile.');
-  assert.ok(pixBox.y > cardBox.y, 'No mobile, as formas de pagamento devem empilhar sem overflow.');
+  await fillForm(mobile, {coupon: 'GUIA10'});
+  await submitAndAssert(mobile, '90', 'https://mpago.la/linsi-qa-discount');
   const documentWidth = await mobile.evaluate(() => document.documentElement.scrollWidth);
   assert.ok(documentWidth <= 390, `A página mobile não pode ter overflow horizontal (${documentWidth}px).`);
-  const mobileDurations = await switchTenTimes(mobile);
+  const ctaBox = await mobile.getByRole('link', {name: 'Pagar no Mercado Pago'}).boundingBox();
+  assert.ok(ctaBox && ctaBox.width > 340, 'O CTA de pagamento deve ocupar a largura útil no mobile.');
 
-  const allDurations = [...desktopDurations, ...mobileDurations];
-  const maxSwitchDuration = Math.max(...allDurations);
-  const averageSwitchDuration = Math.round(allDurations.reduce((sum, value) => sum + value, 0) / allDurations.length);
-  console.log(`Workshop browser smoke passed. Pix -> Cartão visual: média ${averageSwitchDuration}ms, máximo ${maxSwitchDuration}ms.`);
+  console.log('Workshop browser smoke passed: no stepper, manual registration flow, R$100/R$90 links and mobile layout.');
 } finally {
   await browser.close();
 }

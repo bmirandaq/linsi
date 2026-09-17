@@ -5,72 +5,47 @@ const path = require('node:path');
 const workshop = fs.readFileSync(path.resolve(__dirname, '../src/pages/workshop.jsx'), 'utf8');
 const css = fs.readFileSync(path.resolve(__dirname, '../src/pages/workshop.module.css'), 'utf8');
 
-assert.match(
-  workshop,
-  /const cardProcessing = stage === 'checkout' && paymentMethod === 'card' && cardSubmitting;/,
-  'O overlay de processamento do cartão só pode depender de uma submissão real do cartão.',
-);
-assert.doesNotMatch(
-  workshop,
-  /cardProcessing[^\n]*paymentState === 'pending'/,
-  'Um estado pending genérico, como Pix aguardando pagamento, não pode ativar o overlay do cartão.',
-);
+assert.match(workshop, /<strong>Registrando inscrição\.\.\.<\/strong>/, 'O submit deve usar loading amplo e explícito.');
+assert.match(workshop, /<h1 className=\{styles\.feedbackTitle\}>Inscrição recebida<\/h1>/, 'O sucesso local deve afirmar apenas que a inscrição foi recebida.');
+assert.match(workshop, /Agora falta concluir o pagamento para garantir sua vaga no Workshop LINSI\./);
+assert.match(workshop, /Pagar no Mercado Pago<\/a>/, 'A cobrança deve ser apenas um link externo.');
+assert.match(workshop, /href=\{paymentUrl\}/, 'O CTA deve usar a paymentUrl devolvida pelo Worker.');
+assert.match(workshop, /A confirmação da vaga será enviada após a conferência do pagamento\./);
+assert.match(workshop, /setAmount\(result\.amount\)/, 'O valor mostrado deve vir do Worker.');
+assert.match(workshop, /setPaymentUrl\(result\.paymentUrl \|\| ''\)/, 'O frontend deve aceitar somente o link devolvido pelo Worker.');
+assert.match(workshop, /aria-busy=\{stage === 'creating'\}>Continuar para pagamento<\/button>/, 'O CTA deve explicar que a próxima ação é o pagamento.');
+assert.doesNotMatch(workshop, /Etapas da inscrição|WorkshopStepper|styles\.stepper/, 'O Workshop não deve exibir stepper.');
 
-const cardSubmitBlock = workshop.match(/onSubmit: \(formData, additionalData\) => new Promise\(async \(resolve, reject\) => \{([\s\S]*?)\n          \}\),/);
-assert.ok(cardSubmitBlock, 'O callback real onSubmit do Card Payment Brick deve existir.');
-assert.match(cardSubmitBlock[1], /setCardSubmitting\(true\);/, 'A submissão real deve iniciar o estado de processamento.');
-assert.equal(
-  [...workshop.matchAll(/setCardSubmitting\(true\)/g)].length,
-  2,
-  'Somente o Card Brick real e a simulação local explícita podem iniciar Processando pagamento.',
-);
-assert.match(
-  workshop,
-  /const mockPending = useCallback\(\(\) => \{\s*setCardSubmitting\(true\);/,
-  'A segunda ocorrência deve pertencer somente ao mock local explícito.',
-);
+for (const forbidden of [
+  /MercadoPago\(/,
+  /sdk\.mercadopago\.com/,
+  /security\.js/,
+  /cardPayment/i,
+  /qrCode/i,
+  /Pix Copia e Cola/i,
+  /Processando pagamento/i,
+  /Confirmando pagamento/i,
+  /Pagamento em processamento/i,
+  /Pagamento não concluído/i,
+  /Inscrição confirmada/i,
+  /workshop\/pay\/card/,
+  /workshop\/pay\/pix/,
+  /workshop\/checkout/,
+  /workshop\/status/,
+  /payment\/reset/,
+  /WorkshopStepper/,
+  /external_reference/,
+]) {
+  assert.doesNotMatch(workshop, forbidden, `Não pode restar integração/estado antigo: ${forbidden}`);
+}
 
-assert.match(workshop, /deviceId: deviceIdRef\.current/, 'O Card Brick deve ler o device id por ref.');
-assert.doesNotMatch(
-  workshop,
-  /\[checkoutAmount,[^\]]*(methodSwitching|paymentMethod|paymentState)/,
-  'Trocas de método e estado não podem remontar o Card Brick.',
-);
-assert.match(
-  workshop,
-  /<div className=\{styles\.paymentPane\} hidden=\{paymentMethod !== 'card'\}>\{renderCardContent\(\)\}<\/div>/,
-  'O Card Brick deve permanecer montado enquanto a aba Pix estiver visível.',
-);
-assert.doesNotMatch(workshop, /Carregando pagamento|Alterando forma de pagamento/, 'Pix -> Cartão não pode mostrar spinner próprio da LINSI.');
+assert.doesNotMatch(workshop, /window\.location\.(assign|replace)/, 'A LINSI não deve redirecionar automaticamente para pagamento.');
+assert.doesNotMatch(workshop, /target="_blank"/, 'O pagamento deve abrir na mesma janela por padrão.');
+assert.doesNotMatch(workshop, /MP_PUBLIC_KEY|MP_ACCESS_TOKEN|MP_WEBHOOK_SECRET/);
 
-const selectPaymentMethod = workshop.match(/const selectPaymentMethod = useCallback\(async \(method\) => \{([\s\S]*?)\n  \}, \[[^\]]+\]\);/);
-assert.ok(selectPaymentMethod, 'A troca de forma de pagamento deve continuar explícita.');
-assert.ok(
-  selectPaymentMethod[1].indexOf('setPaymentMethod(method);') < selectPaymentMethod[1].indexOf('const reset = resetPayment();'),
-  'A aba escolhida deve mudar imediatamente antes do cancelamento remoto.',
-);
-assert.match(
-  selectPaymentMethod[1],
-  /resetInFlightRef\.current = reset;[\s\S]*?await reset;/,
-  'A submissão do cartão deve aguardar o reset/cancelamento remoto.',
-);
-assert.match(cardSubmitBlock[1], /await resetInFlightRef\.current;/, 'onSubmit deve aguardar o cancelamento pendente.');
+assert.match(css, /\.contactRow\s*\{[\s\S]*?grid-template-columns:\s*1fr 1fr;/, 'O desktop deve preservar duas colunas.');
+assert.match(css, /@media \(max-width: 700px\)[\s\S]*?\.contactRow\s*\{[\s\S]*?grid-template-columns:\s*1fr;/, 'O mobile deve empilhar os campos.');
+assert.match(css, /\.paymentLink\s*\{[\s\S]*?justify-self:\s*start;/, 'O CTA externo deve permanecer explícito no desktop.');
+assert.doesNotMatch(css, /processorCard|paymentBrick|pixQr|mockQr|paymentMethods|methodActive|stepper|stepActive|stepSeparator/, 'CSS legado de pagamento/stepper não deve permanecer.');
 
-assert.match(workshop, />Cartão<\/button>/, 'A tab deve usar o rótulo curto Cartão.');
-assert.match(workshop, /aria-busy=\{stage === 'creating'\}>Continuar<\/button>/, 'O CTA deve continuar exibindo Continuar.');
-assert.match(workshop, /<strong>Carregando\.\.\.<\/strong>/, 'A criação da inscrição deve usar loader amplo com label visível.');
-assert.match(workshop, /<LoadingState label="Gerando QR Code Pix" \/>/, 'A geração do Pix deve mostrar label visível.');
-assert.doesNotMatch(workshop, /<LoadingSpinner/, 'Não deve restar spinner compacto ou sobre o Card Brick.');
-
-assert.match(workshop, /className=\{styles\.pixQr\} src=/, 'O QR Code deve usar classe CSS própria.');
-assert.doesNotMatch(workshop, /className=\{styles\.pixQr\} style=/, 'O QR Code não deve usar borda inline.');
-assert.match(css, /\.pixQr,[\s\S]*?border: 1px solid var\(--linsi-border-color\);[\s\S]*?justify-self: center;/);
-
-const processorBlock = css.match(/\.processorCard\s*\{([\s\S]*?)\n\}/)?.[1] || '';
-assert.ok(processorBlock, 'O estilo do selo Mercado Pago deve existir.');
-assert.doesNotMatch(processorBlock, /background:|border:|border-radius:|padding:/, 'O selo Mercado Pago não deve parecer um card.');
-
-assert.match(workshop, /void loadMercadoPago\(\);/, 'O SDK do Mercado Pago deve ser pré-carregado.');
-assert.match(workshop, /void loadMercadoPagoSecurity\(\)/, 'O device security deve ser aquecido.');
-
-console.log('Workshop payment UI contracts passed: visible loaders, persistent Brick, immediate safe tabs, QR border and processor without card chrome.');
+console.log('Workshop manual payment UI contracts passed: no stepper, explicit payment CTA, registration-only flow, server-returned amount/link and no embedded Mercado Pago payment integration.');

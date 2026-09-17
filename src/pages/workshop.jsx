@@ -4,26 +4,14 @@ import styles from './workshop.module.css';
 
 const WORKSHOP_API_URL = 'https://linsi-form-handler.bmirandaqux.workers.dev';
 const TURNSTILE_SITE_KEY = '0x4AAAAAAEjIIV8ZHpYobikz';
-const MOCK_VALID_COUPONS = new Set(['VAGASUX10', 'CROQ10', 'GUIA10']);
-const MOCK_PENDING_PREVIEW_MS = 4000;
-const MOCK_REQUEST_DELAY_MS = 120;
 const COUPON_DEBOUNCE_MS = 500;
+const MOCK_REQUEST_DELAY_MS = 500;
+const MOCK_VALID_COUPONS = new Set(['VAGASUX10', 'CROQ10', 'GUIA10']);
 let turnstileScriptPromise;
-let mercadoPagoScriptPromise;
-let mercadoPagoSecurityScriptPromise;
 
 function isWorkshopMockMode() {
   if (typeof window === 'undefined') return false;
   return ['localhost', '127.0.0.1'].includes(window.location.hostname);
-}
-
-function LoadingState({label}) {
-  return (
-    <div className={styles.loadingState} role="status" aria-live="polite">
-      <span className={styles.processingSpinner} aria-hidden="true" />
-      <strong>{label}</strong>
-    </div>
-  );
 }
 
 function mockDelay(result) {
@@ -42,32 +30,12 @@ function mockApiRequest(path, options = {}) {
 
   if (path === '/workshop/start') {
     const coupon = String(body.coupon || '').trim().toUpperCase();
+    const discounted = MOCK_VALID_COUPONS.has(coupon);
     return mockDelay({
       registrationId: 'WS-0123456789ABCDEF0123456789ABCDEF',
-      amount: MOCK_VALID_COUPONS.has(coupon) ? 90 : 100,
-      publicKey: 'MOCK_PUBLIC_KEY',
-      attempts: 0,
+      amount: discounted ? 90 : 100,
+      paymentUrl: discounted ? 'https://mpago.la/linsi-qa-discount' : 'https://mpago.la/linsi-qa-full',
     });
-  }
-
-  if (path === '/workshop/payment/reset') {
-    return mockDelay({status: 'started', attempts: 0});
-  }
-
-  if (path === '/workshop/pay/pix') {
-    return mockDelay({
-      status: 'pending',
-      attempts: 0,
-      pix: {
-        qrCode: '00020126580014BR.GOV.BCB.PIX0136WORKSHOP-LINSI-MOCK-LOCAL5204000053039865406100.005802BR5920BEATRIZ MIRANDA MOCK6006RECIFE62070503***6304ABCD',
-        qrCodeBase64: '',
-        ticketUrl: '',
-      },
-    });
-  }
-
-  if (path.startsWith('/workshop/status')) {
-    return Promise.resolve({status: 'pending', attempts: 0});
   }
 
   return Promise.reject(new Error('Endpoint mock não configurado.'));
@@ -97,50 +65,6 @@ function loadTurnstile() {
   return turnstileScriptPromise;
 }
 
-function loadMercadoPago() {
-  if (mercadoPagoScriptPromise) return mercadoPagoScriptPromise;
-  if (window.MercadoPago) return Promise.resolve(window.MercadoPago);
-
-  mercadoPagoScriptPromise = new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = 'https://sdk.mercadopago.com/js/v2';
-    script.async = true;
-    script.onload = () => resolve(window.MercadoPago);
-    script.onerror = () => {
-      script.remove();
-      mercadoPagoScriptPromise = null;
-      reject(new Error('Mercado Pago indisponível'));
-    };
-    document.head.appendChild(script);
-  });
-
-  return mercadoPagoScriptPromise;
-}
-
-function loadMercadoPagoSecurity() {
-  if (mercadoPagoSecurityScriptPromise) return mercadoPagoSecurityScriptPromise;
-  if (window.linsiMercadoPagoDeviceId || window.MP_DEVICE_SESSION_ID) {
-    return Promise.resolve(window.linsiMercadoPagoDeviceId || window.MP_DEVICE_SESSION_ID);
-  }
-
-  mercadoPagoSecurityScriptPromise = new Promise((resolve) => {
-    const script = document.createElement('script');
-    script.src = 'https://www.mercadopago.com/v2/security.js';
-    script.async = true;
-    script.setAttribute('view', 'checkout');
-    script.setAttribute('output', 'linsiMercadoPagoDeviceId');
-    script.onload = () => resolve(window.linsiMercadoPagoDeviceId || window.MP_DEVICE_SESSION_ID || '');
-    script.onerror = () => {
-      script.remove();
-      mercadoPagoSecurityScriptPromise = null;
-      resolve('');
-    };
-    document.head.appendChild(script);
-  });
-
-  return mercadoPagoSecurityScriptPromise;
-}
-
 function normalizeLinkedInForSubmit(value) {
   const trimmed = value.trim();
   if (!trimmed) return '';
@@ -167,24 +91,8 @@ async function apiRequest(path, options = {}) {
   return data;
 }
 
-function WorkshopStepper({active}) {
-  return (
-    <nav className={styles.stepper} aria-label="Etapas da inscrição">
-      <span className={active === 'data' ? styles.stepActive : styles.step}>Seus dados</span>
-      <span className={styles.stepSeparator} aria-hidden="true">·</span>
-      <span className={active === 'payment' ? styles.stepActive : styles.step}>Pagamento</span>
-    </nav>
-  );
-}
-
-function PaymentProcessor() {
-  return (
-    <aside className={styles.processorCard} aria-label="Processado pelo Mercado Pago">
-      <span>Processado pelo</span>
-      <img className={`${styles.processorLogo} ${styles.processorLogoLight}`} src="/img/workshop/mercado-pago-color.webp" alt="Mercado Pago" />
-      <img className={`${styles.processorLogo} ${styles.processorLogoDark}`} src="/img/workshop/mercado-pago-pluma.webp" alt="Mercado Pago" />
-    </aside>
-  );
+function formatBrl(value) {
+  return `R$ ${Number(value).toFixed(2).replace('.', ',')}`;
 }
 
 export default function Workshop() {
@@ -198,19 +106,9 @@ export default function Workshop() {
   const [couponStatus, setCouponStatus] = useState('empty');
   const [couponMessage, setCouponMessage] = useState('');
   const [stage, setStage] = useState('form');
-  const [registrationId, setRegistrationId] = useState('');
-  const [checkoutAmount, setCheckoutAmount] = useState(null);
-  const [publicKey, setPublicKey] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('card');
-  const [paymentState, setPaymentState] = useState('idle');
+  const [amount, setAmount] = useState(null);
+  const [paymentUrl, setPaymentUrl] = useState('');
   const [submitError, setSubmitError] = useState('');
-  const [paymentError, setPaymentError] = useState('');
-  const [pixLoading, setPixLoading] = useState(false);
-  const [pixData, setPixData] = useState(null);
-  const [copied, setCopied] = useState(false);
-  const [deviceId, setDeviceId] = useState('');
-  const [methodSwitching, setMethodSwitching] = useState(false);
-  const [cardSubmitting, setCardSubmitting] = useState(false);
 
   const mockMode = isWorkshopMockMode();
   const turnstileRef = useRef(null);
@@ -219,9 +117,6 @@ export default function Workshop() {
   const turnstileReady = useRef(null);
   const turnstileExecuted = useRef(false);
   const mountedRef = useRef(true);
-  const brickController = useRef(null);
-  const deviceIdRef = useRef('');
-  const resetInFlightRef = useRef(Promise.resolve(true));
 
   useEffect(() => {
     mountedRef.current = true;
@@ -234,15 +129,8 @@ export default function Workshop() {
       if (turnstileWidgetId.current !== null && window.turnstile) {
         try { window.turnstile.remove(turnstileWidgetId.current); } catch {}
       }
-      if (brickController.current) {
-        try { brickController.current.unmount(); } catch {}
-      }
     };
   }, []);
-
-  useEffect(() => {
-    deviceIdRef.current = deviceId;
-  }, [deviceId]);
 
   const ensureTurnstileReady = useCallback(() => {
     if (isWorkshopMockMode()) return Promise.resolve('mock');
@@ -272,22 +160,11 @@ export default function Workshop() {
     return turnstileReady.current;
   }, []);
 
-  const warmCheckout = useCallback(() => {
-    void ensureTurnstileReady();
-    if (mockMode) return;
-    void loadMercadoPago();
-    void loadMercadoPagoSecurity().then((value) => {
-      if (!mountedRef.current || !value) return;
-      deviceIdRef.current = value;
-      setDeviceId(value);
-    });
-  }, [ensureTurnstileReady, mockMode]);
-
   useEffect(() => {
     if (mockMode) return undefined;
-    const timeout = window.setTimeout(warmCheckout, 0);
+    const timeout = window.setTimeout(() => void ensureTurnstileReady(), 0);
     return () => window.clearTimeout(timeout);
-  }, [mockMode, warmCheckout]);
+  }, [ensureTurnstileReady, mockMode]);
 
   const getTurnstileToken = useCallback(() => {
     if (isWorkshopMockMode()) return Promise.resolve('mock-turnstile-token');
@@ -301,6 +178,7 @@ export default function Workshop() {
         resolve(token);
       };
       const timeout = setTimeout(() => finish(null), 30000);
+
       ensureTurnstileReady().then((widgetId) => {
         if (settled) return;
         if (widgetId === null || !window.turnstile) return finish(null);
@@ -309,7 +187,9 @@ export default function Workshop() {
           if (turnstileExecuted.current) window.turnstile.reset(widgetId);
           turnstileExecuted.current = true;
           window.turnstile.execute(widgetId);
-        } catch { finish(null); }
+        } catch {
+          finish(null);
+        }
       });
     });
   }, [ensureTurnstileReady]);
@@ -349,22 +229,14 @@ export default function Workshop() {
 
     setCouponStatus('checking');
     setCouponMessage('');
-    let cancelled = false;
-    const timeout = window.setTimeout(() => {
-      void validateCoupon(value).then(() => {
-        if (cancelled) return;
-      });
-    }, COUPON_DEBOUNCE_MS);
-
-    return () => {
-      cancelled = true;
-      window.clearTimeout(timeout);
-    };
+    const timeout = window.setTimeout(() => void validateCoupon(value), COUPON_DEBOUNCE_MS);
+    return () => window.clearTimeout(timeout);
   }, [cupom, stage, validateCoupon]);
 
   const handleContinue = useCallback(async (event) => {
     event.preventDefault();
     if (stage !== 'form') return;
+
     const formData = new FormData(event.currentTarget);
     const payload = {
       nome: String(formData.get('nome') || '').trim(),
@@ -375,356 +247,128 @@ export default function Workshop() {
       whatsapp: String(formData.get('whatsapp') || '').replace(/\D/g, ''),
       coupon: String(formData.get('cupom') || '').trim(),
     };
-    setNome(payload.nome); setEmail(payload.email); setCargo(payload.cargo); setEmpresa(payload.empresa);
-    setLinkedin(payload.linkedin); setWhatsapp(payload.whatsapp); setCupom(payload.coupon);
-    setSubmitError(''); setStage('creating');
+
+    setNome(payload.nome);
+    setEmail(payload.email);
+    setCargo(payload.cargo);
+    setEmpresa(payload.empresa);
+    setLinkedin(payload.linkedin);
+    setWhatsapp(payload.whatsapp);
+    setCupom(payload.coupon);
+    setSubmitError('');
+    setStage('creating');
+
     try {
       const turnstileToken = await getTurnstileToken();
       if (!turnstileToken) throw new Error('Não foi possível concluir a verificação de segurança. Tente novamente.');
+
       const result = await apiRequest('/workshop/start', {
-        method: 'POST', body: JSON.stringify({...payload, turnstileToken}),
+        method: 'POST',
+        body: JSON.stringify({...payload, turnstileToken}),
       });
-      setRegistrationId(result.registrationId);
-      setCheckoutAmount(result.amount);
-      setPublicKey(result.publicKey);
-      setPaymentState('idle');
-      setStage('checkout');
+      setAmount(result.amount);
+      setPaymentUrl(result.paymentUrl || '');
+      setStage('registered');
     } catch (error) {
       if (error.code === 'coupon_invalid') {
-        setCouponStatus('invalid'); setCouponMessage('Cupom inválido. Revise e corrija');
+        setCouponStatus('invalid');
+        setCouponMessage('Cupom inválido. Revise e corrija');
       } else if (error.code === 'coupon_unavailable') {
-        setCouponStatus('unavailable'); setCouponMessage('Esse cupom não está mais disponível');
+        setCouponStatus('unavailable');
+        setCouponMessage('Esse cupom não está mais disponível');
       }
-      setSubmitError(error.message || 'Não foi possível continuar. Tente novamente.');
+      setSubmitError(error.message || 'Não foi possível registrar sua inscrição. Tente novamente.');
       setStage('form');
     }
   }, [getTurnstileToken, stage]);
 
-  const resetPayment = useCallback(async () => {
-    if (!registrationId) return false;
-    setPaymentError('');
-    try {
-      const result = await apiRequest('/workshop/payment/reset', {
-        method: 'POST',
-        body: JSON.stringify({registrationId}),
-      });
-      if (result.status === 'paid') {
-        setStage('paid');
-        return true;
-      }
-      setPixData(null);
-      setPaymentState('idle');
-      return result.status === 'started' || result.status === 'paid';
-    } catch (error) {
-      setPaymentState('failed');
-      setPaymentError(error.message || 'Não foi possível alterar a forma de pagamento.');
-      return false;
-    }
-  }, [registrationId]);
-
-  const resetMockCheckout = useCallback(() => {
-    if (!mockMode) return;
-    setPaymentError('');
-    setPixData(null);
-    setCopied(false);
-    setPaymentMethod('card');
-    setPaymentState('idle');
-    setMethodSwitching(false);
-    setCardSubmitting(false);
-    resetInFlightRef.current = Promise.resolve(true);
-  }, [mockMode]);
-
-  const selectPaymentMethod = useCallback(async (method) => {
-    if (cardSubmitting || methodSwitching) return;
-    if (method === paymentMethod && !(method === 'pix' && !pixData)) return;
-
-    setPaymentMethod(method);
-    setPaymentError('');
-    setCopied(false);
-    if (method === 'pix') setPixData(null);
-
-    if (mockMode) {
-      setPaymentState('idle');
-      return;
-    }
-
-    const needsReset = paymentState === 'pending' || paymentState === 'failed';
-    if (!needsReset) {
-      setPaymentState('idle');
-      return;
-    }
-
-    setMethodSwitching(true);
-    setPaymentState('switching');
-    const reset = resetPayment();
-    resetInFlightRef.current = reset;
-    await reset;
-    setMethodSwitching(false);
-  }, [cardSubmitting, methodSwitching, mockMode, paymentMethod, paymentState, pixData, resetPayment]);
-
-  useEffect(() => {
-    if (stage !== 'checkout' || !publicKey || !checkoutAmount || !registrationId) return undefined;
-    if (isWorkshopMockMode()) { setPaymentError(''); return undefined; }
-    if (brickController.current) return undefined;
-
-    let cancelled = false;
-    setPaymentError('');
-    loadMercadoPago().then(async (MercadoPago) => {
-      if (cancelled) return;
-      const mp = new MercadoPago(publicKey, {locale: 'pt-BR'});
-      const bricksBuilder = mp.bricks();
-      brickController.current = await bricksBuilder.create('cardPayment', 'cardPaymentBrick_container', {
-        initialization: {amount: checkoutAmount},
-        callbacks: {
-          onSubmit: (formData, additionalData) => new Promise(async (resolve, reject) => {
-            setCardSubmitting(true);
-            try {
-              setPaymentError('');
-              const resetReady = await resetInFlightRef.current;
-              if (!resetReady) throw new Error('Não foi possível alterar a forma de pagamento. Tente novamente.');
-              const result = await apiRequest('/workshop/pay/card', {
-                method: 'POST',
-                body: JSON.stringify({
-                  registrationId,
-                  token: formData.token,
-                  paymentMethodId: formData.payment_method_id,
-                  paymentTypeId: additionalData.paymentTypeId,
-                  installments: formData.installments,
-                  identification: formData.payer?.identification,
-                  deviceId: deviceIdRef.current,
-                }),
-              });
-              if (result.status === 'paid') {
-                setCardSubmitting(false);
-                setStage('paid');
-              } else if (result.status === 'pending') {
-                setPaymentState('pending');
-              } else {
-                setCardSubmitting(false);
-                setPaymentState('failed');
-              }
-              resolve();
-            } catch (error) {
-              setCardSubmitting(false);
-              setPaymentState('failed');
-              setPaymentError(error.message || 'Não foi possível processar o pagamento. Tente novamente.');
-              reject(error);
-            }
-          }),
-          onError: () => {
-            if (!cancelled) {
-              setCardSubmitting(false);
-              setPaymentState('failed');
-              setPaymentError('Não foi possível carregar o pagamento. Tente novamente.');
-            }
-          },
-        },
-      });
-    }).catch(() => {
-      if (!cancelled) {
-        setCardSubmitting(false);
-        setPaymentState('failed');
-        setPaymentError('Não foi possível carregar o pagamento. Tente novamente.');
-      }
-    });
-
-    return () => {
-      cancelled = true;
-      if (brickController.current) {
-        try { brickController.current.unmount(); } catch {}
-        brickController.current = null;
-      }
-    };
-  }, [checkoutAmount, publicKey, registrationId, stage]);
-
-  const createPix = useCallback(async () => {
-    if (pixLoading || methodSwitching) return;
-    setPixLoading(true); setPaymentError(''); setPaymentState('loading');
-    try {
-      const result = await apiRequest('/workshop/pay/pix', {
-        method: 'POST',
-        body: JSON.stringify({registrationId, deviceId: deviceIdRef.current}),
-      });
-      setPixData(result.pix || null);
-      if (result.status === 'paid') setStage('paid');
-      else setPaymentState('pending');
-    } catch (error) {
-      setPaymentState('failed');
-      setPaymentError(error.message || 'Não foi possível gerar o Pix. Tente novamente.');
-    } finally { setPixLoading(false); }
-  }, [methodSwitching, pixLoading, registrationId]);
-
-  useEffect(() => {
-    if (stage === 'checkout' && paymentMethod === 'pix' && paymentState === 'idle' && !methodSwitching && !pixData) void createPix();
-  }, [createPix, methodSwitching, paymentMethod, paymentState, pixData, stage]);
-
-  useEffect(() => {
-    if (stage !== 'checkout' || paymentState !== 'pending' || methodSwitching || !registrationId || isWorkshopMockMode()) return undefined;
-    let cancelled = false;
-    const checkStatus = async () => {
-      try {
-        const result = await apiRequest(`/workshop/status?id=${encodeURIComponent(registrationId)}`);
-        if (cancelled) return;
-        if (result.status === 'paid') {
-          setCardSubmitting(false);
-          setStage('paid');
-        }
-        if (result.status === 'failed' || result.status === 'refunded') {
-          setCardSubmitting(false);
-          setPaymentState('failed');
-        }
-      } catch {}
-    };
-    void checkStatus();
-    const interval = window.setInterval(checkStatus, 5000);
-    return () => { cancelled = true; window.clearInterval(interval); };
-  }, [methodSwitching, paymentState, registrationId, stage]);
-
-  useEffect(() => {
-    if (!mockMode || stage !== 'checkout' || paymentMethod !== 'card' || paymentState !== 'pending') return undefined;
-    const timeout = window.setTimeout(() => {
-      setCardSubmitting(false);
-      setPaymentState('failed');
-      setPaymentError('Não foi possível confirmar o pagamento.');
-    }, MOCK_PENDING_PREVIEW_MS);
-    return () => window.clearTimeout(timeout);
-  }, [mockMode, paymentMethod, paymentState, stage]);
-
-  const copyPix = useCallback(async () => {
-    if (!pixData?.qrCode || !navigator.clipboard) return;
-    try {
-      await navigator.clipboard.writeText(pixData.qrCode);
-      setCopied(true); window.setTimeout(() => setCopied(false), 2000);
-    } catch {}
-  }, [pixData]);
-
-  const mockFail = useCallback(() => {
-    setCardSubmitting(false);
-    setPaymentState('failed');
-    setPaymentError('Não foi possível confirmar o pagamento.');
-  }, []);
-
-  const mockPending = useCallback(() => {
-    setCardSubmitting(true);
-    setPaymentState('pending');
-  }, []);
-
-  const renderCardContent = () => {
-    return <>
-      {paymentState === 'failed' ? (
-        <div className={styles.paymentStatus} role="alert">
-          <strong>Não foi possível confirmar o pagamento</strong>
-          <p>{paymentError || 'Você pode tentar de novo'}</p>
-          <button className={styles.methodButton} type="button" onClick={() => {
-            const reset = resetPayment();
-            resetInFlightRef.current = reset;
-          }}>Tentar outro cartão</button>
-        </div>
-      ) : null}
-      {mockMode ? (
-        <div className={styles.mockPayment}>
-          <div className={styles.mockCardFields} aria-hidden="true">
-            <div className={styles.mockFieldFull}><span>Número do cartão</span><div className={styles.mockInput}>•••• •••• •••• 4242</div></div>
-            <div className={styles.mockField}><span>Validade</span><div className={styles.mockInput}>12/30</div></div>
-            <div className={styles.mockField}><span>CVV</span><div className={styles.mockInput}>•••</div></div>
-            <div className={styles.mockFieldFull}><span>Nome no cartão</span><div className={styles.mockInput}>BEATRIZ MIRANDA</div></div>
-          </div>
-          <div className={styles.mockActions}>
-            <button className={styles.submit} type="button" onClick={() => setStage('paid')}>Simular pagamento aprovado</button>
-            <button className={styles.methodButton} type="button" onClick={mockPending}>Simular pendente</button>
-            <button className={styles.methodButton} type="button" onClick={mockFail}>Simular recusado</button>
-          </div>
-        </div>
-      ) : <div id="cardPaymentBrick_container" className={styles.paymentBrick} />}
-    </>;
-  };
-
-  const renderPixContent = () => {
-    if (paymentState === 'loading') return <LoadingState label="Gerando QR Code Pix" />;
-    if (paymentState === 'failed') return <div className={styles.paymentStatus} role="alert"><strong>Não foi possível gerar o Pix</strong><p>Você pode tentar de novo</p><button className={styles.methodButton} type="button" onClick={() => void resetPayment().then((ok) => ok && createPix())}>Tentar novamente</button></div>;
-    if (!pixData) return null;
-    return (
-      <div className={styles.pixArea}>
-        {pixData.qrCodeBase64 ? <img className={styles.pixQr} src={`data:image/png;base64,${pixData.qrCodeBase64}`} alt="QR Code para pagamento via Pix" /> : null}
-        {mockMode && pixData.qrCode && !pixData.qrCodeBase64 ? <div className={styles.mockQr} aria-label="QR Code Pix simulado"><span>PIX</span><strong>MOCK</strong></div> : null}
-        {pixData.qrCode ? <div className={styles.pixCopy}><label htmlFor="pix-code">Pix Copia e Cola</label><textarea id="pix-code" readOnly value={pixData.qrCode} /><button className={styles.couponButton} type="button" onClick={copyPix}>{copied ? 'Copiado' : 'Copiar código'}</button></div> : null}
-        <p>Válido por 24 horas.</p>
-        {mockMode ? <button className={styles.submit} type="button" onClick={() => setStage('paid')}>Simular pagamento confirmado</button> : null}
-      </div>
-    );
-  };
-
-  const cardProcessing = stage === 'checkout' && paymentMethod === 'card' && cardSubmitting;
-  const methodBusy = cardSubmitting || methodSwitching;
-
   return (
     <Layout title="Workshop" description="Inscrição no Workshop LINSI">
-      <main className={`${styles.page} linsi-page-enter`}><div className={styles.shell}>
-        {stage === 'form' || stage === 'creating' ? <>
-          <header className={styles.header}><h1 className={styles.title}>Inscrição no Workshop LINSI</h1><WorkshopStepper active="data" /></header>
-          <div className={styles.formArea}>
-            <form className={styles.form} onSubmit={handleContinue} onFocusCapture={warmCheckout} onPointerDownCapture={warmCheckout}>
-            <div className={styles.contactRow}>
-              <div className={styles.field}><label htmlFor="nome">Nome</label><input id="nome" name="nome" type="text" autoComplete="name" maxLength={120} required value={nome} onChange={(event) => setNome(event.target.value)} /></div>
-              <div className={styles.field}><label htmlFor="email">E-mail</label><input id="email" name="email" type="email" autoComplete="email" maxLength={254} required value={email} onChange={(event) => setEmail(event.target.value)} /></div>
-            </div>
-            <div className={styles.contactRow}>
-              <div className={styles.field}><label htmlFor="cargo">Cargo</label><input id="cargo" name="cargo" type="text" autoComplete="organization-title" maxLength={120} required value={cargo} onChange={(event) => setCargo(event.target.value)} /></div>
-              <div className={styles.field}><label htmlFor="empresa">Empresa onde trabalha <span className={styles.optionalLabel}>(opcional)</span></label><input id="empresa" name="empresa" type="text" autoComplete="organization" maxLength={160} value={empresa} onChange={(event) => setEmpresa(event.target.value)} /></div>
-            </div>
-            <div className={styles.contactRow}>
-              <div className={styles.field}><label htmlFor="linkedin">LinkedIn <span className={styles.optionalLabel}>(opcional)</span></label><input id="linkedin" name="linkedin" type="text" inputMode="url" autoComplete="url" pattern="(?:https?://)?(?:www[.])?linkedin[.]com/in/[A-Za-z0-9\-]+/?" title="Use um perfil no formato linkedin.com/in/name-user" maxLength={300} value={linkedin} onChange={(event) => setLinkedin(event.target.value)} onBlur={(event) => setLinkedin(normalizeLinkedInForSubmit(event.target.value))} /></div>
-              <div className={styles.field}><label htmlFor="whatsapp">WhatsApp <span className={styles.optionalLabel}>(opcional)</span></label><input id="whatsapp" name="whatsapp" type="tel" inputMode="numeric" autoComplete="tel" pattern="[0-9]*" maxLength={32} value={whatsapp} onChange={(event) => setWhatsapp(event.target.value.replace(/\D/g, ''))} /></div>
-            </div>
-            <div className={styles.field}><label htmlFor="cupom">Cupom <span className={styles.optionalLabel}>(opcional)</span></label><input id="cupom" name="cupom" type="text" autoComplete="off" maxLength={80} value={cupom} onChange={(event) => setCupom(event.target.value)} />{couponMessage && <p className={couponStatus === 'valid' ? styles.couponSuccess : styles.couponError} role={couponStatus === 'valid' ? 'status' : 'alert'}>{couponMessage}</p>}</div>
-            {!mockMode && TURNSTILE_SITE_KEY && <div ref={turnstileRef} className={styles.turnstile} />}
-              <button className={styles.submit} type="submit" disabled={stage === 'creating'} aria-busy={stage === 'creating'}>Continuar</button>
-              {submitError && <div className={styles.error} role="alert">{submitError}</div>}
-            </form>
-            {stage === 'creating' ? (
-              <div className={styles.processingOverlay} role="status" aria-live="polite">
-                <span className={styles.processingSpinner} aria-hidden="true" />
-                <strong>Carregando...</strong>
-              </div>
-            ) : null}
-          </div>
-        </> : null}
+      <main className={`${styles.page} linsi-page-enter`}>
+        <div className={styles.shell}>
+          {stage === 'form' || stage === 'creating' ? (
+            <>
+              <header className={styles.header}>
+                <h1 className={styles.title}>Inscrição no Workshop LINSI</h1>
+              </header>
 
-        {stage === 'checkout' ? <section aria-labelledby="payment-title" className={styles.checkout}>
-          <header className={styles.header}><h1 id="payment-title" className={styles.title}>Inscrição no Workshop LINSI</h1><WorkshopStepper active="payment" /></header>
-          <div className={styles.checkoutBody} aria-busy={cardProcessing || methodSwitching}>
-            <p className={styles.paymentChoiceLabel} style={{marginBottom: 0}}>Valor do workshop</p>
-            <p className={styles.checkoutAmount}>R$ {Number(checkoutAmount).toFixed(2).replace('.', ',')}</p>
-            <p className={styles.paymentChoiceLabel}>Escolha a melhor opção pra você:</p>
-            <div className={styles.paymentMethods} aria-label="Forma de pagamento">
-              <button type="button" className={paymentMethod === 'card' ? styles.methodActive : styles.methodButton} disabled={methodBusy} onClick={() => void selectPaymentMethod('card')}>Cartão</button>
-              <button type="button" className={paymentMethod === 'pix' ? styles.methodActive : styles.methodButton} disabled={methodBusy || pixLoading} onClick={() => void selectPaymentMethod('pix')}>Pix</button>
-            </div>
-            <div className={styles.paymentDynamic}>
-              <div className={styles.paymentPane} hidden={paymentMethod !== 'card'}>{renderCardContent()}</div>
-              <div className={styles.paymentPane} hidden={paymentMethod !== 'pix'}>{renderPixContent()}</div>
-            </div>
-            <PaymentProcessor />
-            {mockMode ? <button className={styles.mockReset} type="button" onClick={resetMockCheckout}>Resetar mock local</button> : null}
-            {cardProcessing ? (
-              <div className={styles.processingOverlay} role="status" aria-live="polite">
-                <span className={styles.processingSpinner} aria-hidden="true" />
-                <strong>Processando pagamento...</strong>
-              </div>
-            ) : null}
-          </div>
-        </section> : null}
+              <div className={styles.formArea}>
+                <form className={styles.form} onSubmit={handleContinue}>
+                  <div className={styles.contactRow}>
+                    <div className={styles.field}>
+                      <label htmlFor="nome">Nome</label>
+                      <input id="nome" name="nome" type="text" autoComplete="name" maxLength={120} required value={nome} onChange={(event) => setNome(event.target.value)} />
+                    </div>
+                    <div className={styles.field}>
+                      <label htmlFor="email">E-mail</label>
+                      <input id="email" name="email" type="email" autoComplete="email" maxLength={254} required value={email} onChange={(event) => setEmail(event.target.value)} />
+                    </div>
+                  </div>
 
-        {stage === 'paid' ? <section className={styles.feedback} role="status" aria-live="polite">
-          <h1 className={styles.feedbackTitle}>Inscrição confirmada</h1>
-          <p>Seu pagamento foi aprovado e sua vaga no Workshop LINSI está garantida</p>
-          <p>Vou te enviar as informações de acesso para:</p>
-          <strong>{email}</strong>
-          <div className={styles.feedbackSignoff}><p>Te vejo lá!<br />Bea</p><img src="/img/workshop/bea-symbol.webp" alt="" /></div>
-          <button className={styles.methodButton} type="button" onClick={() => { window.location.href = '/docs/principios'; }}>Ir para manual LINSI</button>
-          {mockMode ? <button className={styles.mockReset} type="button" onClick={() => { resetMockCheckout(); setStage('form'); }}>Reiniciar mock</button> : null}
-        </section> : null}
-      </div></main>
+                  <div className={styles.contactRow}>
+                    <div className={styles.field}>
+                      <label htmlFor="cargo">Cargo</label>
+                      <input id="cargo" name="cargo" type="text" autoComplete="organization-title" maxLength={120} required value={cargo} onChange={(event) => setCargo(event.target.value)} />
+                    </div>
+                    <div className={styles.field}>
+                      <label htmlFor="empresa">Empresa onde trabalha <span className={styles.optionalLabel}>(opcional)</span></label>
+                      <input id="empresa" name="empresa" type="text" autoComplete="organization" maxLength={160} value={empresa} onChange={(event) => setEmpresa(event.target.value)} />
+                    </div>
+                  </div>
+
+                  <div className={styles.contactRow}>
+                    <div className={styles.field}>
+                      <label htmlFor="linkedin">LinkedIn <span className={styles.optionalLabel}>(opcional)</span></label>
+                      <input id="linkedin" name="linkedin" type="text" inputMode="url" autoComplete="url" pattern="(?:https?://)?(?:www[.])?linkedin[.]com/in/[A-Za-z0-9\-]+/?" title="Use um perfil no formato linkedin.com/in/name-user" maxLength={300} value={linkedin} onChange={(event) => setLinkedin(event.target.value)} onBlur={(event) => setLinkedin(normalizeLinkedInForSubmit(event.target.value))} />
+                    </div>
+                    <div className={styles.field}>
+                      <label htmlFor="whatsapp">WhatsApp <span className={styles.optionalLabel}>(opcional)</span></label>
+                      <input id="whatsapp" name="whatsapp" type="tel" inputMode="numeric" autoComplete="tel" pattern="[0-9]*" maxLength={32} value={whatsapp} onChange={(event) => setWhatsapp(event.target.value.replace(/\D/g, ''))} />
+                    </div>
+                  </div>
+
+                  <div className={styles.field}>
+                    <label htmlFor="cupom">Cupom <span className={styles.optionalLabel}>(opcional)</span></label>
+                    <input id="cupom" name="cupom" type="text" autoComplete="off" maxLength={80} value={cupom} onChange={(event) => setCupom(event.target.value)} />
+                    {couponMessage && (
+                      <p className={couponStatus === 'valid' ? styles.couponSuccess : styles.couponError} role={couponStatus === 'valid' ? 'status' : 'alert'}>
+                        {couponMessage}
+                      </p>
+                    )}
+                  </div>
+
+                  {!mockMode && TURNSTILE_SITE_KEY ? <div ref={turnstileRef} className={styles.turnstile} /> : null}
+                  <button className={styles.submit} type="submit" disabled={stage === 'creating'} aria-busy={stage === 'creating'}>Continuar para pagamento</button>
+                  {submitError && <div className={styles.error} role="alert">{submitError}</div>}
+                </form>
+
+                {stage === 'creating' ? (
+                  <div className={styles.processingOverlay} role="status" aria-live="polite">
+                    <span className={styles.processingSpinner} aria-hidden="true" />
+                    <strong>Registrando inscrição...</strong>
+                  </div>
+                ) : null}
+              </div>
+            </>
+          ) : null}
+
+          {stage === 'registered' ? (
+            <section className={styles.feedback} role="status" aria-live="polite">
+              <h1 className={styles.feedbackTitle}>Inscrição recebida</h1>
+              <p>Seus dados foram registrados.</p>
+              <p>Agora falta concluir o pagamento para garantir sua vaga no Workshop LINSI.</p>
+
+              <div className={styles.amountBlock}>
+                <span>Valor</span>
+                <strong>{formatBrl(amount)}</strong>
+              </div>
+
+              <a className={styles.paymentLink} href={paymentUrl}>Pagar no Mercado Pago</a>
+              <p className={styles.paymentNotice}>A confirmação da vaga será enviada após a conferência do pagamento.</p>
+            </section>
+          ) : null}
+        </div>
+      </main>
     </Layout>
   );
 }
