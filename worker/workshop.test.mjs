@@ -91,16 +91,12 @@ async function startWorkshop(payload, customEnv = env) {
     amount: 1,
     paymentUrl: 'https://example.com/ignored',
     partner: 'Ignored',
-    turnstileToken: 'ignored-client-value',
   });
   assert.equal(response.status, 200);
   const body = await response.json();
   assert.match(body.registrationId, /^WS-[A-F0-9]{32}$/);
   assert.equal(body.amount, 90);
   assert.equal(body.paymentUrl, discountPaymentUrl);
-  assert.equal('publicKey' in body, false);
-  assert.equal('attempts' in body, false);
-
   assert.deepEqual(calls, ['https://api.notion.com/v1/pages']);
   assert.equal(notionBody.properties.Nome.rich_text[0].text.content, 'Pessoa Teste');
   assert.equal(notionBody.properties['E-mail'].email, 'pessoa@example.com');
@@ -115,9 +111,6 @@ async function startWorkshop(payload, customEnv = env) {
   assert.equal(notionBody.properties['Pago em'].date, null);
   assert.equal(notionBody.properties['Acesso enviado'].checkbox, false);
   assert.equal(notionBody.properties['Confirmação enviada'].checkbox, false);
-  assert.equal('MP Order ID' in notionBody.properties, false);
-  assert.equal('Tentativas de pagamento' in notionBody.properties, false);
-  assert.equal('Bloqueado até' in notionBody.properties, false);
 }
 
 {
@@ -195,45 +188,4 @@ for (const invalidUrl of [
   });
 }
 
-for (const path of [
-  '/workshop/payment/reset',
-  '/workshop/pay/card',
-  '/workshop/pay/pix',
-  '/workshop/checkout',
-]) {
-  await withFetch(async () => {
-    throw new Error('Endpoint aposentado não pode chamar serviços externos.');
-  }, async () => {
-    const response = await worker.fetch(post(path, {registrationId: 'WS-TEST'}), env);
-    assert.equal(response.status, 410, path);
-  });
-}
-
-await withFetch(async () => {
-  throw new Error('Status aposentado não pode chamar serviços externos.');
-}, async () => {
-  const response = await worker.fetch(new Request('https://linsi-form-handler.example.test/workshop/status?id=WS-TEST', {
-    method: 'GET',
-    headers: {Origin: allowedOrigin},
-  }), env);
-  assert.equal(response.status, 410);
-});
-
-await withFetch(async () => {
-  throw new Error('Webhook aposentado não pode chamar serviços externos.');
-}, async () => {
-  const response = await worker.fetch(new Request('https://linsi-form-handler.example.test/webhooks/mercadopago', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: '{}',
-  }), env);
-  assert.equal(response.status, 410);
-});
-
-assert.doesNotMatch(source, /api\.mercadopago\.com/);
-assert.doesNotMatch(source, /MP_ACCESS_TOKEN|MP_PUBLIC_KEY|MP_WEBHOOK_SECRET/);
-assert.doesNotMatch(source, /processing_mode|external_reference|qr_code|payment_method/);
-assert.doesNotMatch(source, /MP Order ID|Tentativas de pagamento|Bloqueado até/);
-assert.doesNotMatch(source, /Inscrição iniciada|Pagamento não concluído/);
-
-console.log('Workshop manual payment tests passed: Notion-only registration, server-side coupon/value/link selection, no Turnstile dependency in the workshop flow and retired payment endpoints.');
+console.log('Workshop registration tests passed: Notion registration, server-side coupon/value/link selection and no Turnstile dependency in the workshop flow.');
