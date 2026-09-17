@@ -24,6 +24,11 @@
   margin: 0;
 }
 
+.subtitle {
+  color: var(--linsi-neutral-base);
+  margin: var(--linsi-space-8) 0 0;
+}
+
 .form {
   display: grid;
   gap: var(--linsi-space-16);

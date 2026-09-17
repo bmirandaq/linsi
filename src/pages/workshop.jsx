@@ -182,6 +182,7 @@ export default function Workshop() {
             <>
               <header className={styles.header}>
                 <h1 className={styles.title}>Inscrição no Workshop LINSI</h1>
+                <p className={styles.subtitle}>Valor: R$ 100</p>
               </header>
 
               <form className={styles.form} onSubmit={handleContinue}>
