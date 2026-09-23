@@ -228,7 +228,7 @@ assert.match(
 for (const [name, css, selector] of [
   ['CTA principal da Home', homeCss, '\\.primaryAction'],
   ['CTA do Workshop na Home', homeCss, '\\.workshopAction'],
-  ['CTAs da página Workshop', workshopCss, '\\.submit,'],
+  ['CTAs da página Workshop', workshopCss, '\\.submit,\\s*\\.paymentLink'],
   ['CTA de Contribuir', contributeCss, '\\.submit'],
   ['CTA dos templates', templateCardsCss, '\\.actionButton'],
   ['CTA de copiar Pix', cafeCss, '\\.primaryCopyButton'],
