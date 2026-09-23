@@ -17,6 +17,7 @@ const workshopCss = read('src/pages/workshop.module.css');
 const contributeCss = read('src/pages/contribuir.module.css');
 const templateCardsCss = read('src/components/TemplateCards/styles.module.css');
 const cafePage = read('src/pages/cafe-bea.tsx');
+const cafeCss = read('src/pages/cafe-bea.module.css');
 const colorModeToggle = read('src/theme/Navbar/ColorModeToggle/index.jsx');
 const colorModeCss = read(
   'src/theme/Navbar/ColorModeToggle/styles.module.css',
@@ -230,6 +231,7 @@ for (const [name, css, selector] of [
   ['CTAs da página Workshop', workshopCss, '\\.submit,'],
   ['CTA de Contribuir', contributeCss, '\\.submit'],
   ['CTA dos templates', templateCardsCss, '\\.actionButton'],
+  ['CTA de copiar Pix', cafeCss, '\\.primaryCopyButton'],
 ]) {
   assert.match(
     css,
