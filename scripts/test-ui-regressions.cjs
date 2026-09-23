@@ -13,6 +13,9 @@ const layoutFixesCss = read('src/css/layout-fixes.css');
 const footer = read('src/theme/Footer/index.jsx');
 const footerCss = read('src/theme/Footer/styles.module.css');
 const homeCss = read('src/pages/index.module.css');
+const workshopCss = read('src/pages/workshop.module.css');
+const contributeCss = read('src/pages/contribuir.module.css');
+const templateCardsCss = read('src/components/TemplateCards/styles.module.css');
 const cafePage = read('src/pages/cafe-bea.tsx');
 const colorModeToggle = read('src/theme/Navbar/ColorModeToggle/index.jsx');
 const colorModeCss = read(
@@ -204,6 +207,36 @@ assert.match(
   /\.mediaColumn\s*\{[\s\S]*?order:\s*3;/,
   'A imagem da home precisa ficar depois do subtítulo no layout mobile.',
 );
+
+assert.match(
+  customCss,
+  /--linsi-radius-sm:\s*0\.75rem;[\s\S]*?--linsi-radius-md:\s*1rem;[\s\S]*?--linsi-radius-lg:\s*1\.5rem;[\s\S]*?--linsi-radius-full:\s*9999px;/,
+  'A escala global de radius deve permanecer em 12/16/24/full.',
+);
+assert.match(
+  layoutFixesCss,
+  /\.linsi-sidebar-assistant-beta[\s\S]*?border-radius:\s*var\(--linsi-radius-full\);/,
+  'O badge Beta deve consumir o token radius-full.',
+);
+assert.match(
+  colorModeCss,
+  /\.track\s*\{[\s\S]*?border-radius:\s*var\(--linsi-radius-full\);/,
+  'O track do seletor de tema deve consumir o token radius-full.',
+);
+
+for (const [name, css, selector] of [
+  ['CTA principal da Home', homeCss, '\\.primaryAction'],
+  ['CTA do Workshop na Home', homeCss, '\\.workshopAction'],
+  ['CTAs da página Workshop', workshopCss, '\\.submit,'],
+  ['CTA de Contribuir', contributeCss, '\\.submit'],
+  ['CTA dos templates', templateCardsCss, '\\.actionButton'],
+]) {
+  assert.match(
+    css,
+    new RegExp(`${selector}\\s*\\{[\\s\\S]*?font-size:\\s*1rem;[\\s\\S]*?font-weight:\\s*700;[\\s\\S]*?min-height:\\s*56px;[\\s\\S]*?padding:\\s*0 var\\(--linsi-space-24\\);`),
+    `${name} deve manter 56px mínimos, fonte 16px/700 e padding horizontal de 24px.`,
+  );
+}
 assert.ok(
   cafePage.indexOf("{copiedCode ? 'Código copiado' : 'Copiar código Pix'}") <
     cafePage.indexOf("name={copiedCode ? 'check' : 'content_copy'}"),
