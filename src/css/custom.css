@@ -63,9 +63,10 @@
   --ifm-hr-border-color: #dbdfe6;
 
   /* Radius */
-  --linsi-radius-sm: 0.5rem;
-  --linsi-radius-md: 0.75rem;
-  --linsi-radius-lg: 1rem;
+  --linsi-radius-sm: 0.75rem;
+  --linsi-radius-md: 1rem;
+  --linsi-radius-lg: 1.5rem;
+  --linsi-radius-full: 9999px;
   --ifm-global-radius: var(--linsi-radius-md);
   --ifm-alert-border-radius: var(--linsi-radius-md);
   --ifm-code-border-radius: var(--linsi-radius-sm);
