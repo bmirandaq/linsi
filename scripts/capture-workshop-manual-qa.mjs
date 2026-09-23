@@ -51,33 +51,6 @@ try {
   await details.screenshot({path: `${artifactDir}/desktop-light-registered-90.png`, fullPage: true});
   await details.close();
 
-  for (const target of [
-    {name: 'home', route: '/'},
-    {name: 'templates', route: '/docs/templates'},
-    {name: 'contribuir', route: '/contribuir-ajuda'},
-    {name: 'cafe-bea', route: '/cafe-bea'},
-  ]) {
-    for (const viewport of [
-      {name: 'desktop', width: 1440, height: 1000},
-      {name: 'mobile', width: 390, height: 844},
-    ]) {
-      for (const theme of ['light', 'dark']) {
-        const page = await browser.newPage({viewport: {width: viewport.width, height: viewport.height}});
-        await page.goto(`${baseUrl}${target.route}`, {waitUntil: 'networkidle'});
-        await page.evaluate((value) => {
-          document.documentElement.setAttribute('data-theme', value);
-          localStorage.setItem('theme', value);
-        }, theme);
-        await page.reload({waitUntil: 'networkidle'});
-        await page.screenshot({
-          path: `${artifactDir}/${target.name}-${viewport.name}-${theme}.png`,
-          fullPage: true,
-        });
-        await page.close();
-      }
-    }
-  }
-
   const invalid = await browser.newPage({viewport: {width: 1440, height: 1000}});
   await prepare(invalid, 'light');
   await invalid.locator('#cupom').fill('NAOEXISTE');
