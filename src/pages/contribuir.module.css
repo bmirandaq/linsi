@@ -158,9 +158,10 @@
   color: var(--linsi-button-text);
   cursor: pointer;
   font-family: var(--ifm-heading-font-family);
+  font-size: 1rem;
   font-weight: 700;
-  min-height: 46px;
-  padding: 0 var(--linsi-space-16);
+  min-height: 56px;
+  padding: 0 var(--linsi-space-24);
   transition: background-color var(--linsi-motion-fast) var(--linsi-ease-standard),
     transform var(--linsi-motion-fast) var(--linsi-ease-standard);
 }
