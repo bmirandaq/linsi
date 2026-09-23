@@ -76,8 +76,8 @@ export default function Home() {
               <p className={styles.workshopPretitle}>{homeContent.workshop.pretitle}</p>
 
               <h2 id="workshop-title" className={styles.workshopTitle}>
-                <span>Mapeando&nbsp;experiências</span>{' '}
-                <span>com&nbsp;LINSI</span>
+                <span>Mapeando experiências</span>{' '}
+                <span>com LINSI</span>
               </h2>
 
               <p className={styles.workshopDescription}>
