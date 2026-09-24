@@ -41,13 +41,6 @@
     padding: var(--linsi-space-8);
   }
 
-  @supports (scrollbar-gutter: stable) {
-    .menu {
-      padding: var(--linsi-space-8) 0 var(--linsi-space-8) var(--linsi-space-8);
-      scrollbar-gutter: stable;
-    }
-  }
-
   .menuWithAnnouncementBar {
     margin-bottom: var(--docusaurus-announcement-bar-height);
   }

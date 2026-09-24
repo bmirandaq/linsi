@@ -27,7 +27,7 @@
 
   background: var(--linsi-neutral-lighter);
   border: 1px solid var(--linsi-neutral-base);
-  border-radius: 999px;
+  border-radius: var(--linsi-radius-full);
   display: block;
   height: 26px;
   padding: var(--linsi-toggle-track-inset);

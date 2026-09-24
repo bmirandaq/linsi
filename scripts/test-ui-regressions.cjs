@@ -13,7 +13,12 @@ const layoutFixesCss = read('src/css/layout-fixes.css');
 const footer = read('src/theme/Footer/index.jsx');
 const footerCss = read('src/theme/Footer/styles.module.css');
 const homeCss = read('src/pages/index.module.css');
+const workshopCss = read('src/pages/workshop.module.css');
+const contributeCss = read('src/pages/contribuir.module.css');
+const templateCardsCss = read('src/components/TemplateCards/styles.module.css');
 const cafePage = read('src/pages/cafe-bea.tsx');
+const cafeCss = read('src/pages/cafe-bea.module.css');
+const assistantAutomationCss = read('docs/Utilitários/automatizacao.module.css');
 const colorModeToggle = read('src/theme/Navbar/ColorModeToggle/index.jsx');
 const colorModeCss = read(
   'src/theme/Navbar/ColorModeToggle/styles.module.css',
@@ -30,6 +35,7 @@ const mobileSidebarSecondaryMenuCss = read(
 const navbarSearchCss = read('src/theme/Navbar/Search/styles.module.css');
 const sidebarLayout = read('src/theme/DocRoot/Layout/Sidebar/index.jsx');
 const sidebarLayoutCss = read('src/theme/DocRoot/Layout/Sidebar/styles.module.css');
+const sidebarContentCss = read('src/theme/DocSidebar/Desktop/Content/styles.module.css');
 
 assert.match(
   docusaurusConfig,
@@ -75,6 +81,16 @@ assert.match(
   layoutFixesCss,
   /\.theme-doc-sidebar-container \.menu\s*\{[\s\S]*?max-height:\s*none !important;[\s\S]*?overflow:\s*visible !important;/,
   'O menu da sidebar desktop não deve criar rolagem interna.',
+);
+assert.match(
+  sidebarContentCss,
+  /@media \(min-width: 997px\)[\s\S]*?\.menu\s*\{[\s\S]*?padding:\s*var\(--linsi-space-8\);/,
+  'O menu desktop deve manter inset simétrico de 8px para todos os nav buttons.',
+);
+assert.doesNotMatch(
+  sidebarContentCss,
+  /padding:\s*var\(--linsi-space-8\)\s+0\s+var\(--linsi-space-8\)\s+var\(--linsi-space-8\)|scrollbar-gutter:\s*stable/,
+  'A sidebar não deve reintroduzir gutter que zere o padding direito dos nav buttons.',
 );
 assert.match(
   layoutFixesCss,
@@ -204,6 +220,63 @@ assert.match(
   /\.mediaColumn\s*\{[\s\S]*?order:\s*3;/,
   'A imagem da home precisa ficar depois do subtítulo no layout mobile.',
 );
+
+assert.match(
+  customCss,
+  /--linsi-radius-sm:\s*0\.75rem;[\s\S]*?--linsi-radius-md:\s*1rem;[\s\S]*?--linsi-radius-lg:\s*1\.5rem;[\s\S]*?--linsi-radius-full:\s*9999px;/,
+  'A escala global de radius deve permanecer em 12/16/24/full.',
+);
+assert.match(
+  customCss,
+  /--ifm-button-border-radius:\s*var\(--linsi-radius-full\);/,
+  'Botões genéricos do Docusaurus devem consumir radius-full.',
+);
+assert.match(
+  homeCss,
+  /\.workshopTag\s*\{[\s\S]*?border-radius:\s*var\(--linsi-radius-full\);/,
+  'Tags do Workshop devem consumir radius-full.',
+);
+assert.match(
+  assistantAutomationCss,
+  /\.beta\s*\{[\s\S]*?border-radius:\s*var\(--linsi-radius-full\);/,
+  'O badge Beta da página da Assistente deve consumir radius-full.',
+);
+assert.match(
+  customCss,
+  /\.navbar \.aa-DetachedSearchButton\s*\{[\s\S]*?border-radius:\s*var\(--linsi-radius-full\) !important;/,
+  'O trigger compacto de busca deve consumir radius-full.',
+);
+assert.match(
+  customCss,
+  /\.aa-ClearButton\s*\{[\s\S]*?border-radius:\s*var\(--linsi-radius-full\) !important;/,
+  'A ação de limpar busca deve consumir radius-full.',
+);
+assert.match(
+  layoutFixesCss,
+  /\.linsi-sidebar-assistant-beta[\s\S]*?border-radius:\s*var\(--linsi-radius-full\);/,
+  'O badge Beta deve consumir o token radius-full.',
+);
+assert.match(
+  colorModeCss,
+  /\.track\s*\{[\s\S]*?border-radius:\s*var\(--linsi-radius-full\);/,
+  'O track do seletor de tema deve consumir o token radius-full.',
+);
+
+for (const [name, css, selector] of [
+  ['CTA principal da Home', homeCss, '\\.primaryAction'],
+  ['CTA do Workshop na Home', homeCss, '\\.workshopAction'],
+  ['CTAs da página Workshop', workshopCss, '\\.submit,\\s*\\.paymentLink'],
+  ['CTA de Contribuir', contributeCss, '\\.submit'],
+  ['CTA dos templates', templateCardsCss, '\\.actionButton'],
+  ['CTA de copiar Pix', cafeCss, '\\.primaryCopyButton'],
+  ['CTA de baixar a Skill', assistantAutomationCss, '\\.downloadCta'],
+]) {
+  assert.match(
+    css,
+    new RegExp(`${selector}\\s*\\{[\\s\\S]*?border-radius:\\s*var\\(--linsi-radius-full\\);[\\s\\S]*?font-size:\\s*1rem;[\\s\\S]*?font-weight:\\s*700;[\\s\\S]*?min-height:\\s*56px;[\\s\\S]*?padding:\\s*0 var\\(--linsi-space-24\\);`),
+    `${name} deve manter radius-full, 56px mínimos, fonte 16px/700 e padding horizontal de 24px.`,
+  );
+}
 assert.ok(
   cafePage.indexOf("{copiedCode ? 'Código copiado' : 'Copiar código Pix'}") <
     cafePage.indexOf("name={copiedCode ? 'check' : 'content_copy'}"),

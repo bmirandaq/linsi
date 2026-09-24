@@ -5,12 +5,13 @@ const path = require('node:path');
 const workshop = fs.readFileSync(path.resolve(__dirname, '../src/pages/workshop.jsx'), 'utf8');
 const css = fs.readFileSync(path.resolve(__dirname, '../src/pages/workshop.module.css'), 'utf8');
 
-assert.match(workshop, /<h1 className=\{styles\.feedbackTitle\}>Inscrição recebida<\/h1>/, 'O sucesso local deve afirmar apenas que a inscrição foi recebida.');
-assert.match(workshop, /Agora falta concluir o pagamento para garantir sua vaga no Workshop LINSI\./);
+assert.match(workshop, /<h1 className=\{styles\.feedbackTitle\}>Falta pouco!<\/h1>/, 'O feedback pós-inscrição deve conduzir diretamente ao pagamento.');
+assert.match(workshop, /Seus dados foram recebidos\. Agora faça o pagamento pra garantir sua vaga no workshop\{' '\}[\s\S]*?<strong>Mapeando experiências com LINSI<\/strong>/, 'O feedback deve trazer a nova orientação e destacar o nome do workshop.');
 assert.match(workshop, /Pagar no Mercado Pago<\/a>/, 'A cobrança deve permanecer como link externo.');
 assert.match(workshop, /href=\{paymentUrl\}/, 'O CTA deve usar a URL devolvida pelo Worker.');
-assert.match(workshop, /A confirmação da vaga será enviada após a conferência do pagamento\./);
-assert.match(workshop, /setAmount\(result\.amount\)/, 'O valor mostrado deve vir do Worker.');
+assert.doesNotMatch(workshop, /Agora falta concluir o pagamento para garantir sua vaga no Workshop LINSI\./);
+assert.doesNotMatch(workshop, /A confirmação da vaga será enviada após a conferência do pagamento\./);
+assert.doesNotMatch(workshop, /formatBrl|setAmount\(result\.amount\)|amountBlock|paymentNotice/, 'O feedback não deve repetir preço nem avisos removidos.');
 assert.match(workshop, /setPaymentUrl\(result\.paymentUrl \|\| ''\)/, 'O frontend deve aceitar somente o link devolvido pelo Worker.');
 assert.match(workshop, />Continuar para pagamento<\/button>/, 'O CTA deve explicar que a próxima ação é o pagamento.');
 assert.match(workshop, /<p className=\{styles\.subtitle\}>Valor: R\$ 100<\/p>/, 'O preço integral deve aparecer abaixo do título do Workshop.');
