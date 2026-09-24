@@ -18,6 +18,7 @@ const contributeCss = read('src/pages/contribuir.module.css');
 const templateCardsCss = read('src/components/TemplateCards/styles.module.css');
 const cafePage = read('src/pages/cafe-bea.tsx');
 const cafeCss = read('src/pages/cafe-bea.module.css');
+const assistantAutomationCss = read('docs/Utilitários/automatizacao.module.css');
 const colorModeToggle = read('src/theme/Navbar/ColorModeToggle/index.jsx');
 const colorModeCss = read(
   'src/theme/Navbar/ColorModeToggle/styles.module.css',
@@ -225,6 +226,11 @@ assert.match(
   'Tags do Workshop devem consumir radius-full.',
 );
 assert.match(
+  assistantAutomationCss,
+  /\.beta\s*\{[\s\S]*?border-radius:\s*var\(--linsi-radius-full\);/,
+  'O badge Beta da página da Assistente deve consumir radius-full.',
+);
+assert.match(
   customCss,
   /\.navbar \.aa-DetachedSearchButton\s*\{[\s\S]*?border-radius:\s*var\(--linsi-radius-full\) !important;/,
   'O trigger compacto de busca deve consumir radius-full.',
@@ -252,6 +258,7 @@ for (const [name, css, selector] of [
   ['CTA de Contribuir', contributeCss, '\\.submit'],
   ['CTA dos templates', templateCardsCss, '\\.actionButton'],
   ['CTA de copiar Pix', cafeCss, '\\.primaryCopyButton'],
+  ['CTA de baixar a Skill', assistantAutomationCss, '\\.downloadCta'],
 ]) {
   assert.match(
     css,
