@@ -30,6 +30,9 @@ jobs:
       - name: Auditar dependências
         run: npm run audit:dependencies
 
+      - name: Verificar tipos
+        run: npm run typecheck
+
       - name: Preparar download da Skill
         run: |
           mkdir -p static/downloads/assistente-linsi
@@ -61,6 +64,13 @@ jobs:
 
       - name: Rodar smoke regressivo responsivo
         run: node scripts/test-responsive-smoke.mjs
+        env:
+          SMOKE_BASE_URL: http://127.0.0.1:3000
+
+      - name: Validar analytics desabilitado
+        run: |
+          node scripts/test-analytics-build.cjs build
+          node scripts/test-analytics-browser.mjs
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
 
@@ -100,6 +110,45 @@ jobs:
           done
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
+
+      - name: Gerar build com IDs fictícios de analytics
+        run: npx docusaurus build --out-dir build-analytics
+        env:
+          SITE_URL: http://127.0.0.1:3001
+          BASE_URL: /
+          CLOUDFLARE_WEB_ANALYTICS_TOKEN: '00000000000000000000000000000000'
+          CLARITY_PROJECT_ID: analyticsqa
+
+      - name: Servir build com analytics e validar integração
+        run: |
+          node scripts/test-analytics-build.cjs build-analytics
+          npm run serve -- --dir build-analytics --host 127.0.0.1 --port 3001 > /tmp/linsi-analytics-serve.log 2>&1 &
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3001/ > /dev/null; then
+              node scripts/test-analytics-browser.mjs
+              exit $?
+            fi
+            sleep 1
+          done
+          cat /tmp/linsi-analytics-serve.log
+          exit 1
+        env:
+          SMOKE_BASE_URL: http://127.0.0.1:3001
+          ANALYTICS_TEST_ENABLED: '1'
+
+      - name: Comparar Home com e sem analytics
+        run: node scripts/test-analytics-visual.mjs
+        env:
+          ANALYTICS_BASELINE_URL: http://127.0.0.1:3000
+          SMOKE_BASE_URL: http://127.0.0.1:3001
+
+      - name: Publicar comparação visual de analytics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: analytics-visual-qa
+          path: artifacts/analytics-qa/*.png
+          if-no-files-found: error
 
   preview-integration:
     name: QA real da inscrição manual em Worker preview
