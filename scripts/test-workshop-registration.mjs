@@ -21,13 +21,14 @@ async function fillForm(page, {coupon = ''} = {}) {
 async function submitAndAssert(page, expectedAmount, expectedHref) {
   await page.getByRole('button', {name: 'Continuar para pagamento'}).click();
   assert.equal(await page.getByText('Registrando inscrição...', {exact: true}).count(), 0, 'O submit não deve abrir uma tela de loading.');
-  await page.getByRole('heading', {name: 'Inscrição recebida'}).waitFor();
-  await page.getByText(`R$ ${expectedAmount},00`, {exact: true}).waitFor();
+  await page.getByRole('heading', {name: 'Falta pouco!'}).waitFor();
+  await page.getByText('Mapeando experiências com LINSI', {exact: true}).waitFor();
+  assert.equal(await page.getByText(`R$ ${expectedAmount},00`, {exact: true}).count(), 0, 'O feedback não deve repetir o valor.');
+  assert.equal(await page.getByText('A confirmação da vaga será enviada após a conferência do pagamento.', {exact: true}).count(), 0, 'O aviso antigo não deve permanecer.');
 
   const paymentLink = page.getByRole('link', {name: 'Pagar no Mercado Pago'});
   assert.equal(await paymentLink.getAttribute('href'), expectedHref);
   assert.equal(await paymentLink.getAttribute('target'), null);
-  await page.getByText('A confirmação da vaga será enviada após a conferência do pagamento.', {exact: true}).waitFor();
 }
 
 try {
@@ -48,7 +49,7 @@ try {
   const ctaBox = await mobile.getByRole('link', {name: 'Pagar no Mercado Pago'}).boundingBox();
   assert.ok(ctaBox && ctaBox.width > 340, 'O CTA de pagamento deve ocupar a largura útil no mobile.');
 
-  console.log('Workshop browser smoke passed: direct submit without loading screen, R$100/R$90 payment links and mobile layout.');
+  console.log('Workshop browser smoke passed: concise post-registration feedback, correct payment links and mobile layout.');
 } finally {
   await browser.close();
 }
