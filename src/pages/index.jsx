@@ -5,6 +5,7 @@ import Heading from '@theme/Heading';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import MaterialSymbol from '@site/src/components/MaterialSymbol';
+import {trackClarityEvent} from '@site/src/utils/analytics';
 import homeContent from '@site/content/home.json';
 
 import styles from './index.module.css';
@@ -44,7 +45,7 @@ export default function Home() {
                   {homeContent.primaryAction.label}
                 </Link>
 
-                <Link className={styles.workshopAnchor} to="#workshop">
+                <Link className={styles.workshopAnchor} to="#workshop" onClick={() => trackClarityEvent('workshop_view')}>
                   Participar do workshop
                   <MaterialSymbol
                     name="arrow_forward"
@@ -97,7 +98,7 @@ export default function Home() {
                 ))}
               </div>
 
-              <Link className={styles.workshopAction} to="/workshop">
+              <Link className={styles.workshopAction} to="/workshop" onClick={() => trackClarityEvent('workshop_signup_click')}>
                 {homeContent.workshop.actionLabel}
                 <MaterialSymbol name="arrow_forward" size={20} />
               </Link>
