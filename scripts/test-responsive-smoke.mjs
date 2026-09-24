@@ -120,7 +120,7 @@ for (const viewport of viewports) {
       if (route === '/') {
         await assertFullRadius(page.locator('[class*="primaryAction"]').first(), 'home primary CTA');
         await assertFullRadius(page.locator('[class*="workshopAction"]').first(), 'home workshop CTA');
-        await assertFullRadius(page.locator('[class*="workshopTag"]').first(), 'home workshop tag');
+        await assertFullRadius(page.locator('[class*="workshopTag_"]').first(), 'home workshop tag');
       }
 
       if (route === '/workshop') {
