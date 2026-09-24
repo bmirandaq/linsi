@@ -140,8 +140,8 @@ for (const viewport of viewports) {
       }
 
       if (route === '/docs/assistente') {
-        await assertFullRadius(page.locator('[class*="downloadCta"]').first(), 'assistant download CTA');
-        await assertFullRadius(page.locator('[class*="beta"]').first(), 'assistant Beta badge');
+        await assertFullRadius(page.locator('.theme-doc-markdown [class*="downloadCta"]').first(), 'assistant download CTA');
+        await assertFullRadius(page.locator('.theme-doc-markdown [class*="beta"]').first(), 'assistant Beta badge');
       }
 
       if (route === '/' && (viewport.width === 1440 || viewport.width === 390)) {
