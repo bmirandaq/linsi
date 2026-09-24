@@ -235,8 +235,8 @@ for (const [name, css, selector] of [
 ]) {
   assert.match(
     css,
-    new RegExp(`${selector}\\s*\\{[\\s\\S]*?font-size:\\s*1rem;[\\s\\S]*?font-weight:\\s*700;[\\s\\S]*?min-height:\\s*56px;[\\s\\S]*?padding:\\s*0 var\\(--linsi-space-24\\);`),
-    `${name} deve manter 56px mínimos, fonte 16px/700 e padding horizontal de 24px.`,
+    new RegExp(`${selector}\\s*\\{[\\s\\S]*?border-radius:\\s*var\\(--linsi-radius-full\\);[\\s\\S]*?font-size:\\s*1rem;[\\s\\S]*?font-weight:\\s*700;[\\s\\S]*?min-height:\\s*56px;[\\s\\S]*?padding:\\s*0 var\\(--linsi-space-24\\);`),
+    `${name} deve manter radius-full, 56px mínimos, fonte 16px/700 e padding horizontal de 24px.`,
   );
 }
 assert.ok(
