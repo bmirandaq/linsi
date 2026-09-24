@@ -89,14 +89,14 @@ Na entrada do documento, o snippet lê exclusivamente os quatro parâmetros acim
 
 - Cloudflare Web Analytics é usado no modo padrão privacy-first.
 - O código não muda masking, não declara `data-clarity-unmask` e não envia campos de formulário, custom IDs, session IDs ou friendly names. Os eventos enviam somente seus nomes.
-- No projeto Clarity, confirmar **Settings > Masking > Balanced** (ou Strict), sem regras Unmask para o formulário. Validar Nome, E-mail, Cargo, Empresa, LinkedIn, WhatsApp e Cupom em uma gravação nova com dados fictícios. A documentação da Microsoft informa que inputs são mascarados em todos os modos, mas a gravação real ainda precisa ser inspecionada.
+- No projeto Clarity, Bea confirmou **Settings > Masking > Balanced (Equilibrado)** e **cookies desligados**. O código não concede consentimento automaticamente nem altera essas configurações. Confirmar em produção a ausência de regras Unmask para o formulário e validar Nome, E-mail, Cargo, Empresa, LinkedIn, WhatsApp e Cupom em uma gravação nova com dados fictícios. A documentação da Microsoft informa que inputs são mascarados em todos os modos, mas a gravação real ainda precisa ser inspecionada.
 - A LINSI não possui atualmente uma página/política de privacidade específica no repositório.
 - Antes de publicar o Clarity em produção, revisar a necessidade de transparência/aviso de privacidade para o contexto da LINSI e LGPD.
 - Não foi adicionado banner de cookies automaticamente.
 
 ### Recomendação separada para decisão da Bea
 
-Publicar informação acessível sobre finalidade da coleta, fornecedores, gravações de sessão, dados mascarados, uso de cookies conforme configuração/consentimento e canal de contato. A configuração de cookies/Consent Mode do Clarity deve ser uma decisão explícita antes da publicação. O masking não substitui essa transparência. Nenhuma página, banner ou concessão automática de consentimento foi implementada neste PR; esta é uma recomendação técnica, não parecer jurídico.
+Publicar informação acessível sobre finalidade da coleta, fornecedores, gravações de sessão, dados mascarados, configuração de cookies e canal de contato. A decisão informada por Bea é manter os cookies do Clarity desligados; eventual mudança de consentimento deve ser explícita. O masking e a ausência de cookies não substituem essa transparência. Nenhuma página, banner ou concessão automática de consentimento foi implementada neste PR; esta é uma recomendação técnica, não parecer jurídico.
 
 Referências oficiais: [masking do Clarity](https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-masking), [Consent Mode](https://learn.microsoft.com/en-us/clarity/setup-and-installation/consent-mode), [SPA e UTMs no Cloudflare](https://developers.cloudflare.com/web-analytics/faq/).
 
@@ -111,7 +111,12 @@ Referências oficiais: [masking do Clarity](https://learn.microsoft.com/en-us/cl
 
 ## Estado da validação externa (24/09/2026)
 
-Na revisão do PR #72, os dois secrets ainda não existiam no GitHub e os painéis Cloudflare/Clarity exigiam autenticação. Configuração do site/projeto, injeção automática, recebimento das quatro UTMs, eventos, pageviews e gravação mascarada permanecem pendentes de acesso e coleta real. Os testes com IDs fictícios validam a integração local, não o recebimento pelos fornecedores. Não foi feito merge ou deploy.
+- Presença de `CLOUDFLARE_WEB_ANALYTICS_TOKEN` e `CLARITY_PROJECT_ID` confirmada pela lista de secrets do GitHub, sem acesso/exposição dos valores. O workflow de produção já fornece ambos ao build.
+- Masking Equilibrado e cookies desligados confirmados por Bea no Clarity; a gravação real ainda não foi inspecionada pelo agente.
+- A branch foi atualizada com a `main` `1c950a1` (PR #71), preservando os refinamentos de radius, navegação, feedback do Workshop e `TESTING.md`.
+- Nova leitura do HTML público após o cadastro dos secrets encontrou zero snippets Cloudflare e zero snippets Clarity. Não há injeção automática observada nessa resposta; conferir novamente após o deploy.
+- Os testes com IDs fictícios validam a integração local, não os valores reais dos secrets nem o recebimento pelos fornecedores. Recebimento das quatro UTMs, eventos, pageviews SPA sem duplicação, comportamento sem cookies e gravação mascarada são verificações pós-deploy.
+- O PR #72 permanece aberto. Não foi feito merge do PR nem deploy.
 
 ## Validação esperada em produção
 
