@@ -102,11 +102,20 @@ for (const viewport of viewports) {
           const style = getComputedStyle(element);
           const menu = element.querySelector('.menu');
           const menuStyle = menu ? getComputedStyle(menu) : null;
+          const activeLink = menu?.querySelector(
+            '.theme-doc-sidebar-item-link > .menu__link--active:not(.menu__link--sublist)',
+          );
+          const menuRect = menu?.getBoundingClientRect() ?? null;
+          const activeRect = activeLink?.getBoundingClientRect() ?? null;
           return {
             position: style.position,
             left: style.left,
             menuOverflowY: menuStyle?.overflowY ?? null,
             menuScrollable: menu ? menu.scrollHeight > menu.clientHeight + 1 : false,
+            menuPaddingLeft: menuStyle ? Number.parseFloat(menuStyle.paddingLeft) : null,
+            menuPaddingRight: menuStyle ? Number.parseFloat(menuStyle.paddingRight) : null,
+            activeInsetLeft: menuRect && activeRect ? activeRect.left - menuRect.left : null,
+            activeInsetRight: menuRect && activeRect ? menuRect.right - activeRect.right : null,
           };
         });
 
@@ -115,6 +124,14 @@ for (const viewport of viewports) {
         assert.notEqual(sidebarState.menuOverflowY, 'auto', 'docs sidebar menu must not create its own vertical scroll');
         assert.notEqual(sidebarState.menuOverflowY, 'scroll', 'docs sidebar menu must not force vertical scrolling');
         assert.equal(sidebarState.menuScrollable, false, 'docs sidebar menu content is clipped into an internal scroll area');
+        assert.ok(sidebarState.menuPaddingLeft >= 7, `docs nav left padding is ${sidebarState.menuPaddingLeft}px`);
+        assert.ok(sidebarState.menuPaddingRight >= 7, `docs nav right padding is ${sidebarState.menuPaddingRight}px`);
+        assert.ok(sidebarState.activeInsetLeft >= 7, `active nav left inset is ${sidebarState.activeInsetLeft}px`);
+        assert.ok(sidebarState.activeInsetRight >= 7, `active nav right inset is ${sidebarState.activeInsetRight}px`);
+        assert.ok(
+          Math.abs(sidebarState.activeInsetLeft - sidebarState.activeInsetRight) <= 2,
+          `active nav insets are asymmetric: left ${sidebarState.activeInsetLeft}px, right ${sidebarState.activeInsetRight}px`,
+        );
       }
 
       if (route === '/') {
