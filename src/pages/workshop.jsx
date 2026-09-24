@@ -65,10 +65,6 @@ async function apiRequest(path, options = {}) {
   return data;
 }
 
-function formatBrl(value) {
-  return `R$ ${Number(value).toFixed(2).replace('.', ',')}`;
-}
-
 export default function Workshop() {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
@@ -80,7 +76,6 @@ export default function Workshop() {
   const [couponStatus, setCouponStatus] = useState('empty');
   const [couponMessage, setCouponMessage] = useState('');
   const [stage, setStage] = useState('form');
-  const [amount, setAmount] = useState(null);
   const [paymentUrl, setPaymentUrl] = useState('');
   const [submitError, setSubmitError] = useState('');
 
@@ -158,7 +153,6 @@ export default function Workshop() {
         method: 'POST',
         body: JSON.stringify(payload),
       });
-      setAmount(result.amount);
       setPaymentUrl(result.paymentUrl || '');
       setStage('registered');
     } catch (error) {
@@ -237,17 +231,13 @@ export default function Workshop() {
 
           {stage === 'registered' ? (
             <section className={styles.feedback} role="status" aria-live="polite">
-              <h1 className={styles.feedbackTitle}>Inscrição recebida</h1>
-              <p>Seus dados foram registrados.</p>
-              <p>Agora falta concluir o pagamento para garantir sua vaga no Workshop LINSI.</p>
-
-              <div className={styles.amountBlock}>
-                <span>Valor</span>
-                <strong>{formatBrl(amount)}</strong>
-              </div>
+              <h1 className={styles.feedbackTitle}>Falta pouco!</h1>
+              <p>
+                Seus dados foram recebidos. Agora faça o pagamento pra garantir sua vaga no workshop{' '}
+                <strong>Mapeando experiências com LINSI</strong>
+              </p>
 
               <a className={styles.paymentLink} href={paymentUrl}>Pagar no Mercado Pago</a>
-              <p className={styles.paymentNotice}>A confirmação da vaga será enviada após a conferência do pagamento.</p>
             </section>
           ) : null}
         </div>
