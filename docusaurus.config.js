@@ -68,6 +68,37 @@ const clarityInitScript = clarityProjectId
   `
   : undefined;
 
+// Keep deployment IDs in generated HTML, outside the serialized client siteConfig.
+function analyticsPlugin() {
+  return {
+    name: 'linsi-analytics',
+    injectHtmlTags() {
+      return {
+        headTags: [
+          ...(cloudflareAnalyticsToken
+            ? [{
+                tagName: 'script',
+                attributes: {
+                  type: 'module',
+                  src: 'https://static.cloudflareinsights.com/beacon.min.js',
+                  'data-cf-beacon': JSON.stringify({token: cloudflareAnalyticsToken}),
+                  'data-linsi-analytics': 'cloudflare',
+                },
+              }]
+            : []),
+          ...(clarityInitScript
+            ? [{
+                tagName: 'script',
+                attributes: {'data-linsi-analytics': 'clarity'},
+                innerHTML: clarityInitScript,
+              }]
+            : []),
+        ],
+      };
+    },
+  };
+}
+
 const config = {
   title: 'LINSI – Linguagem Simplificada de Fluxogramas de UX',
   tagline: 'Linguagem Simplificada de Fluxogramas de UX',
@@ -101,28 +132,6 @@ const config = {
       attributes: {'data-linsi-root-canvas': 'true'},
       innerHTML: rootCanvasInitStyle,
     },
-    ...(cloudflareAnalyticsToken
-      ? [
-          {
-            tagName: 'script',
-            attributes: {
-              type: 'module',
-              src: 'https://static.cloudflareinsights.com/beacon.min.js',
-              'data-cf-beacon': JSON.stringify({token: cloudflareAnalyticsToken}),
-              'data-linsi-analytics': 'cloudflare',
-            },
-          },
-        ]
-      : []),
-    ...(clarityInitScript
-      ? [
-          {
-            tagName: 'script',
-            attributes: {'data-linsi-analytics': 'clarity'},
-            innerHTML: clarityInitScript,
-          },
-        ]
-      : []),
     {
       tagName: 'meta',
       attributes: {
@@ -177,6 +186,7 @@ const config = {
   ],
 
   plugins: [
+    analyticsPlugin,
     [
       '@cmfcmf/docusaurus-search-local',
       {
