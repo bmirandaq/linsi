@@ -231,7 +231,7 @@
 .workshopTag {
   background: var(--linsi-neutral-darker);
   border: 1px solid var(--linsi-neutral-dark);
-  border-radius: var(--linsi-radius-sm);
+  border-radius: var(--linsi-radius-full);
   color: var(--linsi-neutral-lightest);
   font-size: 0.8125rem;
   font-weight: 600;
