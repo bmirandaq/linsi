@@ -70,7 +70,7 @@
   --ifm-global-radius: var(--linsi-radius-md);
   --ifm-alert-border-radius: var(--linsi-radius-md);
   --ifm-code-border-radius: var(--linsi-radius-sm);
-  --ifm-button-border-radius: var(--linsi-radius-md);
+  --ifm-button-border-radius: var(--linsi-radius-full);
 
   /* Busca — light */
   --linsi-search-surface: var(--ifm-background-surface-color);
@@ -332,7 +332,7 @@ h6,
   align-items: center;
   background: transparent !important;
   border: 1px solid transparent !important;
-  border-radius: var(--linsi-radius-md) !important;
+  border-radius: var(--linsi-radius-full) !important;
   box-shadow: none !important;
   color: var(--ifm-navbar-link-color) !important;
   cursor: pointer;
@@ -506,7 +506,7 @@ h6,
   align-items: center;
   background: transparent !important;
   border: none !important;
-  border-radius: var(--linsi-radius-sm) !important;
+  border-radius: var(--linsi-radius-full) !important;
   color: var(--linsi-search-secondary-text) !important;
   cursor: pointer;
   display: none !important;
