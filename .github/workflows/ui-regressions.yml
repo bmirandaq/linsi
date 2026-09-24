@@ -189,7 +189,9 @@ jobs:
             --keep-vars \
             --var ALLOWED_ORIGIN:https://linsi.beamiranda.com.br \
             --var WORKSHOP_PAYMENT_LINK_FULL:https://mpago.la/linsi-manual-qa-full \
-            --var WORKSHOP_PAYMENT_LINK_DISCOUNT:https://mpago.la/linsi-manual-qa-discount \
+            --var WORKSHOP_PAYMENT_LINK_95:https://mpago.la/linsi-manual-qa-95 \
+            --var WORKSHOP_PAYMENT_LINK_85:https://mpago.la/linsi-manual-qa-85 \
+            --var WORKSHOP_PAYMENT_LINK_80:https://mpago.la/linsi-manual-qa-80 \
             2>&1 | tee /tmp/wrangler-preview.log
           PREVIEW_URL=$(grep -Eo 'https://[A-Za-z0-9.-]+\.workers\.dev' /tmp/wrangler-preview.log | tail -n 1)
           if [ -z "$PREVIEW_URL" ]; then

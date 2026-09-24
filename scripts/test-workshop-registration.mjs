@@ -32,24 +32,32 @@ async function submitAndAssert(page, expectedAmount, expectedHref) {
 }
 
 try {
-  const desktop = await browser.newPage({viewport: {width: 1440, height: 1000}});
-  await fillForm(desktop);
-  await submitAndAssert(desktop, '100', 'https://mpago.la/linsi-qa-full');
-  assert.ok((await desktop.evaluate(() => document.documentElement.scrollWidth)) <= 1440);
+  const full = await browser.newPage({viewport: {width: 1440, height: 1000}});
+  await fillForm(full);
+  await submitAndAssert(full, '100', 'https://mpago.la/linsi-qa-full');
+  assert.ok((await full.evaluate(() => document.documentElement.scrollWidth)) <= 1440);
 
-  const discounted = await browser.newPage({viewport: {width: 1440, height: 1000}});
-  await fillForm(discounted, {coupon: 'Croq10'});
-  await submitAndAssert(discounted, '90', 'https://mpago.la/linsi-qa-discount');
+  for (const offer of [
+    {coupon: 'croq5', amount: '95', href: 'https://mpago.la/linsi-qa-95'},
+    {coupon: 'GUIA5', amount: '95', href: 'https://mpago.la/linsi-qa-95'},
+    {coupon: 'VAGASUX15', amount: '85', href: 'https://mpago.la/linsi-qa-85'},
+    {coupon: 'CLUBEUXW20', amount: '80', href: 'https://mpago.la/linsi-qa-80'},
+  ]) {
+    const page = await browser.newPage({viewport: {width: 1440, height: 1000}});
+    await fillForm(page, {coupon: offer.coupon});
+    await submitAndAssert(page, offer.amount, offer.href);
+    await page.close();
+  }
 
   const mobile = await browser.newPage({viewport: {width: 390, height: 844}});
-  await fillForm(mobile, {coupon: 'GUIA10'});
-  await submitAndAssert(mobile, '90', 'https://mpago.la/linsi-qa-discount');
+  await fillForm(mobile, {coupon: 'GUIA5'});
+  await submitAndAssert(mobile, '95', 'https://mpago.la/linsi-qa-95');
   const documentWidth = await mobile.evaluate(() => document.documentElement.scrollWidth);
   assert.ok(documentWidth <= 390, `A página mobile não pode ter overflow horizontal (${documentWidth}px).`);
   const ctaBox = await mobile.getByRole('link', {name: 'Pagar no Mercado Pago'}).boundingBox();
   assert.ok(ctaBox && ctaBox.width > 340, 'O CTA de pagamento deve ocupar a largura útil no mobile.');
 
-  console.log('Workshop browser smoke passed: concise post-registration feedback, correct payment links and mobile layout.');
+  console.log('Workshop browser smoke passed: input accepted all current coupons, payment routes are correct and mobile layout is preserved.');
 } finally {
   await browser.close();
 }

@@ -41,14 +41,14 @@ try {
 
   const details = await browser.newPage({viewport: {width: 1440, height: 1000}});
   await prepare(details, 'light');
-  await details.locator('#cupom').fill('Croq10');
+  await details.locator('#cupom').fill('CROQ5');
   await details.getByText('Cupom aplicado', {exact: true}).waitFor();
   await details.screenshot({path: `${artifactDir}/desktop-light-coupon-valid.png`, fullPage: true});
   await fillRequired(details);
   await details.getByRole('button', {name: 'Continuar para pagamento'}).click();
   await details.getByRole('heading', {name: 'Falta pouco!'}).waitFor();
   await details.getByText('Mapeando experiências com LINSI', {exact: true}).waitFor();
-  await details.screenshot({path: `${artifactDir}/desktop-light-registered-90.png`, fullPage: true});
+  await details.screenshot({path: `${artifactDir}/desktop-light-registered-95.png`, fullPage: true});
   await details.close();
 
   const invalid = await browser.newPage({viewport: {width: 1440, height: 1000}});
