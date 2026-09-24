@@ -168,34 +168,9 @@
 .feedback p {
   margin: 0;
 }
-
-.amountBlock {
-  border-bottom: 1px solid var(--linsi-border-color);
-  border-top: 1px solid var(--linsi-border-color);
-  display: flex;
-  justify-content: space-between;
-  padding: var(--linsi-space-16) 0;
-}
-
-.amountBlock span {
-  color: var(--linsi-neutral-base);
-  font-size: 0.9rem;
-}
-
-.amountBlock strong {
-  color: var(--ifm-font-color-base);
-  font-family: var(--ifm-heading-font-family);
-  font-size: 1.25rem;
-}
-
 .paymentLink {
   justify-self: start;
   margin-top: var(--linsi-space-8);
-}
-
-.paymentNotice {
-  color: var(--linsi-neutral-base);
-  font-size: 0.9rem;
 }
 
 [data-theme='dark'] .title,
