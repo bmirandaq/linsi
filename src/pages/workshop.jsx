@@ -5,7 +5,12 @@ import styles from './workshop.module.css';
 const WORKSHOP_API_URL = 'https://linsi-form-handler.bmirandaqux.workers.dev';
 const COUPON_DEBOUNCE_MS = 500;
 const MOCK_REQUEST_DELAY_MS = 500;
-const MOCK_VALID_COUPONS = new Set(['VAGASUX10', 'CROQ10', 'GUIA10']);
+const MOCK_COUPONS = new Map([
+  ['VAGASUX15', {amount: 85, paymentUrl: 'https://mpago.la/linsi-qa-85'}],
+  ['CLUBEUXW20', {amount: 80, paymentUrl: 'https://mpago.la/linsi-qa-80'}],
+  ['CROQ5', {amount: 95, paymentUrl: 'https://mpago.la/linsi-qa-95'}],
+  ['GUIA5', {amount: 95, paymentUrl: 'https://mpago.la/linsi-qa-95'}],
+]);
 
 function isWorkshopMockMode() {
   if (typeof window === 'undefined') return false;
@@ -21,18 +26,18 @@ function mockApiRequest(path, options = {}) {
 
   if (path === '/workshop/coupon') {
     const coupon = String(body.coupon || '').trim().toUpperCase();
-    if (MOCK_VALID_COUPONS.has(coupon)) return Promise.resolve({status: 'valid', coupon});
+    if (MOCK_COUPONS.has(coupon)) return Promise.resolve({status: 'valid', coupon});
     if (coupon === 'EXPIRADO' || coupon === 'INDISPONIVEL') return Promise.resolve({status: 'unavailable'});
     return Promise.resolve({status: 'invalid'});
   }
 
   if (path === '/workshop/start') {
     const coupon = String(body.coupon || '').trim().toUpperCase();
-    const discounted = MOCK_VALID_COUPONS.has(coupon);
+    const offer = MOCK_COUPONS.get(coupon);
     return mockDelay({
       registrationId: 'WS-0123456789ABCDEF0123456789ABCDEF',
-      amount: discounted ? 90 : 100,
-      paymentUrl: discounted ? 'https://mpago.la/linsi-qa-discount' : 'https://mpago.la/linsi-qa-full',
+      amount: offer?.amount ?? 100,
+      paymentUrl: offer?.paymentUrl ?? 'https://mpago.la/linsi-qa-full',
     });
   }
 
