@@ -154,7 +154,7 @@
 .submit {
   background: var(--linsi-button-background);
   border: 0;
-  border-radius: var(--linsi-radius-md);
+  border-radius: var(--linsi-radius-full);
   color: var(--linsi-button-text);
   cursor: pointer;
   font-family: var(--ifm-heading-font-family);
