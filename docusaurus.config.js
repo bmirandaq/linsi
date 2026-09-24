@@ -37,6 +37,37 @@ const rootCanvasInitStyle = `
   }
 `;
 
+function readAnalyticsEnv(name) {
+  const value = process.env[name]?.trim();
+  return value && /^[A-Za-z0-9_-]+$/.test(value) ? value : undefined;
+}
+
+const analyticsEnabled = process.env.NODE_ENV === 'production';
+const cloudflareAnalyticsToken = analyticsEnabled
+  ? readAnalyticsEnv('CLOUDFLARE_WEB_ANALYTICS_TOKEN')
+  : undefined;
+const clarityProjectId = analyticsEnabled
+  ? readAnalyticsEnv('CLARITY_PROJECT_ID')
+  : undefined;
+
+const clarityInitScript = clarityProjectId
+  ? `
+    (function(c,l,a,r,i,t,y){
+      c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+      t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+      y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", ${JSON.stringify(clarityProjectId)});
+
+    try {
+      var linsiCampaignParams = new URLSearchParams(window.location.search);
+      ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'].forEach(function(key) {
+        var value = linsiCampaignParams.get(key);
+        if (value) window.clarity('set', key, value.slice(0, 120));
+      });
+    } catch (_) {}
+  `
+  : undefined;
+
 const config = {
   title: 'LINSI – Linguagem Simplificada de Fluxogramas de UX',
   tagline: 'Linguagem Simplificada de Fluxogramas de UX',
@@ -70,6 +101,28 @@ const config = {
       attributes: {'data-linsi-root-canvas': 'true'},
       innerHTML: rootCanvasInitStyle,
     },
+    ...(cloudflareAnalyticsToken
+      ? [
+          {
+            tagName: 'script',
+            attributes: {
+              type: 'module',
+              src: 'https://static.cloudflareinsights.com/beacon.min.js',
+              'data-cf-beacon': JSON.stringify({token: cloudflareAnalyticsToken}),
+              'data-linsi-analytics': 'cloudflare',
+            },
+          },
+        ]
+      : []),
+    ...(clarityInitScript
+      ? [
+          {
+            tagName: 'script',
+            attributes: {'data-linsi-analytics': 'clarity'},
+            innerHTML: clarityInitScript,
+          },
+        ]
+      : []),
     {
       tagName: 'meta',
       attributes: {
