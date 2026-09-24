@@ -33,7 +33,7 @@ try {
       await page.screenshot({path: `${artifactDir}/${viewport.name}-${theme}-form.png`, fullPage: true});
       await fillRequired(page);
       await page.getByRole('button', {name: 'Continuar para pagamento'}).click();
-      await page.getByRole('heading', {name: 'Inscrição recebida'}).waitFor();
+      await page.getByRole('heading', {name: 'Falta pouco!'}).waitFor();
       await page.screenshot({path: `${artifactDir}/${viewport.name}-${theme}-registered-100.png`, fullPage: true});
       await page.close();
     }
@@ -46,8 +46,8 @@ try {
   await details.screenshot({path: `${artifactDir}/desktop-light-coupon-valid.png`, fullPage: true});
   await fillRequired(details);
   await details.getByRole('button', {name: 'Continuar para pagamento'}).click();
-  await details.getByRole('heading', {name: 'Inscrição recebida'}).waitFor();
-  await details.getByText('R$ 90,00', {exact: true}).waitFor();
+  await details.getByRole('heading', {name: 'Falta pouco!'}).waitFor();
+  await details.getByText('Mapeando experiências com LINSI', {exact: true}).waitFor();
   await details.screenshot({path: `${artifactDir}/desktop-light-registered-90.png`, fullPage: true});
   await details.close();
 
