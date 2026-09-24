@@ -95,7 +95,7 @@
   align-items: center;
   background: var(--linsi-button-background);
   border: 1px solid var(--linsi-button-background);
-  border-radius: var(--linsi-radius-md);
+  border-radius: var(--linsi-radius-full);
   color: var(--linsi-button-text);
   cursor: pointer;
   display: inline-flex;
