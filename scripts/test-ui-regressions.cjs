@@ -35,6 +35,7 @@ const mobileSidebarSecondaryMenuCss = read(
 const navbarSearchCss = read('src/theme/Navbar/Search/styles.module.css');
 const sidebarLayout = read('src/theme/DocRoot/Layout/Sidebar/index.jsx');
 const sidebarLayoutCss = read('src/theme/DocRoot/Layout/Sidebar/styles.module.css');
+const sidebarContentCss = read('src/theme/DocSidebar/Desktop/Content/styles.module.css');
 
 assert.match(
   docusaurusConfig,
@@ -80,6 +81,16 @@ assert.match(
   layoutFixesCss,
   /\.theme-doc-sidebar-container \.menu\s*\{[\s\S]*?max-height:\s*none !important;[\s\S]*?overflow:\s*visible !important;/,
   'O menu da sidebar desktop não deve criar rolagem interna.',
+);
+assert.match(
+  sidebarContentCss,
+  /@media \(min-width: 997px\)[\s\S]*?\.menu\s*\{[\s\S]*?padding:\s*var\(--linsi-space-8\);/,
+  'O menu desktop deve manter inset simétrico de 8px para todos os nav buttons.',
+);
+assert.doesNotMatch(
+  sidebarContentCss,
+  /padding:\s*var\(--linsi-space-8\)\s+0\s+var\(--linsi-space-8\)\s+var\(--linsi-space-8\)|scrollbar-gutter:\s*stable/,
+  'A sidebar não deve reintroduzir gutter que zere o padding direito dos nav buttons.',
 );
 assert.match(
   layoutFixesCss,
