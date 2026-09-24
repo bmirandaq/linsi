@@ -61,7 +61,7 @@
   align-items: center;
   background: var(--linsi-brand-02-base);
   border: 1px solid var(--linsi-brand-02-base);
-  border-radius: var(--linsi-radius-md);
+  border-radius: var(--linsi-radius-full);
   color: var(--linsi-pure-white) !important;
   display: inline-flex;
   font-family: var(--ifm-heading-font-family);
