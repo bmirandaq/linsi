@@ -7,7 +7,11 @@ const routes = [
   '/',
   '/docs/principios',
   '/docs/pq-fluxogramas',
+  '/docs/templates',
+  '/docs/assistente',
+  '/workshop',
   '/contribuir',
+  '/contribuir-ajuda',
   '/cafe-bea',
 ];
 const viewports = [
@@ -24,6 +28,14 @@ const failures = [];
 
 const recordFailure = (scope, error) => {
   failures.push(`${scope}: ${error instanceof Error ? error.message : String(error)}`);
+};
+
+const assertFullRadius = async (locator, name) => {
+  await locator.waitFor({ state: 'visible' });
+  const radius = await locator.evaluate((element) =>
+    Number.parseFloat(getComputedStyle(element).borderTopLeftRadius),
+  );
+  assert.ok(radius >= 999, `${name} should use radius-full; rendered radius is ${radius}px`);
 };
 
 for (const viewport of viewports) {
@@ -90,11 +102,20 @@ for (const viewport of viewports) {
           const style = getComputedStyle(element);
           const menu = element.querySelector('.menu');
           const menuStyle = menu ? getComputedStyle(menu) : null;
+          const activeLink = menu?.querySelector(
+            '.theme-doc-sidebar-item-link > .menu__link--active:not(.menu__link--sublist)',
+          );
+          const menuRect = menu?.getBoundingClientRect() ?? null;
+          const activeRect = activeLink?.getBoundingClientRect() ?? null;
           return {
             position: style.position,
             left: style.left,
             menuOverflowY: menuStyle?.overflowY ?? null,
             menuScrollable: menu ? menu.scrollHeight > menu.clientHeight + 1 : false,
+            menuPaddingLeft: menuStyle ? Number.parseFloat(menuStyle.paddingLeft) : null,
+            menuPaddingRight: menuStyle ? Number.parseFloat(menuStyle.paddingRight) : null,
+            activeInsetLeft: menuRect && activeRect ? activeRect.left - menuRect.left : null,
+            activeInsetRight: menuRect && activeRect ? menuRect.right - activeRect.right : null,
           };
         });
 
@@ -103,11 +124,47 @@ for (const viewport of viewports) {
         assert.notEqual(sidebarState.menuOverflowY, 'auto', 'docs sidebar menu must not create its own vertical scroll');
         assert.notEqual(sidebarState.menuOverflowY, 'scroll', 'docs sidebar menu must not force vertical scrolling');
         assert.equal(sidebarState.menuScrollable, false, 'docs sidebar menu content is clipped into an internal scroll area');
+        assert.ok(sidebarState.menuPaddingLeft >= 7, `docs nav left padding is ${sidebarState.menuPaddingLeft}px`);
+        assert.ok(sidebarState.menuPaddingRight >= 7, `docs nav right padding is ${sidebarState.menuPaddingRight}px`);
+        assert.ok(sidebarState.activeInsetLeft >= 7, `active nav left inset is ${sidebarState.activeInsetLeft}px`);
+        assert.ok(sidebarState.activeInsetRight >= 7, `active nav right inset is ${sidebarState.activeInsetRight}px`);
+        assert.ok(
+          Math.abs(sidebarState.activeInsetLeft - sidebarState.activeInsetRight) <= 2,
+          `active nav insets are asymmetric: left ${sidebarState.activeInsetLeft}px, right ${sidebarState.activeInsetRight}px`,
+        );
+      }
+
+      if (route === '/') {
+        await assertFullRadius(page.locator('[class*="primaryAction"]').first(), 'home primary CTA');
+        await assertFullRadius(page.locator('[class*="workshopAction"]').first(), 'home workshop CTA');
+        await assertFullRadius(page.locator('[class*="workshopTag_"]').first(), 'home workshop tag');
+      }
+
+      if (route === '/workshop') {
+        await assertFullRadius(page.locator('button[type="submit"]').first(), 'workshop submit CTA');
+      }
+
+      if (route === '/contribuir-ajuda') {
+        await assertFullRadius(page.locator('button[type="submit"]').first(), 'contribute submit CTA');
+      }
+
+      if (route === '/cafe-bea') {
+        await assertFullRadius(page.locator('[class*="primaryCopyButton"]').first(), 'Pix copy CTA');
+      }
+
+      if (route === '/docs/templates') {
+        await assertFullRadius(page.locator('[class*="actionButton"]').first(), 'template CTA');
+      }
+
+      if (route === '/docs/assistente') {
+        await assertFullRadius(page.locator('.theme-doc-markdown [class*="downloadCta"]').first(), 'assistant download CTA');
+        await assertFullRadius(page.locator('.theme-doc-markdown [class*="beta"]').first(), 'assistant Beta badge');
       }
 
       if (route === '/' && (viewport.width === 1440 || viewport.width === 390)) {
         const searchButton = page.locator('.navbar .aa-DetachedSearchButton').first();
         if (await searchButton.isVisible()) {
+          await assertFullRadius(searchButton, 'navbar search action');
           await searchButton.click();
           const modal = page.locator('.aa-DetachedContainer').first();
           await modal.waitFor({ state: 'visible' });

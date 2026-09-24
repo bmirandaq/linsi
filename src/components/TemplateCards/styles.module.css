@@ -61,14 +61,15 @@
   align-items: center;
   background: var(--linsi-brand-02-base);
   border: 1px solid var(--linsi-brand-02-base);
-  border-radius: var(--linsi-radius-md);
+  border-radius: var(--linsi-radius-full);
   color: var(--linsi-pure-white) !important;
   display: inline-flex;
   font-family: var(--ifm-heading-font-family);
-  font-size: 0.8125rem;
+  font-size: 1rem;
   font-weight: 700;
   justify-content: center;
-  padding: var(--linsi-space-8) var(--linsi-space-16);
+  min-height: 56px;
+  padding: 0 var(--linsi-space-24);
   text-align: center;
   text-decoration: none !important;
   transition: background-color var(--linsi-motion-fast) var(--linsi-ease-standard),

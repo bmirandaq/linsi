@@ -85,7 +85,7 @@
 .linsi-sidebar-assistant-beta.theme-doc-sidebar-item-link > .menu__link::after {
   background: var(--linsi-accent-primary-soft);
   border: 1px solid var(--linsi-accent-primary);
-  border-radius: 999px;
+  border-radius: var(--linsi-radius-full);
   color: var(--linsi-accent-primary);
   content: 'Beta';
   flex: 0 0 auto;

@@ -95,15 +95,16 @@
   align-items: center;
   background: var(--linsi-button-background);
   border: 1px solid var(--linsi-button-background);
-  border-radius: var(--linsi-radius-md);
+  border-radius: var(--linsi-radius-full);
   color: var(--linsi-button-text);
   cursor: pointer;
   display: inline-flex;
   font-family: var(--ifm-heading-font-family);
+  font-size: 1rem;
   font-weight: 700;
   justify-content: center;
-  min-height: 46px;
-  padding: 0 var(--linsi-space-16);
+  min-height: 56px;
+  padding: 0 var(--linsi-space-24);
   text-decoration: none;
   transition: background-color var(--linsi-motion-fast) var(--linsi-ease-standard),
     border-color var(--linsi-motion-fast) var(--linsi-ease-standard),
@@ -167,34 +168,9 @@
 .feedback p {
   margin: 0;
 }
-
-.amountBlock {
-  border-bottom: 1px solid var(--linsi-border-color);
-  border-top: 1px solid var(--linsi-border-color);
-  display: flex;
-  justify-content: space-between;
-  padding: var(--linsi-space-16) 0;
-}
-
-.amountBlock span {
-  color: var(--linsi-neutral-base);
-  font-size: 0.9rem;
-}
-
-.amountBlock strong {
-  color: var(--ifm-font-color-base);
-  font-family: var(--ifm-heading-font-family);
-  font-size: 1.25rem;
-}
-
 .paymentLink {
   justify-self: start;
   margin-top: var(--linsi-space-8);
-}
-
-.paymentNotice {
-  color: var(--linsi-neutral-base);
-  font-size: 0.9rem;
 }
 
 [data-theme='dark'] .title,
