@@ -148,7 +148,6 @@ for (const viewport of viewports) {
         const searchButton = page.locator('.navbar .aa-DetachedSearchButton').first();
         if (await searchButton.isVisible()) {
           await assertFullRadius(searchButton, 'navbar search action');
-        if (await searchButton.isVisible()) {
           await searchButton.click();
           const modal = page.locator('.aa-DetachedContainer').first();
           await modal.waitFor({ state: 'visible' });
