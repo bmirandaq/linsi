@@ -9,8 +9,18 @@ const REASON_LABELS = Object.freeze({
 const ALLOWED_REASONS = Object.keys(REASON_LABELS);
 const CONTACT_ACTION = 'contact';
 const WORKSHOP_BASE_PRICE = 100;
-const WORKSHOP_DISCOUNT_PERCENT = 10;
-const WORKSHOP_DISCOUNTED_PRICE = 90;
+const WORKSHOP_COUPONS = Object.freeze({
+  VAGASUX15: Object.freeze({partner: 'VagasUX', discount: 15, amount: 85}),
+  CLUBEUXW20: Object.freeze({partner: 'Clube do UX Writing', discount: 20, amount: 80}),
+  CROQ5: Object.freeze({partner: 'Design Croquete', discount: 5, amount: 95}),
+  GUIA5: Object.freeze({partner: 'GUIA', discount: 5, amount: 95}),
+});
+const WORKSHOP_PAYMENT_BINDINGS = Object.freeze({
+  100: 'WORKSHOP_PAYMENT_LINK_FULL',
+  95: 'WORKSHOP_PAYMENT_LINK_95',
+  85: 'WORKSHOP_PAYMENT_LINK_85',
+  80: 'WORKSHOP_PAYMENT_LINK_80',
+});
 const MAX_LENGTHS = {
   apelido: 120,
   email: 254,
@@ -270,14 +280,22 @@ function normalizeCoupon(value) {
 }
 
 function couponConfig(env) {
-  if (!env.WORKSHOP_COUPONS_JSON) return null;
-  try {
-    const parsed = JSON.parse(env.WORKSHOP_COUPONS_JSON);
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
-    return parsed;
-  } catch {
-    return null;
+  let overrides = {};
+  if (env.WORKSHOP_COUPONS_JSON) {
+    try {
+      const parsed = JSON.parse(env.WORKSHOP_COUPONS_JSON);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) overrides = parsed;
+    } catch {
+      overrides = {};
+    }
   }
+
+  return Object.fromEntries(Object.entries(WORKSHOP_COUPONS).map(([coupon, rule]) => {
+    const override = overrides[coupon];
+    const active = typeof override?.active === 'boolean' ? override.active : true;
+    const expiresAt = typeof override?.expiresAt === 'string' ? override.expiresAt : '';
+    return [coupon, {...rule, active, expiresAt}];
+  }));
 }
 
 function evaluateCoupon(value, env) {
@@ -286,19 +304,17 @@ function evaluateCoupon(value, env) {
   if (!coupon) return {status: 'empty', coupon: '', partner: '', amount: WORKSHOP_BASE_PRICE};
 
   const config = couponConfig(env);
-  if (!config) return {status: 'unavailable'};
   const rule = config[coupon];
   if (!rule) return {status: 'invalid'};
 
   const expired = rule.expiresAt && Number.isFinite(Date.parse(rule.expiresAt)) && Date.parse(rule.expiresAt) < Date.now();
   if (rule.active === false || expired) return {status: 'unavailable'};
-  if (Number(rule.discount) !== WORKSHOP_DISCOUNT_PERCENT) return {status: 'unavailable'};
 
   return {
     status: 'valid',
     coupon,
-    partner: requiredString(rule.partner, 120) || 'Parceria',
-    amount: WORKSHOP_DISCOUNTED_PRICE,
+    partner: rule.partner,
+    amount: rule.amount,
   };
 }
 
@@ -323,11 +339,8 @@ function paymentLink(value) {
 }
 
 function workshopPaymentLink(amount, env) {
-  return paymentLink(
-    amount === WORKSHOP_DISCOUNTED_PRICE
-      ? env.WORKSHOP_PAYMENT_LINK_DISCOUNT
-      : env.WORKSHOP_PAYMENT_LINK_FULL,
-  );
+  const binding = WORKSHOP_PAYMENT_BINDINGS[amount];
+  return binding ? paymentLink(env[binding]) : null;
 }
 
 async function createWorkshopRegistration({registrationId, nome, email, cargo, empresa, linkedin, whatsapp, coupon, partner, amount}, env) {

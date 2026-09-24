@@ -5,7 +5,9 @@ compatibility_date = "2025-08-31"
 [vars]
 ALLOWED_ORIGIN = "https://linsi.beamiranda.com.br"
 WORKSHOP_PAYMENT_LINK_FULL = "https://mpago.la/1gSBzhj"
-WORKSHOP_PAYMENT_LINK_DISCOUNT = "https://mpago.la/2d16sXn"
+WORKSHOP_PAYMENT_LINK_95 = "https://mpago.la/2d16sXn"
+WORKSHOP_PAYMENT_LINK_85 = "https://mpago.la/2B4Xqf2"
+WORKSHOP_PAYMENT_LINK_80 = "https://mpago.la/188nCxc"
 
 # Configure via: wrangler secret put TURNSTILE_SECRET_KEY
 # Configure via: wrangler secret put NOTION_API_KEY
@@ -14,4 +16,4 @@ WORKSHOP_PAYMENT_LINK_DISCOUNT = "https://mpago.la/2d16sXn"
 # Configure via: wrangler secret put CONTACT_TO_EMAIL
 # Configure via: wrangler secret put CONTACT_FROM_EMAIL
 # Configure via: wrangler secret put WORKSHOP_NOTION_DATABASE_ID
-# Configure via: wrangler secret put WORKSHOP_COUPONS_JSON
+# Opcional: WORKSHOP_COUPONS_JSON pode sobrescrever active/expiresAt dos cupons configurados em código
