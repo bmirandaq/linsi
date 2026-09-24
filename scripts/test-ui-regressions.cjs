@@ -215,6 +215,26 @@ assert.match(
   'A escala global de radius deve permanecer em 12/16/24/full.',
 );
 assert.match(
+  customCss,
+  /--ifm-button-border-radius:\s*var\(--linsi-radius-full\);/,
+  'Botões genéricos do Docusaurus devem consumir radius-full.',
+);
+assert.match(
+  homeCss,
+  /\.workshopTag\s*\{[\s\S]*?border-radius:\s*var\(--linsi-radius-full\);/,
+  'Tags do Workshop devem consumir radius-full.',
+);
+assert.match(
+  customCss,
+  /\.navbar \.aa-DetachedSearchButton\s*\{[\s\S]*?border-radius:\s*var\(--linsi-radius-full\) !important;/,
+  'O trigger compacto de busca deve consumir radius-full.',
+);
+assert.match(
+  customCss,
+  /\.aa-ClearButton\s*\{[\s\S]*?border-radius:\s*var\(--linsi-radius-full\) !important;/,
+  'A ação de limpar busca deve consumir radius-full.',
+);
+assert.match(
   layoutFixesCss,
   /\.linsi-sidebar-assistant-beta[\s\S]*?border-radius:\s*var\(--linsi-radius-full\);/,
   'O badge Beta deve consumir o token radius-full.',
