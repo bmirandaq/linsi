@@ -7,7 +7,11 @@ const routes = [
   '/',
   '/docs/principios',
   '/docs/pq-fluxogramas',
+  '/docs/templates',
+  '/docs/assistente',
+  '/workshop',
   '/contribuir',
+  '/contribuir-ajuda',
   '/cafe-bea',
 ];
 const viewports = [
@@ -24,6 +28,14 @@ const failures = [];
 
 const recordFailure = (scope, error) => {
   failures.push(`${scope}: ${error instanceof Error ? error.message : String(error)}`);
+};
+
+const assertFullRadius = async (locator, name) => {
+  await locator.waitFor({ state: 'visible' });
+  const radius = await locator.evaluate((element) =>
+    Number.parseFloat(getComputedStyle(element).borderTopLeftRadius),
+  );
+  assert.ok(radius >= 999, `${name} should use radius-full; rendered radius is ${radius}px`);
 };
 
 for (const viewport of viewports) {
@@ -105,8 +117,37 @@ for (const viewport of viewports) {
         assert.equal(sidebarState.menuScrollable, false, 'docs sidebar menu content is clipped into an internal scroll area');
       }
 
+      if (route === '/') {
+        await assertFullRadius(page.locator('[class*="primaryAction"]').first(), 'home primary CTA');
+        await assertFullRadius(page.locator('[class*="workshopAction"]').first(), 'home workshop CTA');
+        await assertFullRadius(page.locator('[class*="workshopTag"]').first(), 'home workshop tag');
+      }
+
+      if (route === '/workshop') {
+        await assertFullRadius(page.locator('button[type="submit"]').first(), 'workshop submit CTA');
+      }
+
+      if (route === '/contribuir-ajuda') {
+        await assertFullRadius(page.locator('button[type="submit"]').first(), 'contribute submit CTA');
+      }
+
+      if (route === '/cafe-bea') {
+        await assertFullRadius(page.locator('[class*="primaryCopyButton"]').first(), 'Pix copy CTA');
+      }
+
+      if (route === '/docs/templates') {
+        await assertFullRadius(page.locator('[class*="actionButton"]').first(), 'template CTA');
+      }
+
+      if (route === '/docs/assistente') {
+        await assertFullRadius(page.locator('[class*="downloadCta"]').first(), 'assistant download CTA');
+        await assertFullRadius(page.locator('[class*="beta"]').first(), 'assistant Beta badge');
+      }
+
       if (route === '/' && (viewport.width === 1440 || viewport.width === 390)) {
         const searchButton = page.locator('.navbar .aa-DetachedSearchButton').first();
+        if (await searchButton.isVisible()) {
+          await assertFullRadius(searchButton, 'navbar search action');
         if (await searchButton.isVisible()) {
           await searchButton.click();
           const modal = page.locator('.aa-DetachedContainer').first();
