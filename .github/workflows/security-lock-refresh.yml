@@ -1,0 +1,40 @@
+name: Refresh security dependency lock
+
+on:
+  pull_request:
+    paths:
+      - package.json
+      - package-lock.json
+      - .github/workflows/security-lock-refresh.yml
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    if: github.head_ref == 'chore/security-dependencies-2026-10'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Refresh lockfile only
+        run: npm install --package-lock-only --ignore-scripts
+
+      - name: Capture production audit
+        run: npm audit --omit=dev --json > security-audit.json || true
+
+      - name: Upload refreshed lock and audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-lock-refresh
+          path: |
+            package-lock.json
+            security-audit.json
+          if-no-files-found: error
