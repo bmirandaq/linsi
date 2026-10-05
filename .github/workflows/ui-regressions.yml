@@ -28,6 +28,8 @@ jobs:
         run: npm ci
 
       - name: Auditar dependências
+        id: dependency-audit
+        continue-on-error: true
         run: npm run audit:dependencies
 
       - name: Verificar tipos
@@ -84,13 +86,13 @@ jobs:
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
 
-      - name: Validar inscrição manual do Workshop no navegador
-        run: node scripts/test-workshop-registration.mjs
+      - name: Validar redirect legado do Workshop
+        run: node scripts/test-workshop-redirect.mjs
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
 
-      - name: Capturar QA visual do Workshop manual
-        run: node scripts/capture-workshop-manual-qa.mjs
+      - name: Capturar QA visual do Workshop atual
+        run: node scripts/capture-workshop-qa.mjs
         env:
           SMOKE_BASE_URL: http://127.0.0.1:3000
 
@@ -98,8 +100,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: workshop-manual-visual-qa
-          path: artifacts/workshop-manual-qa/*.png
+          name: workshop-visual-qa
+          path: artifacts/workshop-qa/*.png
           if-no-files-found: error
 
       - name: Validar docs mobile no iPhone 16 Pro Max em todas as fontes
@@ -150,57 +152,9 @@ jobs:
           path: artifacts/analytics-qa/*.png
           if-no-files-found: error
 
-  preview-integration:
-    name: QA real da inscrição manual em Worker preview
-    if: github.event_name == 'pull_request' && contains(github.head_ref, 'workshop')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Baixar branch da PR
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-
-      - name: Configurar Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: npm
-
-      - name: Instalar dependências
-        run: npm ci
-
-      - name: Verificar credenciais Cloudflare
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Falhar se a auditoria de dependências encontrou vulnerabilidades
+        if: always() && steps.dependency-audit.outcome == 'failure'
         run: |
-          test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::CLOUDFLARE_API_TOKEN ausente"; exit 1; }
-          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::CLOUDFLARE_ACCOUNT_ID ausente"; exit 1; }
+          echo "::error::A auditoria de dependências encontrou vulnerabilidades não tratadas."
+          exit 1
 
-      - name: Criar versão preview do Worker sem deploy
-        id: worker-preview
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          set -o pipefail
-          npx wrangler@4 versions upload \
-            --config worker/wrangler.toml \
-            --keep-vars \
-            --var ALLOWED_ORIGIN:https://linsi.beamiranda.com.br \
-            --var WORKSHOP_PAYMENT_LINK_FULL:https://mpago.la/linsi-manual-qa-full \
-            --var WORKSHOP_PAYMENT_LINK_95:https://mpago.la/linsi-manual-qa-95 \
-            --var WORKSHOP_PAYMENT_LINK_85:https://mpago.la/linsi-manual-qa-85 \
-            --var WORKSHOP_PAYMENT_LINK_80:https://mpago.la/linsi-manual-qa-80 \
-            2>&1 | tee /tmp/wrangler-preview.log
-          PREVIEW_URL=$(grep -Eo 'https://[A-Za-z0-9.-]+\.workers\.dev' /tmp/wrangler-preview.log | tail -n 1)
-          if [ -z "$PREVIEW_URL" ]; then
-            echo "::error::Wrangler não retornou uma Preview URL."
-            exit 1
-          fi
-          echo "url=$PREVIEW_URL" >> "$GITHUB_OUTPUT"
-
-      - name: Testar inscrição real sem mock de aplicação
-        env:
-          WORKER_PREVIEW_URL: ${{ steps.worker-preview.outputs.url }}
-        run: node scripts/test-workshop-manual-preview.mjs

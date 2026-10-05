@@ -36,9 +36,9 @@ O snippet de inicialização do Clarity permanece o oficial. Não há tracking m
 Eventos mínimos enviados ao Clarity:
 
 - `workshop_view`: clique na âncora “Participar do workshop” na Home;
-- `workshop_signup_click`: clique no CTA da seção do workshop que leva à página de inscrição.
+- `workshop_signup_click`: clique no CTA “Quero participar” da seção do workshop, antes da saída para o checkout externo da HeroSpark/SparkPay.
 
-A rota `/workshop` já é observável por pageview; por isso não há evento redundante de pageview manual.
+A rota legada `/workshop` redireciona para o mesmo checkout externo. Não há evento manual adicional de pageview ou de inscrição nessa rota.
 
 ## UTMs
 
@@ -88,8 +88,9 @@ Na entrada do documento, o snippet lê exclusivamente os quatro parâmetros acim
 ## Privacidade
 
 - Cloudflare Web Analytics é usado no modo padrão privacy-first.
-- O código não muda masking, não declara `data-clarity-unmask` e não envia campos de formulário, custom IDs, session IDs ou friendly names. Os eventos enviam somente seus nomes.
-- No projeto Clarity, Bea confirmou **Settings > Masking > Balanced (Equilibrado)** e **cookies desligados**. O código não concede consentimento automaticamente nem altera essas configurações. Confirmar em produção a ausência de regras Unmask para o formulário e validar Nome, E-mail, Cargo, Empresa, LinkedIn, WhatsApp e Cupom em uma gravação nova com dados fictícios. A documentação da Microsoft informa que inputs são mascarados em todos os modos, mas a gravação real ainda precisa ser inspecionada.
+- O código não muda masking, não declara `data-clarity-unmask` e não envia dados pessoais, custom IDs, session IDs ou friendly names nos eventos do workshop. Os eventos enviam somente seus nomes.
+- O checkout do workshop agora acontece fora do domínio da LINSI, na HeroSpark/SparkPay. Dados preenchidos no checkout externo não passam pelo frontend ou pelo Worker da LINSI e não fazem parte do contrato de masking do formulário antigo.
+- No projeto Clarity, Bea confirmou **Settings > Masking > Balanced (Equilibrado)** e **cookies desligados**. O código não concede consentimento automaticamente nem altera essas configurações.
 - A LINSI não possui atualmente uma página/política de privacidade específica no repositório.
 - Antes de publicar o Clarity em produção, revisar a necessidade de transparência/aviso de privacidade para o contexto da LINSI e LGPD.
 - Não foi adicionado banner de cookies automaticamente.
@@ -104,7 +105,7 @@ Referências oficiais: [masking do Clarity](https://learn.microsoft.com/en-us/cl
 
 - `npm run test:analytics` (também em `prebuild`): configuração ausente/inválida, produção/desenvolvimento, endpoints, UTMs permitidas, payload mínimo e chamadas seguras sem Clarity/SSR.
 - `node scripts/test-analytics-build.cjs build`: ausência dos scripts e IDs no build sem configuração.
-- `node scripts/test-analytics-browser.mjs`: cliques reais, navegação SPA, campos sem envio ao helper, console e ausência/carregamento único dos scripts.
+- `node scripts/test-analytics-browser.mjs`: cliques reais na Home, navegação SPA, evento de saída para HeroSpark interceptado sem acessar o checkout externo, console e ausência/carregamento único dos scripts.
 - O CI gera um segundo build em `build-analytics`, com IDs **fictícios**, e executa os testes de build/browser com `ANALYTICS_TEST_ENABLED=1`. Os fornecedores são interceptados; nenhuma coleta real é alegada por esses testes.
 - `node scripts/test-analytics-visual.mjs`: compara a Home entre `ANALYTICS_BASELINE_URL` e `SMOKE_BASE_URL`, com screenshots desktop 1440×1000 e mobile 390×844, light/dark, em `artifacts/analytics-qa`. No CI a comparação é entre builds sem/com analytics; no QA local também foi comparada à `main`.
 - Os testes de build com IDs fictícios verificam que cada HTML gerado pelo Docusaurus contém um único snippet por fornecedor e que os IDs não aparecem em JS, JSON ou sourcemaps. O HTML independente `static/share-linsi/index.html` é apenas copiado e permanece sem analytics, como no PR original.
@@ -128,7 +129,7 @@ Após configurar os IDs e publicar:
 4. confirmar pageviews no painel;
 5. testar uma URL com UTM;
 6. verificar no Clarity as tags `utm_*`;
-7. clicar em “Participar do workshop” e no CTA de inscrição;
+7. clicar em “Participar do workshop” e em “Quero participar”;
 8. confirmar os eventos `workshop_view` e `workshop_signup_click`;
-9. verificar uma gravação de sessão e confirmar que campos pessoais do workshop continuam mascarados.
+9. confirmar que `/workshop` redireciona para o checkout atual da HeroSpark/SparkPay.
 

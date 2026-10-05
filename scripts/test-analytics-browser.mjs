@@ -5,6 +5,7 @@ import {chromium} from 'playwright';
 // Synthetic build IDs and intercepted vendors must never be used as collection evidence.
 const baseUrl = process.env.SMOKE_BASE_URL ?? 'http://127.0.0.1:3000';
 const enabled = process.env.ANALYTICS_TEST_ENABLED === '1';
+const workshopCheckout = 'https://pay.herospark.com/workshop-mapeando-experiencias-com-linsi-545805';
 const browser = await chromium.launch({headless: true});
 const context = await browser.newContext();
 const requests = [];
@@ -38,19 +39,23 @@ try {
     ['set', 'utm_campaign', 'workshop_linsi'], ['set', 'utm_content', 'post'],
   ] : [];
   assert.deepEqual(await calls(), tags);
+
   await page.getByRole('link', {name: 'Participar do workshop'}).click();
   await page.waitForURL((url) => url.hash === '#workshop');
   await page.locator('#workshop').waitFor({state: 'visible'});
-  await page.locator('#workshop a[href="/workshop"]').click();
-  await page.waitForURL((url) => url.pathname === '/workshop');
+
+  const checkoutLink = page.locator(`#workshop a[href="${workshopCheckout}"]`);
+  assert.equal(await checkoutLink.count(), 1, 'Workshop checkout link must point directly to HeroSpark.');
+  assert.equal(await checkoutLink.getAttribute('href'), workshopCheckout);
+  await page.evaluate((url) => {
+    const link = document.querySelector(`#workshop a[href="${url}"]`);
+    link?.addEventListener('click', (event) => event.preventDefault(), {once: true});
+  }, workshopCheckout);
+  await checkoutLink.click();
+
   const expectedCalls = enabled ? [...tags, ['event', 'workshop_view'], ['event', 'workshop_signup_click']] : [];
   assert.deepEqual(await calls(), expectedCalls);
-  // Fill without submitting: synthetic values must not become tags, IDs or event properties.
-  for (const [id, value] of Object.entries({nome: 'Pessoa QA', email: 'qa@example.com', cargo: 'Designer QA', empresa: 'Empresa QA', linkedin: 'https://linkedin.com/in/pessoa-qa', whatsapp: '11999999999', cupom: 'QA'})) {
-    await page.locator(`#${id}`).fill(value);
-    assert.equal(await page.locator(`#${id}`).evaluate((input) => Boolean(input.closest('[data-clarity-unmask]'))), false);
-  }
-  assert.deepEqual(await calls(), expectedCalls);
+
   await clickRoute('/docs/principios');
   await clickRoute('/cafe-bea');
   await clickRoute('/contribuir-ajuda');
@@ -58,7 +63,7 @@ try {
   assert.deepEqual(await calls(), expectedCalls, 'SPA navigation must not reinitialize tags or emit manual pageviews');
   assert.deepEqual(requests.sort(), enabled ? ['clarity', 'cloudflare'] : [], 'Vendor scripts must load once per document, or never when disabled');
   assert.deepEqual(errors, []);
-  console.log(`Analytics browser passed (${enabled ? 'synthetic IDs; vendors intercepted' : 'no IDs'}): UTMs, both CTA clicks, form isolation, SPA links, single script load and clean console.`);
+  console.log(`Analytics browser passed (${enabled ? 'synthetic IDs; vendors intercepted' : 'no IDs'}): UTMs, workshop view/signup events, external HeroSpark CTA isolation, SPA links, single script load and clean console.`);
 } finally {
   await context.close();
   await browser.close();

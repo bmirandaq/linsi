@@ -9,13 +9,23 @@
   "workshop": {
     "pretitle": "Workshop",
     "title": "Mapeando experiências com LINSI",
-    "description": "Acompanhe na prática um cenário se transformar em um fluxograma completo com aplicação da LINSI. Espaço para dúvidas e trocas",
-    "dateTime": "Quinta-feira, 8 de outubro às 19h",
+    "dateTime": "15 de outubro, quinta-feira, às 19h",
     "tags": [
-      "Duração de 1h30",
-      "Online no YouTube",
-      "Gravação incluída"
+      "Ao vivo no YouTube",
+      "Gravação inclusa",
+      "1h30 de duração"
     ],
-    "actionLabel": "Tenho interesse"
+    "price": "R$ 100",
+    "installment": "Ou até 3x de R$ 35,70",
+    "actionLabel": "Quero participar",
+    "actionHref": "https://pay.herospark.com/workshop-mapeando-experiencias-com-linsi-545805",
+    "securePayment": "Pagamento seguro com SparkPay",
+    "description": "Mapear experiências faz parte do trabalho diário de quem projeta produtos e serviços. Vamos trabalhar em um cenário para transformar esse repertório em um fluxograma com LINSI, e assim usar a representação para revelar definições e lacunas de uma experiência",
+    "prerequisite": "Não é preciso conhecer a LINSI antes. Basta estudar ou atuar em UX/UI/Product Design, Produto ou áreas relacionadas. Espaço para dúvidas e trocas",
+    "topics": [
+      "Reconhecer o que caracteriza um mapeamento",
+      "Organizar o que já foi mapeado",
+      "Construir o fluxograma com LINSI"
+    ]
   }
 }
