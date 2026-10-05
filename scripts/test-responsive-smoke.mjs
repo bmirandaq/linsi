@@ -9,7 +9,6 @@ const routes = [
   '/docs/pq-fluxogramas',
   '/docs/templates',
   '/docs/assistente',
-  '/workshop',
   '/contribuir',
   '/contribuir-ajuda',
   '/cafe-bea',
@@ -138,10 +137,6 @@ for (const viewport of viewports) {
         await assertFullRadius(page.locator('[class*="primaryAction"]').first(), 'home primary CTA');
         await assertFullRadius(page.locator('[class*="workshopAction"]').first(), 'home workshop CTA');
         await assertFullRadius(page.locator('[class*="workshopTag_"]').first(), 'home workshop tag');
-      }
-
-      if (route === '/workshop') {
-        await assertFullRadius(page.locator('button[type="submit"]').first(), 'workshop submit CTA');
       }
 
       if (route === '/contribuir-ajuda') {

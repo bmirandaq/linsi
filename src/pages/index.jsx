@@ -14,6 +14,9 @@ export default function Home() {
   const logo = useBaseUrl('/img/linsi-logo.svg');
   const heroCover = useBaseUrl('/img/cover-hero.png');
   const templateCover = useBaseUrl('/img/template-fluxograma-cover.png');
+  const workshopFragmentDesktop = useBaseUrl('/img/workshop-fragment-desktop.svg');
+  const workshopFragmentCompact = useBaseUrl('/img/workshop-fragment-compact.svg');
+  const workshopSecureIcon = useBaseUrl('/img/verified-user-material-symbol.svg');
 
   return (
     <Layout description="LINSI — Linguagem Simplificada de Fluxogramas de UX">
@@ -73,35 +76,76 @@ export default function Home() {
           id="workshop"
           aria-labelledby="workshop-title">
           <div className={clsx('container', styles.workshopCard)}>
-            <div className={styles.workshopContent}>
-              <p className={styles.workshopPretitle}>{homeContent.workshop.pretitle}</p>
+            <div className={styles.workshopHeader}>
+              <div className={styles.workshopHeaderContent}>
+                <p className={styles.workshopPretitle}>{homeContent.workshop.pretitle}</p>
 
-              <h2 id="workshop-title" className={styles.workshopTitle}>
-                <span>Mapeando experiências</span>{' '}
-                <span>com LINSI</span>
-              </h2>
+                <div className={styles.workshopHeadingGroup}>
+                  <Heading as="h2" id="workshop-title" className={styles.workshopTitle}>
+                    {homeContent.workshop.title}
+                  </Heading>
+                  <p className={styles.workshopDate}>{homeContent.workshop.dateTime}</p>
+                </div>
 
-              <p className={styles.workshopDescription}>
-                {homeContent.workshop.description}
-              </p>
-
-              <p className={styles.workshopDate}>{homeContent.workshop.dateTime}</p>
-
-              <div className={styles.workshopTags} aria-label="Informações do workshop">
-                {homeContent.workshop.tags.map((tag) => (
-                  <span
-                    className={styles.workshopTag}
-                    key={tag}
-                    style={{background: 'transparent'}}>
-                    {tag}
-                  </span>
-                ))}
+                <div className={styles.workshopTags} aria-label="Informações do workshop">
+                  {homeContent.workshop.tags.map((tag) => (
+                    <span className={styles.workshopTag} key={tag}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
 
-              <Link className={styles.workshopAction} to="/workshop" onClick={() => trackClarityEvent('workshop_signup_click')}>
-                {homeContent.workshop.actionLabel}
-                <MaterialSymbol name="arrow_forward" size={20} />
-              </Link>
+              <div className={styles.workshopPurchase}>
+                <div className={styles.workshopPriceGroup}>
+                  <p className={styles.workshopPrice}>{homeContent.workshop.price}</p>
+                  <p className={styles.workshopInstallment}>{homeContent.workshop.installment}</p>
+                </div>
+
+                <div className={styles.workshopActionGroup}>
+                  <a
+                    className={styles.workshopAction}
+                    href={homeContent.workshop.actionHref}
+                    onClick={() => trackClarityEvent('workshop_signup_click')}>
+                    <span>{homeContent.workshop.actionLabel}</span>
+                    <MaterialSymbol name="arrow_forward" size={24} />
+                  </a>
+
+                  <p className={styles.workshopSecurePayment}>
+                    <img
+                      className={styles.workshopSecurePaymentIcon}
+                      src={workshopSecureIcon}
+                      alt=""
+                      aria-hidden="true"
+                      width="16"
+                      height="16"
+                    />
+                    <span>{homeContent.workshop.securePayment}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.workshopDetails}>
+              <div className={styles.workshopDescriptionGroup}>
+                <p className={styles.workshopDescription}>{homeContent.workshop.description}</p>
+                <p className={styles.workshopPrerequisite}>{homeContent.workshop.prerequisite}</p>
+              </div>
+
+              <div className={styles.workshopTopics}>
+                <p className={styles.workshopTopicsTitle}>Tópicos</p>
+                <ul className={styles.workshopTopicList}>
+                  {homeContent.workshop.topics.map((topic) => (
+                    <li className={styles.workshopTopic} key={topic}>
+                      <picture className={styles.workshopTopicIcon} aria-hidden="true">
+                        <source media="(max-width: 996px)" srcSet={workshopFragmentCompact} />
+                        <img src={workshopFragmentDesktop} alt="" width="54" height="24" />
+                      </picture>
+                      <span>{topic}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </section>

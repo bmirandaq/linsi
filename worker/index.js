@@ -8,29 +8,12 @@ const REASON_LABELS = Object.freeze({
 });
 const ALLOWED_REASONS = Object.keys(REASON_LABELS);
 const CONTACT_ACTION = 'contact';
-const WORKSHOP_BASE_PRICE = 100;
-const WORKSHOP_COUPONS = Object.freeze({
-  VAGASUX15: Object.freeze({partner: 'VagasUX', discount: 15, amount: 85}),
-  CLUBEUXW20: Object.freeze({partner: 'Clube do UX Writing', discount: 20, amount: 80}),
-  CROQ5: Object.freeze({partner: 'Design Croquete', discount: 5, amount: 95}),
-  GUIA5: Object.freeze({partner: 'GUIA', discount: 5, amount: 95}),
-});
-const WORKSHOP_PAYMENT_BINDINGS = Object.freeze({
-  100: 'WORKSHOP_PAYMENT_LINK_FULL',
-  95: 'WORKSHOP_PAYMENT_LINK_95',
-  85: 'WORKSHOP_PAYMENT_LINK_85',
-  80: 'WORKSHOP_PAYMENT_LINK_80',
-});
 const MAX_LENGTHS = {
   apelido: 120,
   email: 254,
   linkedin: 300,
   whatsapp: 32,
   mensagem: 5000,
-  nome: 120,
-  cargo: 120,
-  empresa: 160,
-  coupon: 80,
   turnstileToken: 2048,
 };
 
@@ -274,177 +257,10 @@ async function handleContact(request, env, cors) {
   return json({ok: true}, 200, cors);
 }
 
-function normalizeCoupon(value) {
-  const raw = optionalString(value, MAX_LENGTHS.coupon);
-  return raw === null ? null : raw.toUpperCase();
-}
-
-function couponConfig(env) {
-  let overrides = {};
-  if (env.WORKSHOP_COUPONS_JSON) {
-    try {
-      const parsed = JSON.parse(env.WORKSHOP_COUPONS_JSON);
-      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) overrides = parsed;
-    } catch {
-      overrides = {};
-    }
-  }
-
-  return Object.fromEntries(Object.entries(WORKSHOP_COUPONS).map(([coupon, rule]) => {
-    const override = overrides[coupon];
-    const active = typeof override?.active === 'boolean' ? override.active : true;
-    const expiresAt = typeof override?.expiresAt === 'string' ? override.expiresAt : '';
-    return [coupon, {...rule, active, expiresAt}];
-  }));
-}
-
-function evaluateCoupon(value, env) {
-  const coupon = normalizeCoupon(value);
-  if (coupon === null) return {status: 'invalid'};
-  if (!coupon) return {status: 'empty', coupon: '', partner: '', amount: WORKSHOP_BASE_PRICE};
-
-  const config = couponConfig(env);
-  const rule = config[coupon];
-  if (!rule) return {status: 'invalid'};
-
-  const expired = rule.expiresAt && Number.isFinite(Date.parse(rule.expiresAt)) && Date.parse(rule.expiresAt) < Date.now();
-  if (rule.active === false || expired) return {status: 'unavailable'};
-
-  return {
-    status: 'valid',
-    coupon,
-    partner: rule.partner,
-    amount: rule.amount,
-  };
-}
-
-function paymentLink(value) {
-  const raw = requiredString(value, 2048);
-  if (!raw) return null;
-
-  let url;
-  try {
-    url = new URL(raw);
-  } catch {
-    return null;
-  }
-
-  const hostname = url.hostname.toLowerCase();
-  const trustedHost = hostname === 'mpago.la'
-    || hostname === 'mercadopago.com.br'
-    || hostname.endsWith('.mercadopago.com.br');
-
-  if (url.protocol !== 'https:' || !trustedHost || url.username || url.password || url.port) return null;
-  return url.toString();
-}
-
-function workshopPaymentLink(amount, env) {
-  const binding = WORKSHOP_PAYMENT_BINDINGS[amount];
-  return binding ? paymentLink(env[binding]) : null;
-}
-
-async function createWorkshopRegistration({registrationId, nome, email, cargo, empresa, linkedin, whatsapp, coupon, partner, amount}, env) {
-  if (!env.NOTION_API_KEY || !env.WORKSHOP_NOTION_DATABASE_ID) {
-    throw new Error('Workshop Notion configuration missing');
-  }
-
-  const resp = await fetch('https://api.notion.com/v1/pages', {
-    method: 'POST',
-    headers: notionHeaders(env),
-    body: JSON.stringify({
-      parent: {database_id: env.WORKSHOP_NOTION_DATABASE_ID},
-      properties: {
-        Inscrição: {title: [{text: {content: registrationId}}]},
-        Nome: {rich_text: [{text: {content: nome}}]},
-        'E-mail': {email},
-        Cargo: {rich_text: [{text: {content: cargo}}]},
-        Empresa: {rich_text: empresa ? [{text: {content: empresa}}] : []},
-        LinkedIn: {url: linkedin || null},
-        WhatsApp: {phone_number: whatsapp || null},
-        Cupom: {rich_text: coupon ? [{text: {content: coupon}}] : []},
-        Parceiro: {rich_text: partner ? [{text: {content: partner}}] : []},
-        Valor: {number: amount},
-        Status: {select: {name: 'Aguardando pagamento'}},
-        'Criado em': {date: {start: new Date().toISOString()}},
-        'Pago em': {date: null},
-        'Acesso enviado': {checkbox: false},
-        'Confirmação enviada': {checkbox: false},
-      },
-    }),
-  });
-
-  if (!resp.ok) {
-    const body = await resp.text();
-    throw new Error(`Workshop Notion create error: ${resp.status} ${body}`);
-  }
-}
-
-async function handleCoupon(request, env, cors) {
-  const payload = await readJson(request);
-  if (!payload) return json({status: 'unavailable'}, 400, cors);
-
-  const result = evaluateCoupon(payload.coupon, env);
-  if (result.status === 'valid') return json({status: 'valid', coupon: result.coupon}, 200, cors);
-  if (result.status === 'invalid') return json({status: 'invalid'}, 200, cors);
-  return json({status: 'unavailable'}, 200, cors);
-}
-
-async function handleWorkshopStart(request, env, cors) {
-  const payload = await readJson(request);
-  if (!payload) return json({message: 'Confira os campos preenchidos e tente novamente.'}, 400, cors);
-
-  const nome = requiredString(payload.nome, MAX_LENGTHS.nome);
-  const email = requiredString(payload.email, MAX_LENGTHS.email);
-  const cargo = requiredString(payload.cargo, MAX_LENGTHS.cargo);
-  const empresa = optionalString(payload.empresa, MAX_LENGTHS.empresa);
-  const linkedin = normalizeLinkedIn(payload.linkedin);
-  const whatsapp = normalizeWhatsApp(payload.whatsapp);
-  if (!nome || !validEmail(email) || !cargo || empresa === null || linkedin === null || whatsapp === null) {
-    return json({message: 'Confira os campos preenchidos e tente novamente.'}, 400, cors);
-  }
-
-  const couponResult = evaluateCoupon(payload.coupon, env);
-  if (couponResult.status === 'invalid') {
-    return json({code: 'coupon_invalid', message: 'Cupom inválido. Revise e corrija'}, 400, cors);
-  }
-  if (couponResult.status === 'unavailable') {
-    return json({code: 'coupon_unavailable', message: 'Esse cupom não está mais disponível'}, 400, cors);
-  }
-
-  const amount = couponResult.amount || WORKSHOP_BASE_PRICE;
-  const selectedPaymentLink = workshopPaymentLink(amount, env);
-  if (!selectedPaymentLink) {
-    return json({message: 'O pagamento está temporariamente indisponível.'}, 503, cors);
-  }
-
-  const registrationId = `WS-${crypto.randomUUID().replace(/-/g, '').toUpperCase()}`;
-  try {
-    await createWorkshopRegistration({
-      registrationId,
-      nome,
-      email,
-      cargo,
-      empresa,
-      linkedin,
-      whatsapp,
-      coupon: couponResult.coupon || '',
-      partner: couponResult.partner || '',
-      amount,
-    }, env);
-  } catch (err) {
-    console.error('Workshop registration failed:', err?.message || 'unknown_error');
-    return json({message: 'Não foi possível registrar sua inscrição. Tente novamente.'}, 500, cors);
-  }
-
-  return json({registrationId, amount, paymentUrl: selectedPaymentLink}, 200, cors);
-}
-
-
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname.replace(/\/$/, '') || '/';
-
 
     const origin = request.headers.get('Origin') || '';
     if (!isAllowedOrigin(origin, env)) return json({error: 'Origin not allowed'}, 403, {});
@@ -452,10 +268,7 @@ export default {
 
     if (request.method === 'OPTIONS') return new Response(null, {status: 204, headers: cors});
 
-
     if (path === '/' && request.method === 'POST') return handleContact(request, env, cors);
-    if (path === '/workshop/coupon' && request.method === 'POST') return handleCoupon(request, env, cors);
-    if (path === '/workshop/start' && request.method === 'POST') return handleWorkshopStart(request, env, cors);
 
     return json({error: 'Method not allowed'}, 405, cors);
   },

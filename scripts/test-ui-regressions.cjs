@@ -13,7 +13,6 @@ const layoutFixesCss = read('src/css/layout-fixes.css');
 const footer = read('src/theme/Footer/index.jsx');
 const footerCss = read('src/theme/Footer/styles.module.css');
 const homeCss = read('src/pages/index.module.css');
-const workshopCss = read('src/pages/workshop.module.css');
 const contributeCss = read('src/pages/contribuir.module.css');
 const templateCardsCss = read('src/components/TemplateCards/styles.module.css');
 const cafePage = read('src/pages/cafe-bea.tsx');
@@ -264,8 +263,6 @@ assert.match(
 
 for (const [name, css, selector] of [
   ['CTA principal da Home', homeCss, '\\.primaryAction'],
-  ['CTA do Workshop na Home', homeCss, '\\.workshopAction'],
-  ['CTAs da página Workshop', workshopCss, '\\.submit,\\s*\\.paymentLink'],
   ['CTA de Contribuir', contributeCss, '\\.submit'],
   ['CTA dos templates', templateCardsCss, '\\.actionButton'],
   ['CTA de copiar Pix', cafeCss, '\\.primaryCopyButton'],
@@ -277,6 +274,17 @@ for (const [name, css, selector] of [
     `${name} deve manter radius-full, 56px mínimos, fonte 16px/700 e padding horizontal de 24px.`,
   );
 }
+assert.match(
+  homeCss,
+  /\\.workshopAction\\s*\\{[\\s\\S]*?border-radius:\\s*var\\(--linsi-radius-full\\);[\\s\\S]*?font-size:\\s*1\\.5rem;[\\s\\S]*?font-weight:\\s*600;[\\s\\S]*?min-height:\\s*55px;/,
+  'O CTA desktop do Workshop deve preservar a geometria aprovada no Figma.',
+);
+assert.match(
+  homeCss,
+  /@media \\(max-width: 996px\\)[\\s\\S]*?\\.workshopAction\\s*\\{[\\s\\S]*?font-size:\\s*1rem;[\\s\\S]*?min-height:\\s*44px;[\\s\\S]*?padding:\\s*var\\(--linsi-space-8\\) var\\(--linsi-space-16\\);/,
+  'O CTA compacto do Workshop deve preservar 44px, 16px e padding 8/16.',
+);
+
 assert.ok(
   cafePage.indexOf("{copiedCode ? 'Código copiado' : 'Copiar código Pix'}") <
     cafePage.indexOf("name={copiedCode ? 'check' : 'content_copy'}"),
