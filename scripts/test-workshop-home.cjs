@@ -50,12 +50,17 @@ assert.doesNotMatch(page, /to="\/workshop"/);
 
 assert.match(css, /\.workshopHeader\s*\{[\s\S]*?background:\s*var\(--linsi-brand-02-base\);[\s\S]*?border-top-right-radius:\s*100px;/);
 assert.match(css, /grid-template-columns:\s*minmax\(0, 1fr\) 267px;/);
-assert.match(css, /\.workshopDetails\s*\{[\s\S]*?background:\s*var\(--linsi-brand-02-darkest\);[\s\S]*?grid-template-columns:\s*minmax\(0, 800px\) minmax\(0, 1fr\);/);
+assert.match(css, /\.workshopDetails\s*\{[\s\S]*?background:\s*var\(--linsi-brand-02-darkest\);[\s\S]*?border-bottom-right-radius:\s*100px;[\s\S]*?grid-template-columns:\s*minmax\(0, 800px\) minmax\(0, 1fr\);/);
 assert.match(css, /\.workshopTags\s*\{[\s\S]*?flex-wrap:\s*wrap;/);
 assert.match(css, /@media \(max-width: 996px\)[\s\S]*?\.workshopCard\s*\{[\s\S]*?width:\s*calc\(100% - var\(--linsi-space-16\)\);/);
 assert.match(css, /@media \(max-width: 996px\)[\s\S]*?\.workshopHeader\s*\{[\s\S]*?flex-direction:\s*column;/);
-assert.match(css, /@media \(max-width: 996px\)[\s\S]*?\.workshopDetails\s*\{[\s\S]*?flex-direction:\s*column;/);
-assert.doesNotMatch(css, /\[data-theme='dark'\] \.workshop(?:Card|Header|Details)/);
+assert.match(css, /@media \(max-width: 1440px\) and \(min-width: 997px\)[\s\S]*?\.workshopDetails\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\);/);
+assert.match(css, /@media \(max-width: 996px\)[\s\S]*?\.workshopDetails\s*\{[\s\S]*?flex-direction:\s*column;[\s\S]*?padding:\s*var\(--linsi-space-24\) var\(--linsi-space-16\) var\(--linsi-space-32\);/);
+assert.match(css, /\[data-theme='dark'\] \.workshopDetails\s*\{[\s\S]*?background:\s*var\(--linsi-brand-02-ultralighter\);/);
+assert.match(css, /\[data-theme='dark'\] \.workshopDescription\s*\{[\s\S]*?color:\s*var\(--linsi-neutral-darker\);/);
+assert.match(css, /\[data-theme='dark'\] \.workshopPrerequisite\s*\{[\s\S]*?color:\s*var\(--linsi-neutral-dark\);/);
+assert.match(css, /\[data-theme='dark'\] \.workshopTopicsTitle,[\s\S]*?\[data-theme='dark'\] \.workshopTopic\s*\{[\s\S]*?color:\s*var\(--linsi-pure-black\);/);
+assert.doesNotMatch(css, /\[data-theme='dark'\] \.workshop(?:Card|Header)\s*\{/);
 
 assert.match(redirect, new RegExp(checkoutUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 assert.match(redirect, /window\.location\.replace\(WORKSHOP_CHECKOUT_URL\)/);
