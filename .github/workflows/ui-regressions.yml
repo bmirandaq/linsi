@@ -28,6 +28,8 @@ jobs:
         run: npm ci
 
       - name: Auditar dependências
+        id: dependency-audit
+        continue-on-error: true
         run: npm run audit:dependencies
 
       - name: Verificar tipos
@@ -149,4 +151,10 @@ jobs:
           name: analytics-visual-qa
           path: artifacts/analytics-qa/*.png
           if-no-files-found: error
+
+      - name: Falhar se a auditoria de dependências encontrou vulnerabilidades
+        if: always() && steps.dependency-audit.outcome == 'failure'
+        run: |
+          echo "::error::A auditoria de dependências encontrou vulnerabilidades não tratadas."
+          exit 1
 
