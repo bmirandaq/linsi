@@ -2,8 +2,18 @@ const assert = require('node:assert/strict');
 const {spawnSync} = require('node:child_process');
 
 const allowedAdvisories = new Set([
+  // image-size is locally patched and covered by test:security.
   'https://github.com/advisories/GHSA-w3rx-r6r6-pgpr',
   'https://github.com/advisories/GHSA-5p2g-fcmc-qvqq',
+
+  // braces@3.0.3 is transitive build tooling. No patched npm release exists yet.
+  // Remove this waiver as soon as an upstream fixed release is available.
+  'https://github.com/advisories/GHSA-vfj7-8cjw-p6xm',
+
+  // http-cache-semantics is transitive via update-notifier/package-json/got.
+  // LINSI does not use it as a shared runtime cache, and upstream disputes this advisory.
+  // Remove this waiver if the advisory is revised or a fixed release is published.
+  'https://github.com/advisories/GHSA-ch52-4w7c-c8xp',
 ]);
 
 const npmCli = process.env.npm_execpath;
@@ -65,5 +75,5 @@ assert.ok(
 );
 
 console.log(
-  'Auditoria aprovada: somente os avisos de image-size permanecem, com correção local validada por test:security.',
+  'Auditoria aprovada: somente advisories explicitamente revisados permanecem; image-size possui correção local validada por test:security e os demais waivers são transitivos e temporários.',
 );
