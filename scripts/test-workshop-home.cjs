@@ -62,7 +62,14 @@ assert.match(css, /\[data-theme='dark'\] \.workshopPrerequisite\s*\{[\s\S]*?colo
 assert.match(css, /\[data-theme='dark'\] \.workshopTopicsTitle,[\s\S]*?\[data-theme='dark'\] \.workshopTopic\s*\{[\s\S]*?color:\s*var\(--linsi-pure-black\);/);
 assert.doesNotMatch(css, /\[data-theme='dark'\] \.workshop(?:Card|Header)\s*\{/);
 
-assert.ok(redirect.includes(checkoutUrl), 'Legacy workshop redirect must contain the exact HeroSpark checkout URL.');
+const redirectLines = redirect.split('\n').map((line) => line.trim());
+const checkoutDeclarationIndex = redirectLines.indexOf('const WORKSHOP_CHECKOUT_URL =');
+assert.notEqual(checkoutDeclarationIndex, -1, 'Legacy workshop redirect must declare WORKSHOP_CHECKOUT_URL.');
+assert.equal(
+  redirectLines[checkoutDeclarationIndex + 1],
+  `'${checkoutUrl}';`,
+  'Legacy workshop redirect must declare the exact HeroSpark checkout URL.',
+);
 assert.match(redirect, /window\.location\.replace\(WORKSHOP_CHECKOUT_URL\)/);
 assert.match(redirect, /httpEquiv="refresh"/);
 assert.match(redirect, /<a href=\{WORKSHOP_CHECKOUT_URL\}>Ir para o checkout do workshop<\/a>/);
