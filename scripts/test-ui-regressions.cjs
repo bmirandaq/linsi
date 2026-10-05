@@ -276,12 +276,12 @@ for (const [name, css, selector] of [
 }
 assert.match(
   homeCss,
-  /\\.workshopAction\\s*\\{[\\s\\S]*?border-radius:\\s*var\\(--linsi-radius-full\\);[\\s\\S]*?font-size:\\s*1\\.5rem;[\\s\\S]*?font-weight:\\s*600;[\\s\\S]*?min-height:\\s*55px;/,
+  /\.workshopAction\s*\{[\s\S]*?border-radius:\s*var\(--linsi-radius-full\);[\s\S]*?font-size:\s*1\.5rem;[\s\S]*?font-weight:\s*600;[\s\S]*?min-height:\s*55px;/,
   'O CTA desktop do Workshop deve preservar a geometria aprovada no Figma.',
 );
 assert.match(
   homeCss,
-  /@media \\(max-width: 996px\\)[\\s\\S]*?\\.workshopAction\\s*\\{[\\s\\S]*?font-size:\\s*1rem;[\\s\\S]*?min-height:\\s*44px;[\\s\\S]*?padding:\\s*var\\(--linsi-space-8\\) var\\(--linsi-space-16\\);/,
+  /@media \(max-width: 996px\)[\s\S]*?\.workshopAction\s*\{[\s\S]*?font-size:\s*1rem;[\s\S]*?min-height:\s*44px;[\s\S]*?padding:\s*var\(--linsi-space-8\) var\(--linsi-space-16\);/,
   'O CTA compacto do Workshop deve preservar 44px, 16px e padding 8/16.',
 );
 
