@@ -350,6 +350,7 @@
 .workshopDetails {
   align-items: start;
   background: var(--linsi-brand-02-darkest);
+  border-bottom-right-radius: 100px;
   display: grid;
   gap: var(--linsi-space-64);
   grid-template-columns: minmax(0, 800px) minmax(0, 1fr);
@@ -424,6 +425,23 @@
   display: block;
   height: 24px;
   width: 54px;
+}
+
+[data-theme='dark'] .workshopDetails {
+  background: var(--linsi-brand-02-ultralighter);
+}
+
+[data-theme='dark'] .workshopDescription {
+  color: var(--linsi-neutral-darker);
+}
+
+[data-theme='dark'] .workshopPrerequisite {
+  color: var(--linsi-neutral-dark);
+}
+
+[data-theme='dark'] .workshopTopicsTitle,
+[data-theme='dark'] .workshopTopic {
+  color: var(--linsi-pure-black);
 }
 
 .origin {
@@ -560,6 +578,12 @@
   }
 }
 
+@media (max-width: 1440px) and (min-width: 997px) {
+  .workshopDetails {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 1399px) and (min-width: 997px) {
   .workshopCard {
     width: calc(100% - (2 * var(--linsi-space-48)));
@@ -579,7 +603,7 @@
 
   .workshopDetails {
     gap: var(--linsi-space-48);
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     padding: var(--linsi-space-48);
   }
 
@@ -715,7 +739,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--linsi-space-32);
-    padding: var(--linsi-space-24) var(--linsi-space-16);
+    padding: var(--linsi-space-24) var(--linsi-space-16) var(--linsi-space-32);
   }
 
   .workshopDescription {
