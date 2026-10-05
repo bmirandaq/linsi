@@ -50,7 +50,7 @@ assert.doesNotMatch(page, /to="\/workshop"/);
 
 assert.match(css, /\.workshopHeader\s*\{[\s\S]*?background:\s*var\(--linsi-brand-02-base\);[\s\S]*?border-top-right-radius:\s*100px;/);
 assert.match(css, /grid-template-columns:\s*minmax\(0, 1fr\) 267px;/);
-assert.match(css, /\.workshopDetails\s*\{[\s\S]*?background:\s*var\(--linsi-brand-02-darkest\);[\s\S]*?border-bottom-right-radius:\s*100px;[\s\S]*?grid-template-columns:\s*minmax\(0, 800px\) minmax\(0, 1fr\);/);
+assert.match(css, /\.workshopDetails\s*\{[\s\S]*?background:\s*var\(--linsi-brand-02-darkest\);[\s\S]*?border-bottom-right-radius:\s*100px;[\s\S]*?grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\);/);
 assert.match(css, /\.workshopTags\s*\{[\s\S]*?flex-wrap:\s*wrap;/);
 assert.match(css, /@media \(max-width: 996px\)[\s\S]*?\.workshopCard\s*\{[\s\S]*?width:\s*calc\(100% - var\(--linsi-space-16\)\);/);
 assert.match(css, /@media \(max-width: 996px\)[\s\S]*?\.workshopHeader\s*\{[\s\S]*?flex-direction:\s*column;/);
