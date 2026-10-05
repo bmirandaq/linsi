@@ -16,7 +16,7 @@ const wrangler = read('worker/wrangler.toml');
 
 assert.equal(home.workshop.pretitle, 'Workshop');
 assert.equal(home.workshop.title, 'Mapeando experiências com LINSI');
-assert.equal(home.workshop.dateTime, '15 de outubro, quinta-feira, às 19h');
+assert.equal(home.workshop.dateTime, '12 de novembro, quinta-feira, às 19h');
 assert.deepEqual(home.workshop.tags, ['Ao vivo no YouTube', 'Gravação inclusa', '1h30 de duração']);
 assert.equal(home.workshop.price, 'R$ 100');
 assert.equal(home.workshop.installment, 'Ou até 3x de R$ 35,70');
