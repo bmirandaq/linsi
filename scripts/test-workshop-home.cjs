@@ -62,7 +62,7 @@ assert.match(css, /\[data-theme='dark'\] \.workshopPrerequisite\s*\{[\s\S]*?colo
 assert.match(css, /\[data-theme='dark'\] \.workshopTopicsTitle,[\s\S]*?\[data-theme='dark'\] \.workshopTopic\s*\{[\s\S]*?color:\s*var\(--linsi-pure-black\);/);
 assert.doesNotMatch(css, /\[data-theme='dark'\] \.workshop(?:Card|Header)\s*\{/);
 
-assert.match(redirect, new RegExp(checkoutUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+assert.ok(redirect.includes(checkoutUrl), 'Legacy workshop redirect must contain the exact HeroSpark checkout URL.');
 assert.match(redirect, /window\.location\.replace\(WORKSHOP_CHECKOUT_URL\)/);
 assert.match(redirect, /httpEquiv="refresh"/);
 assert.match(redirect, /<a href=\{WORKSHOP_CHECKOUT_URL\}>Ir para o checkout do workshop<\/a>/);
